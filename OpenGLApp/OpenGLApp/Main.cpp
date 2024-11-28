@@ -10,6 +10,9 @@
 #include "camera.h"
 
 #include <iostream>
+#include <array>
+
+#include "GameObject.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -21,7 +24,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 15.0f, 0.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -209,6 +212,17 @@ int main()
     ourShader.setInt("texture2", 1);
 
 
+    // Example data structure of all game objects
+    std::array<GameObject, 10> objects;
+
+    for (int i = 0; i < objects.size(); i++)
+    {
+        objects[i].transform->position = cubePositions[i];
+        objects[i].transform->rotation = glm::vec3();
+    }
+
+    objects[0].transform->rotation.z = 45;
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -245,15 +259,20 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
 
+        objects[0].transform->rotation.z += 20 * deltaTime;
+        objects[0].transform->rotation.y += 20 * deltaTime;
+
         // render boxes
         glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 10; i++)
+        for (unsigned int i = 0; i < objects.size(); i++)
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            model = glm::translate(model, objects[i].transform->position);
+            model = glm::rotate(model, glm::radians(objects[i].transform->rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
+            model = glm::rotate(model, glm::radians(objects[i].transform->rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
+            model = glm::rotate(model, glm::radians(objects[i].transform->rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
+
             ourShader.setMat4("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -322,8 +341,8 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
     lastX = xpos;
     lastY = ypos;
-
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    
+    // camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
