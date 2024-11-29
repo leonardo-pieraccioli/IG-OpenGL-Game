@@ -1,20 +1,17 @@
 #pragma once
 #include <glm/glm.hpp>
-
-typedef struct {
-	glm::vec3 position;
-	glm::vec3 rotation;
-	glm::vec3 scale;
-} Transform;
+#include "Transform.h"
 
 class GameObject
 {
 public:
 	GameObject();
-	~GameObject();
+	//~GameObject();
 	virtual void Update(float deltaTime);
 
-	Transform *transform;
+	Transform transform;
+	//mesh
+	//texture
 
 private:
 
