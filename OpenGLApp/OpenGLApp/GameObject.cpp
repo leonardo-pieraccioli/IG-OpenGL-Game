@@ -2,15 +2,13 @@
 
 GameObject::GameObject()
 {
-	transform = (Transform *) malloc(sizeof(Transform));
-
+	transform = Transform();
 }
 
-GameObject::~GameObject()
+/*GameObject::~GameObject()
 {
-	free(transform);
-
-}
+	delete transform;
+}*/
 
 void GameObject::Update(float deltaTime)
 {

@@ -13,6 +13,7 @@
 #include <array>
 
 #include "GameObject.h"
+#include "Planet.h"
 #include "MiniEngine/ResourceLoader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -25,7 +26,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 15.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 15.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -173,11 +174,14 @@ int main()
 
     for (int i = 0; i < objects.size(); i++)
     {
-        objects[i].transform->position = cubePositions[i];
-        objects[i].transform->rotation = glm::vec3();
+        objects[i].transform.setPosition(cubePositions[i]);
+        objects[i].transform.setRotation();
     }
 
-    objects[0].transform->rotation.z = 45;
+    //objects[0].transform.position.x = 5.f;
+    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 15.0f),
+                                 glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(0.0f, 1.0f, 0.0f));
 
     // render loop
     // -----------
@@ -212,11 +216,11 @@ int main()
         ourShader.setMat4("projection", projection);
 
         // camera/view transformation
-        glm::mat4 view = camera.GetViewMatrix();
+        //glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
 
-        objects[0].transform->rotation.z += 20 * deltaTime;
-        objects[0].transform->rotation.y += 20 * deltaTime;
+        //objects[0].transform.rotation.z += 20 * deltaTime;
+        //objects[0].transform.rotation.y += 20 * deltaTime;
 
         // render boxes
         glBindVertexArray(VAO);
@@ -224,10 +228,10 @@ int main()
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, objects[i].transform->position);
-            model = glm::rotate(model, glm::radians(objects[i].transform->rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
-            model = glm::rotate(model, glm::radians(objects[i].transform->rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
-            model = glm::rotate(model, glm::radians(objects[i].transform->rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
+            model = glm::translate(model, objects[i].transform.getPosition());
+            model = glm::rotate(model, glm::radians(objects[i].transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
+            model = glm::rotate(model, glm::radians(objects[i].transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
+            model = glm::rotate(model, glm::radians(objects[i].transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
 
             ourShader.setMat4("model", model);
 
