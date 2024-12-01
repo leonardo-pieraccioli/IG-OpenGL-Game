@@ -215,12 +215,19 @@ int main()
 
 
     // Example data structure of all game objects
-    std::array<GameObject, 10> objects;
+    // Esempio temporaneo per dimostrare funzionamento del polimorfismo
+    std::array<GameObject*, 10> objects;
+    for (int i = 0; i < 10; i++) {
+        if (i == 0 || i == 1)
+            objects[i] = new Planet();
+        else
+            objects[i] = new GameObject();
+    }
 
     for (int i = 0; i < objects.size(); i++)
     {
-        objects[i].transform.setPosition(cubePositions[i]);
-        objects[i].transform.setRotation();
+        objects[i]->transform.setPosition(cubePositions[i]);
+        objects[i]->transform.setRotation();
     }
 
     //objects[0].transform.position.x = 5.f;
@@ -271,12 +278,13 @@ int main()
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < objects.size(); i++)
         {
+            objects[i]->Update(deltaTime);
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, objects[i].transform.getPosition());
-            model = glm::rotate(model, glm::radians(objects[i].transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
-            model = glm::rotate(model, glm::radians(objects[i].transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
-            model = glm::rotate(model, glm::radians(objects[i].transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
+            model = glm::translate(model, objects[i]->transform.getPosition());
+            model = glm::rotate(model, glm::radians(objects[i]->transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
+            model = glm::rotate(model, glm::radians(objects[i]->transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
+            model = glm::rotate(model, glm::radians(objects[i]->transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
 
             ourShader.setMat4("model", model);
 
