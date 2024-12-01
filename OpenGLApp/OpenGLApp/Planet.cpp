@@ -5,6 +5,11 @@ void Planet::rotatePlanet(float deltaTime)
 	this->transform.rotation.y += rotationRate * deltaTime;
 }
 
+void Planet::explode()
+{
+	//Esplosione? Game
+}
+
 Planet::Planet(int health, float rotationRate)
 {
 	this->maxHealth = (maxHealth >= -0.00001f && maxHealth <= 0.00001f ? 0.f : maxHealth);
@@ -25,5 +30,13 @@ float Planet::getCurrentHealthRatio()
 void Planet::Update(float deltaTime)
 {
 	rotatePlanet(deltaTime);
+}
+
+void Planet::damageActor(int damage)
+{
+	currentHealth -= damage;
+	if (currentHealth <= 0) {
+		explode();
+	}
 }
 

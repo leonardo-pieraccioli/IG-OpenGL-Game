@@ -30,6 +30,18 @@
     <ClCompile Include="Cube.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Planet.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Coin.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="ShootingEntity.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
     <ClCompile Include="MiniEngine\ResourceLoader.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
@@ -48,6 +60,18 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="Cube.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Planet.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Coin.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="ShootingEntity.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="MiniEngine\ResourceLoader.h">
