@@ -9,11 +9,17 @@ public:
 	//~GameObject();
 	virtual void Update(float deltaTime);
 
+	// operators override
+	bool operator == (const GameObject& go);
+	bool operator != (const GameObject& go);
+	
 	Transform transform;
 	//mesh
 	//texture
 
-private:
+	unsigned int GetID() const;
 
+private:
+	unsigned int ID;
 };
 

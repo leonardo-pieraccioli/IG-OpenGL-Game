@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include "stb_image.h"
 
 #include <glm/glm.hpp>
@@ -7,79 +8,44 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shader_s.h"
-#include "camera.h"
+#include "MiniEngine/camera.h"
 
 #include <iostream>
 #include <array>
 
-#include "GameObject.h"
+#include "MiniEngine/Game.h"
+#include "MiniEngine/GameObject.h"
 #include "Planet.h"
 #include "MiniEngine/ResourceLoader.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow* window);
-
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+std::string gameName = "Space Defender";
+const unsigned int SCR_WIDTH = 1280;
+const unsigned int SCR_HEIGHT = 720;
+GLFWwindow* window;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 15.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
+// TRANSFER INTO THE ENGINE
+void ProcessInput(float deltaTime);
+
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    Game& SpaceDefender = Game::Instance();
 
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-    // glfw window creation
-    // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Example19", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-
-    // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    // configure global opengl state
-    // -----------------------------
-    glEnable(GL_DEPTH_TEST);
+    window = SpaceDefender.Setup(SCR_WIDTH, SCR_HEIGHT, gameName);
 
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("shader.vs", "shader.fs");
+
+    // --------------------------------------
+    // TEMPORARY SECTION: CUBE INITIALIZATION
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -126,19 +92,7 @@ int main()
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
-    // world space positions of our cubes
-    glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
-    };
+
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -154,7 +108,7 @@ int main()
     // texture coord attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
+    // --------------------------
 
     // load and create a texture 
     // -------------------------
@@ -171,21 +125,33 @@ int main()
 
     // Example data structure of all game objects
     // Esempio temporaneo per dimostrare funzionamento del polimorfismo
-    std::array<GameObject*, 10> objects;
+
+    // world space positions of our cubes
+    glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f,  0.0f,  0.0f),
+        glm::vec3(2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f,  2.0f, -2.5f),
+        glm::vec3(1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
     for (int i = 0; i < 10; i++) {
-        if (i == 0 || i == 1)
-            objects[i] = new Planet();
+        if (i == 0 || i == 1) 
+        {
+            SpaceDefender.InstantiateGameObject(new Planet(), new Transform(cubePositions[i]));
+        }
         else
-            objects[i] = new GameObject();
+        {
+            SpaceDefender.InstantiateGameObject(new GameObject(), new Transform(cubePositions[i]));
+        }
     }
 
-    for (int i = 0; i < objects.size(); i++)
-    {
-        objects[i]->transform.setPosition(cubePositions[i]);
-        objects[i]->transform.setRotation();
-    }
-
-    //objects[0].transform.position.x = 5.f;
+    // CAMERA SETUP
+    // ------------
     glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 15.0f),
                                  glm::vec3(0.0f, 0.0f, 0.0f),
                                  glm::vec3(0.0f, 1.0f, 0.0f));
@@ -202,11 +168,11 @@ int main()
 
         // input
         // -----
-        processInput(window);
+        ProcessInput(deltaTime);
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // bind textures on corresponding texture units
@@ -225,26 +191,12 @@ int main()
         // camera/view transformation
         //glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
-
-        //objects[0].transform.rotation.z += 20 * deltaTime;
-        //objects[0].transform.rotation.y += 20 * deltaTime;
-
+        
         // render boxes
         glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < objects.size(); i++)
-        {
-            objects[i]->Update(deltaTime);
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, objects[i]->transform.getPosition());
-            model = glm::rotate(model, glm::radians(objects[i]->transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
-            model = glm::rotate(model, glm::radians(objects[i]->transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
-            model = glm::rotate(model, glm::radians(objects[i]->transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
 
-            ourShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        SpaceDefender.Update(deltaTime);
+        SpaceDefender.Draw(ourShader);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -265,7 +217,7 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
+void ProcessInput(float deltaTime)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -278,44 +230,4 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
-}
-
-
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
-
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-    
-    // camera.ProcessMouseMovement(xoffset, yoffset);
-}
-
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
