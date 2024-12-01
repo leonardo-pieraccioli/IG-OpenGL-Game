@@ -143,7 +143,6 @@
     <ClCompile Include="MiniEngine\Game.cpp" />
     <ClCompile Include="MiniEngine\GameObject.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Planet.cpp" />
@@ -157,7 +156,6 @@
     <ClInclude Include="MiniEngine\camera.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Enemy.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="MiniEngine\Game.h" />
     <ClInclude Include="MiniEngine\GameObject.h" />
     <ClInclude Include="Planet.h" />
