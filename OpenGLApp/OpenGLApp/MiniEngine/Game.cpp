@@ -120,6 +120,7 @@ void Game::Draw(Shader ourShader)
         model = glm::rotate(model, glm::radians((*obj)->transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
         model = glm::rotate(model, glm::radians((*obj)->transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
         model = glm::rotate(model, glm::radians((*obj)->transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
+        model = glm::scale(model, (*obj)->transform.getScale());
 
         ourShader.setMat4("model", model);
 

@@ -22,6 +22,9 @@
 std::string gameName = "Space Defender";
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
+const float zNear = -20.0f;
+const float zFar = 20.0f;
+const float orthScale = 50.0f; // Parametro per zoomare e dezoomare gli oggetti con la camera ortografica
 GLFWwindow* window;
 
 // camera
@@ -129,20 +132,13 @@ int main()
     // world space positions of our cubes
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
+        glm::vec3(0.0f,  5.0f, 0.0f),
     };
-    for (int i = 0; i < 10; i++) {
-        if (i == 0 || i == 1) 
+    for (int i = 0; i < 2; i++) {
+        if (i == 0) 
         {
-            SpaceDefender.InstantiateGameObject(new Planet(), new Transform(cubePositions[i]));
+            glm::vec3 planetScale = glm::vec3(3.0f, 3.0f, 3.0f);
+            SpaceDefender.InstantiateGameObject(new Planet(), new Transform(cubePositions[i], glm::vec3(0.f, 0.f, 0.f), planetScale));
         }
         else
         {
@@ -184,9 +180,11 @@ int main()
         // activate shader
         ourShader.use();
 
-        // pass projection matrix to shader (note that in this case it could change every frame)
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
+        // Mi trovo la matrice ortografica per la camera
+        glm::mat4 projection = glm::ortho(-((float) SCR_WIDTH / 2), (float)SCR_WIDTH / 2, -((float) SCR_HEIGHT / 2), (float)SCR_HEIGHT / 2, zNear, zFar);
+        
+        projection = glm::scale(projection, glm::vec3(orthScale, orthScale, 1.0f));
+        ourShader.setMat4("projection", projection); 
 
         // camera/view transformation
         //glm::mat4 view = camera.GetViewMatrix();
