@@ -1,7 +1,6 @@
 #include "GameObject.h"
 #include "Game.h"
 
-#include "glm/gtc/matrix_transform.hpp"
 
 static unsigned int lastID = 0;
 

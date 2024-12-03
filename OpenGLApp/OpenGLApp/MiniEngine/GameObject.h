@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include "Transform.h"
 #include "../shader_s.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 class GameObject
 {
@@ -9,7 +10,7 @@ public:
 	GameObject();
 	//~GameObject();
 	virtual void Update(float deltaTime);
-	void Draw(Shader ourShader);
+	virtual void Draw(Shader ourShader);
 
 	// operators override
 	bool operator == (const GameObject& go);

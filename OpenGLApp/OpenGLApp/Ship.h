@@ -5,12 +5,16 @@ class Ship : public ShootingEntity
 {
 private:
 	int nProjectiles;
-	float movementRate = 45.0f;
+	float movementRate = 90.0f;
 
 public:
 	Ship(int nProjectiles = 1);
 
-	void restoreHealth();
 	void Update(float deltaTime) override;
+	void Draw(Shader ourShader) override;
+
+	void restoreHealth();
+
+	float getShipMovementRate();
 };
 

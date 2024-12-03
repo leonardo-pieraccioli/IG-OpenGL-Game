@@ -146,6 +146,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Planet.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShootingEntity.cpp" />
     <ClCompile Include="MiniEngine\ResourceLoader.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="MiniEngine\GameObject.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="MiniEngine\ResourceLoader.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="shader_s.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShootingEntity.h" />
