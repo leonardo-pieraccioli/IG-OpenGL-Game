@@ -17,6 +17,7 @@
 #include "MiniEngine/GameObject.h"
 #include "Planet.h"
 #include "Ship.h"
+#include "Player.h"
 #include "Coin.h"
 #include "MiniEngine/ResourceLoader.h"
 
@@ -31,6 +32,9 @@ GLFWwindow* window;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 15.0f));
+
+// player (da spostare)
+Player* player = new Player();
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -133,7 +137,8 @@ int main()
 
     glm::vec3 planetScale = glm::vec3(3.0f, 3.0f, 3.0f);
     SpaceDefender.InstantiateGameObject(new Planet(), new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), planetScale));
-    SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f)));
+    //SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale));
+    SpaceDefender.InstantiateGameObject(player, new Transform());
 
     // CAMERA SETUP
     // ------------
@@ -210,7 +215,7 @@ void ProcessInput(float deltaTime)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);        // Da sostituire
+        player->moveHip(1, deltaTime);                  // Da sostituire
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);       // Da sostituire
+        player->moveHip(0, deltaTime);       // Da sostituire
 }
