@@ -17,12 +17,15 @@ public:
 	Game(Game&&) noexcept = default;			// move constructor
 	Game& operator=(Game&&) noexcept = default; // move assignment
 	
-	// -------------------
-	// game loop and setup 
+	// ------------------------------
+	// game information and reference
 	int SCREEN_WIDTH;
 	int SCREEN_HEIGHT;
 	const char* GAME_NAME;
 	static Game &Instance();
+
+	// -------------------
+	// game loop and setup 
 	GLFWwindow* Setup(int screenWidth, int screenHeight, std::string gameName);
 	void Update(float deltaTime);
 	void Draw(Shader ourShader);
@@ -33,10 +36,12 @@ public:
 	void DestroyGameObject(GameObject& gameObject);
 
 private:
-	Game() 
+	Game()
 	{
-
-	}; 	
+		SCREEN_WIDTH = 0;
+		SCREEN_HEIGHT = 0;
+		GAME_NAME = "Game";
+	};
 	std::list<GameObject*> activeObjects;
 };
 
