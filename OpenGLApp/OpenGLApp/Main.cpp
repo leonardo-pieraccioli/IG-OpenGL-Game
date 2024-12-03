@@ -17,6 +17,7 @@
 #include "MiniEngine/GameObject.h"
 #include "Planet.h"
 #include "Ship.h"
+#include "Coin.h"
 #include "MiniEngine/ResourceLoader.h"
 
 // settings
@@ -130,22 +131,9 @@ int main()
     // Example data structure of all game objects
     // Esempio temporaneo per dimostrare funzionamento del polimorfismo
 
-    // world space positions of our cubes
-    glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(0.0f,  5.0f, 0.0f),
-    };
-    for (int i = 0; i < 2; i++) {
-        if (i == 0) 
-        {
-            glm::vec3 planetScale = glm::vec3(3.0f, 3.0f, 3.0f);
-            SpaceDefender.InstantiateGameObject(new Planet(), new Transform(cubePositions[i], glm::vec3(0.f, 0.f, 0.f), planetScale));
-        }
-        else
-        {
-            SpaceDefender.InstantiateGameObject(new Ship(), new Transform(cubePositions[i]));
-        }
-    }
+    glm::vec3 planetScale = glm::vec3(3.0f, 3.0f, 3.0f);
+    SpaceDefender.InstantiateGameObject(new Planet(), new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), planetScale));
+    SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f)));
 
     // CAMERA SETUP
     // ------------

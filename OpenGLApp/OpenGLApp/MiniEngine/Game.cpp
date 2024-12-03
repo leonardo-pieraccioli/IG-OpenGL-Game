@@ -86,7 +86,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -114,17 +114,7 @@ void Game::Draw(Shader ourShader)
     // TEMPORARY DISPLAY OF CUBES
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
-        // calculate the model matrix for each object and pass it to shader before drawing
-        glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        model = glm::translate(model, (*obj)->transform.getPosition());
-        model = glm::rotate(model, glm::radians((*obj)->transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
-        model = glm::rotate(model, glm::radians((*obj)->transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
-        model = glm::rotate(model, glm::radians((*obj)->transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
-        model = glm::scale(model, (*obj)->transform.getScale());
-
-        ourShader.setMat4("model", model);
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        (*obj)->Draw(ourShader);
     }
 }
 
