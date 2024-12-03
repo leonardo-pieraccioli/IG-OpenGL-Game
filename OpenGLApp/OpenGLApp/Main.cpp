@@ -16,6 +16,7 @@
 #include "MiniEngine/Game.h"
 #include "MiniEngine/GameObject.h"
 #include "Planet.h"
+#include "Ship.h"
 #include "MiniEngine/ResourceLoader.h"
 
 // settings
@@ -142,7 +143,7 @@ int main()
         }
         else
         {
-            SpaceDefender.InstantiateGameObject(new GameObject(), new Transform(cubePositions[i]));
+            SpaceDefender.InstantiateGameObject(new Ship(), new Transform(cubePositions[i]));
         }
     }
 
@@ -220,12 +221,8 @@ void ProcessInput(float deltaTime)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        camera.ProcessKeyboard(LEFT, deltaTime);        // Da sostituire
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.ProcessKeyboard(RIGHT, deltaTime);       // Da sostituire
 }

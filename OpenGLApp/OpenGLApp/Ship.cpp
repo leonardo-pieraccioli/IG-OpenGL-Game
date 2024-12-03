@@ -9,3 +9,8 @@ void Ship::restoreHealth()
 {
 	currentHealth = maxHealth;
 }
+
+void Ship::Update(float deltaTime)
+{
+	this->transform.rotation.z += movementRate * deltaTime;
+}
