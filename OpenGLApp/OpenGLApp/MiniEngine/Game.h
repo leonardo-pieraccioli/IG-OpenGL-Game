@@ -33,7 +33,8 @@ public:
 	// ---------------------
 	// GameObject management
 	bool InstantiateGameObject(GameObject* newGameObject, Transform* spawnTransform);
-	void DestroyGameObject(GameObject& gameObject);
+	bool InstantiateGameObject(GameObject* newGameObject, glm::vec3 position);
+	void DestroyGameObject(GameObject* gameObject);
 
 private:
 	Game()

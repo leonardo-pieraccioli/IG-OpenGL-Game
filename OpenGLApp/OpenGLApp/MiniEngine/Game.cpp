@@ -135,13 +135,31 @@ bool Game::InstantiateGameObject(GameObject* newGameObject, Transform* spawnTran
         throw std::runtime_error("Game: Trying to instantiate a new GameObject but transform is nullptr");
     }
 
+    // copy content of transform into the new gameObject
 	newGameObject->transform = *spawnTransform;
 	activeObjects.push_back(newGameObject);
 
+    // NOT TOO GOOD
+    // it would be better if the ownership of the transform was given to the gameobject
+    delete spawnTransform;
+    // -------------------
 	return true;
 }
 
-void Game::DestroyGameObject(GameObject& gameObject)
+bool Game::InstantiateGameObject(GameObject* newGameObject, glm::vec3 position)
 {
-	//ActiveObjects.remove(gameObject);
+    Transform t = Transform(position, glm::vec3(.0f, .0f, .0f), glm::vec3(1.f, 1.f, 1.f));
+    newGameObject->transform = t;
+    activeObjects.push_back(newGameObject);
+    return false;
+}
+
+void Game::DestroyGameObject(GameObject* gameObject)
+{
+    if (gameObject == nullptr)
+    {
+        throw std::runtime_error("Game: Trying to destroy a GameObject but pointer given is null");
+    }
+	activeObjects.remove(gameObject);
+    delete gameObject;
 }
