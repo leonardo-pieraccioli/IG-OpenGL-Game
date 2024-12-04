@@ -187,6 +187,9 @@ int main()
         // render boxes
         glBindVertexArray(VAO);
 
+        // generazione monete
+        Coin::generateCoins(deltaTime, SpaceDefender);
+
         SpaceDefender.Update(deltaTime);
         SpaceDefender.Draw(ourShader);
 
