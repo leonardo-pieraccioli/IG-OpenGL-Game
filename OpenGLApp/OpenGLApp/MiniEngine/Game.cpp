@@ -3,6 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <stdexcept>
+#include "../Coin.h"
 
 // ---------------
 // INPUT CALLBACKS
@@ -162,4 +163,16 @@ void Game::DestroyGameObject(GameObject* gameObject)
     }
 	activeObjects.remove(gameObject);
     delete gameObject;
+}
+
+void Game::CheckCoins()
+{
+    
+    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
+    {
+        Coin* coin = dynamic_cast<Coin*>(*obj);
+        if (coin) {
+            coin->shouldDestroy(glm::vec3()); // coordinate da sostituire
+        }
+    }
 }

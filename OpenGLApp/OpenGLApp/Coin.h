@@ -14,12 +14,15 @@ class Coin : public GameObject
 {
 private:
 	int moneyAmount;
+	glm::vec3 colliderCorners[2];
 
 public:
 	Coin(int initialAmount);
+	Coin(int initialAmount, Game& SpaceDefender, float x, float y);
 
 	void setMoney(int money);
 	int getMoney();
+	void shouldDestroy(glm::vec3 mouseWorldCoord);
 	static void generateCoins(float deltaTime, Game& SpaceDefender);
 };
 

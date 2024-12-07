@@ -33,6 +33,9 @@ GLFWwindow* window;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 15.0f));
 
+// Game instance
+Game& SpaceDefender = Game::Instance();
+
 // player (da spostare)
 Player* player = new Player();
 
@@ -45,7 +48,7 @@ void ProcessInput(float deltaTime);
 
 int main()
 {
-    Game& SpaceDefender = Game::Instance();
+    
 
     window = SpaceDefender.Setup(SCR_WIDTH, SCR_HEIGHT, gameName);
 
@@ -220,5 +223,24 @@ void ProcessInput(float deltaTime)
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         player->moveHip(1, deltaTime);                  // Da sostituire
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        player->moveHip(0, deltaTime);       // Da sostituire
+        player->moveHip(0, deltaTime);                  // Da sostituire
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        SpaceDefender.CheckCoins();
+    }
+        
 }
+
+/*                                                                      Esperimento
+std::pair<float, float> ScreenCoordToWorldCoord() {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    glm::mat4 projection = glm::ortho(-((float)SCR_WIDTH / 2), (float)SCR_WIDTH / 2, -((float)SCR_HEIGHT / 2), (float)SCR_HEIGHT / 2, zNear, zFar);
+    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 15.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    const float ndc_x = (float)(2 * xpos - SCR_WIDTH) / (float)SCR_WIDTH; 
+    const float ndc_y = (float)(SCR_HEIGHT - 2 * ypos) / (float)SCR_HEIGHT;
+    glm::vec4 point = glm::inverse(projection) * glm::vec4(ndc_x, ndc_y, -1.f, 1.f);//inv_P = inverse projection matrix
+    point = point / point.w;
+    glm::vec4 world = glm::inverse(view) * point; //inv_V = inverse view matrix
+}
+*/

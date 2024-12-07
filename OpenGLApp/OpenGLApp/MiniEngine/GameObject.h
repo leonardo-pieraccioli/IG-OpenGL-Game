@@ -8,7 +8,7 @@ class GameObject
 {
 public:
 	GameObject();
-	//~GameObject();
+	virtual ~GameObject() = default;
 	virtual void Update(float deltaTime);
 	virtual void Draw(Shader ourShader);
 
