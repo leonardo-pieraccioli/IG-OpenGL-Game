@@ -12,7 +12,7 @@
 // mouse callback
 float lastX;
 float lastY;
-bool firstMouse = true;
+bool mouseInputPressedOnce = false;
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
@@ -30,20 +30,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    // camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
@@ -162,17 +149,17 @@ void Game::DestroyGameObject(GameObject* gameObject)
         throw std::runtime_error("Game: Trying to destroy a GameObject but pointer given is null");
     }
 	activeObjects.remove(gameObject);
-    delete gameObject;
 }
 
-void Game::CheckCoins()
+void Game::CheckCoins(glm::vec3 coinPosition)
 {
     
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
         Coin* coin = dynamic_cast<Coin*>(*obj);
         if (coin) {
-            coin->shouldDestroy(glm::vec3()); // coordinate da sostituire
+            coin->shouldDestroy(coinPosition); // coordinate da sostituire
+            break;
         }
     }
 }

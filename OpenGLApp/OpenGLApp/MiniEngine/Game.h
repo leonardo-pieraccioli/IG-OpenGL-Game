@@ -36,7 +36,7 @@ public:
 	bool InstantiateGameObject(GameObject* newGameObject, glm::vec3 position);
 	void DestroyGameObject(GameObject* gameObject);
 
-	void CheckCoins();
+	void CheckCoins(glm::vec3 coinPosition);
 
 private:
 	Game()

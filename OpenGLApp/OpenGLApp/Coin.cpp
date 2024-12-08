@@ -34,7 +34,7 @@ int Coin::getMoney()
 void Coin::shouldDestroy(glm::vec3 mouseWorldCoord)
 {
 	if (mouseWorldCoord.x >= colliderCorners[0].x && mouseWorldCoord.x <= colliderCorners[1].x && mouseWorldCoord.y <= colliderCorners[0].y && mouseWorldCoord.y >= colliderCorners[1].y) {
-		// delete coin
+		Game::Instance().DestroyGameObject(this);
 	}
 }
 

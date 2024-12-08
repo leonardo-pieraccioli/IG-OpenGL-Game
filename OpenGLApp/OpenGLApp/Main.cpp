@@ -141,8 +141,8 @@ int main()
     glm::vec3 planetScale = glm::vec3(3.0f, 3.0f, 3.0f);
     SpaceDefender.InstantiateGameObject(new Planet(), new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), planetScale));
     //SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale));
-    SpaceDefender.InstantiateGameObject(player, new Transform());
-
+    SpaceDefender.InstantiateGameObject(player, new Transform());    
+    
     // CAMERA SETUP
     // ------------
     glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 15.0f),
@@ -223,9 +223,23 @@ void ProcessInput(float deltaTime)
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         player->moveHip(1, deltaTime);                  // Da sostituire
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        player->moveHip(0, deltaTime);                  // Da sostituire
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        SpaceDefender.CheckCoins();
+        player->moveHip(0, deltaTime);
+
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)// !mouseInputPressedOnce)
+    {
+        // xpos : 1280 = xworld : 12.5 -> xworld = xpos * 12.5 / 1280
+        double xworld = (xpos * 25 / SpaceDefender.SCREEN_WIDTH) - 12.5;
+        double yworld = -((ypos * 13 / SpaceDefender.SCREEN_HEIGHT) - 6.5);
+        std::cout << "Mouse clicked in " << xworld << ":" << yworld << std::endl;
+        SpaceDefender.CheckCoins(glm::vec3(xworld, yworld, 0.0));
+        //mouseInputPressedOnce = true;
+    }
+    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)// && mouseInputPressedOnce)
+    {
+        //mouseInputPressedOnce = false;
     }
         
 }
