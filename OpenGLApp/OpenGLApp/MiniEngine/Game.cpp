@@ -151,6 +151,8 @@ void Game::DestroyGameObject(GameObject* gameObject)
 	activeObjects.remove(gameObject);
 }
 
+// TEMP: colliders should have a more general behavior and polling every game object
+//       at every click of the mouse is a waste of performance
 void Game::CheckCoins(glm::vec3 coinPosition)
 {
     
@@ -158,8 +160,8 @@ void Game::CheckCoins(glm::vec3 coinPosition)
     {
         Coin* coin = dynamic_cast<Coin*>(*obj);
         if (coin) {
-            coin->shouldDestroy(coinPosition); // coordinate da sostituire
-            break;
+            if (coin->shouldDestroy(coinPosition)) // coordinate da sostituire
+                break;
         }
     }
 }

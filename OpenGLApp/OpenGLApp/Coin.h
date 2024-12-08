@@ -22,7 +22,7 @@ public:
 
 	void setMoney(int money);
 	int getMoney();
-	void shouldDestroy(glm::vec3 mouseWorldCoord);
+	bool shouldDestroy(glm::vec3 mouseWorldCoord);
 	static void generateCoins(float deltaTime, Game& SpaceDefender);
 };
 

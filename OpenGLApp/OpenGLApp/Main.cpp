@@ -228,20 +228,21 @@ void ProcessInput(float deltaTime)
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
 
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)// !mouseInputPressedOnce)
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
+        // TEMPORARY: 12.5 and 6.5 are the approximate coordinates of the limits
+        //            of what we can see with the camera.
+        //            The function should map mouse coordinates more precisely
+        // ---------------------------------------------------------------------
         // xpos : 1280 = xworld : 12.5 -> xworld = xpos * 12.5 / 1280
-        double xworld = (xpos * 25 / SpaceDefender.SCREEN_WIDTH) - 12.5;
+        double xworld = (xpos * 26 / SpaceDefender.SCREEN_WIDTH) - 13;
         double yworld = -((ypos * 13 / SpaceDefender.SCREEN_HEIGHT) - 6.5);
+        // ---------------------------------------------------------------------
+
         std::cout << "Mouse clicked in " << xworld << ":" << yworld << std::endl;
         SpaceDefender.CheckCoins(glm::vec3(xworld, yworld, 0.0));
-        //mouseInputPressedOnce = true;
     }
-    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)// && mouseInputPressedOnce)
-    {
-        //mouseInputPressedOnce = false;
-    }
-        
+
 }
 
 /*                                                                      Esperimento
