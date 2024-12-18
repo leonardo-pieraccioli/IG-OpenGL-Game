@@ -18,7 +18,11 @@ public:
 	
 	Transform transform;
 	//mesh
+	
 	//texture
+	virtual void SetTextures(unsigned int texture1, unsigned int texture2);
+	unsigned int texture1;
+	unsigned int texture2;
 
 	unsigned int GetID() const;
 

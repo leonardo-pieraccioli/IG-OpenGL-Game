@@ -21,6 +21,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+    Game::Instance().SCREEN_HEIGHT = height;
+    Game::Instance().SCREEN_WIDTH = width;
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -116,12 +118,14 @@ Game& Game::Instance()
 // OBJECT DATA STRUCTURE MANIPULATION
 // ----------------------------------
 
-bool Game::InstantiateGameObject(GameObject* newGameObject, Transform* spawnTransform)
+bool Game::InstantiateGameObject(GameObject* newGameObject, Transform* spawnTransform, unsigned int texture)
 {
     if (spawnTransform == nullptr)
     {
         throw std::runtime_error("Game: Trying to instantiate a new GameObject but transform is nullptr");
     }
+
+    newGameObject->SetTextures(texture, texture);
 
     // copy content of transform into the new gameObject
 	newGameObject->transform = *spawnTransform;

@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Game.h"
+#include "ResourceLoader.h"
 
 
 static unsigned int lastID = 0;
@@ -26,6 +27,11 @@ void GameObject::Update(float deltaTime)
 
 void GameObject::Draw(Shader ourShader)
 {
+    // bind textures on corresponding texture units
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
     // calculate the model matrix for each object and pass it to shader before drawing
     glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     model = glm::translate(model, this->transform.getPosition());
@@ -39,6 +45,12 @@ void GameObject::Draw(Shader ourShader)
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
+
+void GameObject::SetTextures(unsigned int texture1, unsigned int texture2)
+{
+    this->texture1 = texture1;
+    this->texture2 = texture2;
+}
 
 unsigned int GameObject::GetID() const { return ID; }
 

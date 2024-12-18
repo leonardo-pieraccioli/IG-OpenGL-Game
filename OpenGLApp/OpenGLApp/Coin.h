@@ -17,12 +17,12 @@ private:
 	glm::vec3 colliderCorners[2];
 
 public:
-	Coin(int initialAmount);
+	Coin(int initialAmount, unsigned int texture);
 	Coin(int initialAmount, Game& SpaceDefender, float x, float y);
 
 	void setMoney(int money);
 	int getMoney();
 	bool shouldDestroy(glm::vec3 mouseWorldCoord);
-	static void generateCoins(float deltaTime, Game& SpaceDefender);
+	static void generateCoins(float deltaTime, Game& SpaceDefender, unsigned int texture);
 };
 

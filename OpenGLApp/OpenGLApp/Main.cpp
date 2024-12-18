@@ -48,8 +48,6 @@ void ProcessInput(float deltaTime);
 
 int main()
 {
-    
-
     window = SpaceDefender.Setup(SCR_WIDTH, SCR_HEIGHT, gameName);
 
     // build and compile our shader zprogram
@@ -122,11 +120,15 @@ int main()
     glEnableVertexAttribArray(1);
     // --------------------------
 
-    // load and create a texture 
+    // load and create textures 
     // -------------------------
-    unsigned int texture1, texture2;
-    texture1 = LoadTexture("container.jpg", false);
-    texture2 = LoadTexture("awesomeface.png", true);
+    //unsigned int text_container = LoadTexture("container.jpg", false);
+    //unsigned int text_awesomeFace = LoadTexture("awesomeface.png", true);
+    unsigned int text_coin = LoadTexture("coin_black.png", true);
+    //unsigned int text_coinBlack = LoadTexture("coin_black.png", true);
+    unsigned int text_spaceship = LoadTexture("spaceship.png", true);
+    unsigned int text_planet = LoadTexture("planet.png", false);
+    //unsigned int text_spaceshipBlack = LoadTexture("spaceship_black.png", true);
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
@@ -139,9 +141,9 @@ int main()
     // Esempio temporaneo per dimostrare funzionamento del polimorfismo
 
     glm::vec3 planetScale = glm::vec3(3.0f, 3.0f, 3.0f);
-    SpaceDefender.InstantiateGameObject(new Planet(), new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), planetScale));
+    SpaceDefender.InstantiateGameObject(new Planet(), new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), planetScale), text_planet);
+    SpaceDefender.InstantiateGameObject(player, new Transform(), text_spaceship);
     //SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale));
-    SpaceDefender.InstantiateGameObject(player, new Transform());    
     
     // CAMERA SETUP
     // ------------
@@ -168,12 +170,6 @@ int main()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-
         // activate shader
         ourShader.use();
 
@@ -191,7 +187,7 @@ int main()
         glBindVertexArray(VAO);
 
         // generazione monete
-        Coin::generateCoins(deltaTime, SpaceDefender);
+        Coin::generateCoins(deltaTime, SpaceDefender, text_coin);
 
         SpaceDefender.Update(deltaTime);
         SpaceDefender.Draw(ourShader);
@@ -239,7 +235,7 @@ void ProcessInput(float deltaTime)
         double yworld = -((ypos * 13 / SpaceDefender.SCREEN_HEIGHT) - 6.5);
         // ---------------------------------------------------------------------
 
-        std::cout << "Mouse clicked in " << xworld << ":" << yworld << std::endl;
+        // std::cout << "Mouse clicked in " << xworld << ":" << yworld << std::endl;
         SpaceDefender.CheckCoins(glm::vec3(xworld, yworld, 0.0));
     }
 

@@ -16,5 +16,7 @@ public:
 
 	void Draw(Shader ourShader);
 	void moveHip(int direction, float deltaTime);
+
+	void SetTextures(unsigned int texture1, unsigned int texture2) override;
 };
 
