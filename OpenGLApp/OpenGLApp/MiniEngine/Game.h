@@ -8,6 +8,7 @@
 #include "../shader_s.h"
 
 #include "../Player.h"
+#include "SoundManager.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

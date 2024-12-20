@@ -20,6 +20,10 @@
 #include "Player.h"
 #include "Coin.h"
 #include "MiniEngine/ResourceLoader.h"
+#include "MiniEngine/SoundManager.h"
+
+
+
 
 // settings
 std::string gameName = "Space Defender";
@@ -45,6 +49,9 @@ float lastFrame = 0.0f;
 
 // TRANSFER INTO THE ENGINE
 void ProcessInput(float deltaTime);
+
+// AUDIO
+
 
 int main()
 {
@@ -161,10 +168,17 @@ int main()
     SpaceDefender.fontSetup();
 
 
+    // Background music
+    SoundManager::Instance().setup();
+    SoundManager::Instance().playSound("Assets/Sounds/star_striker.mp3", true);
+
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        
+
         // per-frame time logic
         // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());

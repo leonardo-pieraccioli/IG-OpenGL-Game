@@ -182,6 +182,7 @@ void Game::CheckCoins(glm::vec3 coinPosition, Player* ptr_player)
         if (coin) {
             if (coin->shouldDestroy(coinPosition)) {  // coordinate da sostituire
                 ptr_player->addMoney(coin->getMoney());
+                SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
                 obj = activeObjects.erase(obj);
                 DestroyGameObject(coin);
             }

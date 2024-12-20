@@ -110,13 +110,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\glm-master;..\..\glad\include;..\..\glfw-3.3.8.bin.WIN64\include;..\..\freetype-2.13.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\glm-master;..\..\glad\include;..\..\glfw-3.3.8.bin.WIN64\include;..\..\irrKlang\include;..\..\freetype-2.13.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\glfw-3.3.8.bin.WIN64\lib-vc2022;..\..\freetype-2.13.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;freetype.lib;../../irrKlang/lib/irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,6 +150,7 @@
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShootingEntity.cpp" />
     <ClCompile Include="MiniEngine\ResourceLoader.cpp" />
+    <ClCompile Include="MiniEngine\SoundManager.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="MiniEngine\Transform.cpp" />
   </ItemGroup>
@@ -165,6 +166,7 @@
     <ClInclude Include="shader_s.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShootingEntity.h" />
+    <ClInclude Include="MiniEngine\SoundManager.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="MiniEngine\Transform.h" />
   </ItemGroup>
