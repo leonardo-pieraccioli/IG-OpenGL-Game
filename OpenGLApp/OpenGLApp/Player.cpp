@@ -28,3 +28,18 @@ void Player::SetTextures(unsigned int texture1, unsigned int texture2)
 {
 	shipArray[0].SetTextures(texture1, texture2);
 }
+
+int Player::getMoney()
+{
+	return money;
+}
+
+void Player::setMoney(int money)
+{
+	this->money = money;
+}
+
+void Player::addMoney(int moneyAmount)
+{
+	money += moneyAmount;
+}

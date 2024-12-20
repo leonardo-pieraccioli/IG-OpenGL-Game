@@ -18,5 +18,9 @@ public:
 	void moveHip(int direction, float deltaTime);
 
 	void SetTextures(unsigned int texture1, unsigned int texture2) override;
+
+	int getMoney();
+	void setMoney(int money);
+	void addMoney(int moneyAmount);
 };
 

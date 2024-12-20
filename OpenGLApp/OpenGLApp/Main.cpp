@@ -54,6 +54,9 @@ int main()
     // ------------------------------------
     Shader ourShader("shader.vs", "shader.fs");
 
+    // Text Shader
+    Shader textShader = Shader("textShader.vs", "textShader.fs");
+
     // --------------------------------------
     // TEMPORARY SECTION: CUBE INITIALIZATION
 
@@ -151,6 +154,13 @@ int main()
                                  glm::vec3(0.0f, 0.0f, 0.0f),
                                  glm::vec3(0.0f, 1.0f, 0.0f));
 
+    glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
+    textShader.use();
+    glUniformMatrix4fv(glGetUniformLocation(textShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(textProjection));
+
+    SpaceDefender.fontSetup();
+
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -191,6 +201,9 @@ int main()
 
         SpaceDefender.Update(deltaTime);
         SpaceDefender.Draw(ourShader);
+
+        std::string scoreText = "Score: " + std::to_string(player->getMoney());
+        SpaceDefender.RenderText(textShader, scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -236,7 +249,7 @@ void ProcessInput(float deltaTime)
         // ---------------------------------------------------------------------
 
         // std::cout << "Mouse clicked in " << xworld << ":" << yworld << std::endl;
-        SpaceDefender.CheckCoins(glm::vec3(xworld, yworld, 0.0));
+        SpaceDefender.CheckCoins(glm::vec3(xworld, yworld, 0.0), player);
     }
 
 }

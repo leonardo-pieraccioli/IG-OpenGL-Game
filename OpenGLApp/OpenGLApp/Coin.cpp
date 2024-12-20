@@ -41,11 +41,7 @@ int Coin::getMoney()
 
 bool Coin::shouldDestroy(glm::vec3 mouseWorldCoord)
 {
-	if (mouseWorldCoord.x >= colliderCorners[0].x && mouseWorldCoord.x <= colliderCorners[1].x && mouseWorldCoord.y <= colliderCorners[0].y && mouseWorldCoord.y >= colliderCorners[1].y) {
-		Game::Instance().DestroyGameObject(this);
-		return true;
-	}
-	return false;
+	return (mouseWorldCoord.x >= colliderCorners[0].x && mouseWorldCoord.x <= colliderCorners[1].x && mouseWorldCoord.y <= colliderCorners[0].y && mouseWorldCoord.y >= colliderCorners[1].y) ? true : false;
 }
 
 float currentTime = 0.0f;
