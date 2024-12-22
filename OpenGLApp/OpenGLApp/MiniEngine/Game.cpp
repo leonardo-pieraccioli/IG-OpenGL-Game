@@ -3,7 +3,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <stdexcept>
+
 #include "../Coin.h"
+
+GLFWwindow* gameWindow;
 
 // ---------------
 // INPUT CALLBACKS
@@ -64,20 +67,20 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 
     // glfw window creation
     // --------------------
-    GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME, NULL, NULL);
-    if (window == NULL)
+    gameWindow = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME, NULL, NULL);
+    if (gameWindow == NULL)
     {
         glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window");
     }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwMakeContextCurrent(gameWindow);
+    glfwSetFramebufferSizeCallback(gameWindow, framebuffer_size_callback);
+    glfwSetCursorPosCallback(gameWindow, mouse_callback);
+    glfwSetScrollCallback(gameWindow, scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
+    glfwSetInputMode(gameWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -88,24 +91,69 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    return window;
+    return gameWindow;
+}
+
+
+void Game::Init()
+{
+    player = new Player();
+    planet = new Planet();
+    InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.25f, 1.25f, 1.25f)));
+    InstantiateGameObject(player, new Transform());
+    // SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale));
 }
 
 void Game::Update(float deltaTime)
 {
+    // generazione monete
+    Coin::generateCoins(deltaTime);
+
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
         (*obj)->Update(deltaTime);
     }
 }
 
-void Game::Draw(Shader ourShader)
+void Game::Draw(Shader shader)
 {
     // TEMPORARY DISPLAY OF CUBES
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
-        (*obj)->Draw(ourShader);
+        (*obj)->Draw(shader);
     }
+}
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void Game::ProcessInput(float deltaTime)
+{
+    if (glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(gameWindow, true);
+
+    if (glfwGetKey(gameWindow, GLFW_KEY_A) == GLFW_PRESS)
+        player->moveHip(1, deltaTime);                  // Da sostituire
+    if (glfwGetKey(gameWindow, GLFW_KEY_D) == GLFW_PRESS)
+        player->moveHip(0, deltaTime);
+
+    double xpos, ypos;
+    glfwGetCursorPos(gameWindow, &xpos, &ypos);
+
+    if (glfwGetMouseButton(gameWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    {
+        // TEMPORARY: 12.5 and 6.5 are the approximate coordinates of the limits
+        //            of what we can see with the camera.
+        //            The function should map mouse coordinates more precisely
+        // ---------------------------------------------------------------------
+        // xpos : 1280 = xworld : 12.5 -> xworld = xpos * 12.5 / 1280
+        double xworld = (xpos * 26 / SCREEN_WIDTH) - 13;
+        double yworld = -((ypos * 13 / SCREEN_HEIGHT) - 6.5);
+        // ---------------------------------------------------------------------
+
+        // std::cout << "Mouse clicked in " << xworld << ":" << yworld << std::endl;
+        CheckCoins(glm::vec3(xworld, yworld, 0.0));
+    }
+
 }
 
 Game& Game::Instance()
@@ -118,40 +166,21 @@ Game& Game::Instance()
 // OBJECT DATA STRUCTURE MANIPULATION
 // ----------------------------------
 
-bool Game::InstantiateGameObject(GameObject* newGameObject, Transform* spawnTransform, unsigned int texture)
+bool Game::InstantiateGameObject(GameObject* newGameObject, Transform* spawnTransform)//, Model model)
 {
     if (spawnTransform == nullptr)
     {
         throw std::runtime_error("Game: Trying to instantiate a new GameObject but transform is nullptr");
     }
 
-    newGameObject->SetTextures(texture, texture);
-
-    // copy content of transform into the new gameObject
 	newGameObject->transform = *spawnTransform;
+    //newGameObject->objectModel = model;
 	activeObjects.push_back(newGameObject);
-
-    // NOT TOO GOOD
-    // it would be better if the ownership of the transform was given to the gameobject
-    delete spawnTransform;
-    // -------------------
 	return true;
-}
-
-bool Game::InstantiateGameObject(GameObject* newGameObject, glm::vec3 position)
-{
-    Transform t = Transform(position, glm::vec3(.0f, .0f, .0f), glm::vec3(1.f, 1.f, 1.f));
-    newGameObject->transform = t;
-    activeObjects.push_back(newGameObject);
-    return false;
 }
 
 void Game::DestroyGameObject(GameObject* gameObject)
 {
-    if (gameObject == nullptr)
-    {
-        throw std::runtime_error("Game: Trying to destroy a GameObject but pointer given is null");
-    }
 	activeObjects.remove(gameObject);
 }
 

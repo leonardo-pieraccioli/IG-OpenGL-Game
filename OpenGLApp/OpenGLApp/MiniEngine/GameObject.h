@@ -1,28 +1,26 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "Transform.h"
-#include "../shader_s.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Transform.h"
+#include "assimp_API/shader.h"
+#include "assimp_API/model.h"
 
 class GameObject
 {
 public:
 	GameObject();
+
 	virtual ~GameObject() = default;
 	virtual void Update(float deltaTime);
-	virtual void Draw(Shader ourShader);
+	virtual void Draw(Shader shader);
 
 	// operators override
 	bool operator == (const GameObject& go);
 	bool operator != (const GameObject& go);
 	
 	Transform transform;
-	//mesh
 	
-	//texture
-	virtual void SetTextures(unsigned int texture1, unsigned int texture2);
-	unsigned int texture1;
-	unsigned int texture2;
+	Model objectModel;
 
 	unsigned int GetID() const;
 

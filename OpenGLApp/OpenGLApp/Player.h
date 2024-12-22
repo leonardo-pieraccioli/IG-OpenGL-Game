@@ -14,9 +14,8 @@ private:
 public:
 	Player();
 
-	void Draw(Shader ourShader);
+	void Update(float deltaTime) override;
+	void Draw(Shader shader) override;
 	void moveHip(int direction, float deltaTime);
-
-	void SetTextures(unsigned int texture1, unsigned int texture2) override;
 };
 

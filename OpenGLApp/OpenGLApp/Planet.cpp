@@ -15,6 +15,8 @@ Planet::Planet(int health, float rotationRate)
 	this->maxHealth = (maxHealth >= -0.00001f && maxHealth <= 0.00001f ? 0.f : maxHealth);
 	this->currentHealth = maxHealth;
 	this->rotationRate = rotationRate;
+
+	objectModel = Model("Assets/Models/Planet.obj");
 }
 
 int Planet::getCurrentHealth()

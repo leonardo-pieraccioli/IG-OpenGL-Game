@@ -1,32 +1,37 @@
 #include "Coin.h"
 #include <utility>
-#include "Ship.h"   // temp
-
-#include "MiniEngine/ResourceLoader.h"
+#include "MiniEngine/Game.h"
 
 float random_number(float min, float max);
 std::pair<float, float> generateValidCoordinates(float x_min, float x_max, float y_min, float y_max);
-static glm::vec3 coinScale = glm::vec3(0.8f, 0.8f, 0.8f);
+static glm::vec3 coinScale = glm::vec3(0.25f, 0.25f, 0.25f);
 
 
 Coin::Coin(int initialAmount, unsigned int texture)
 {
-	texture1 = texture;
-	texture2 = texture;
 	moneyAmount = initialAmount;
 	// TEMP: colliders are doubled to account for bad mouse click tracking
 	colliderCorners[0] = glm::vec3(this->transform.getPosition().x - (this->transform.getScale().x), this->transform.getPosition().y + (this->transform.getScale().y), 0.0f);
 	colliderCorners[1] = glm::vec3(this->transform.getPosition().x + (this->transform.getScale().x), this->transform.getPosition().y - (this->transform.getScale().y), 0.0f);
 	// -------------------------------------------------------------------
+
+	objectModel = Model("Assets/Models/Coin.obj");
 }
 
-Coin::Coin(int initialAmount, Game& SpaceDefender, float x, float y)
+Coin::Coin(int initialAmount, float x, float y)
 {
 	moneyAmount = initialAmount;
 	// TEMP: colliders are doubled to account for bad mouse click tracking
 	colliderCorners[0] = glm::vec3(x - (coinScale.x), y + (coinScale.y), 0.0f);//glm::vec3(5.0f, 5.0f, 0.0f);//glm::vec3(this->transform.getPosition().x - (this->transform.getScale().x / 2), this->transform.getPosition().y + (this->transform.getScale().y / 2), 0.0f);
 	colliderCorners[1] = glm::vec3(x + (coinScale.x), y - (coinScale.y), 0.0f);//glm::vec3(this->transform.getPosition().x + (this->transform.getScale().x / 2), this->transform.getPosition().y - (this->transform.getScale().y / 2), 0.0f);
 	// -------------------------------------------------------------------
+
+	objectModel = Model("Assets/Models/Coin.obj");
+}
+
+void Coin::Update(float deltaTime)
+{
+	transform.rotation.z += deltaTime * 50.f;
 }
 
 void Coin::setMoney(int money)
@@ -51,7 +56,9 @@ bool Coin::shouldDestroy(glm::vec3 mouseWorldCoord)
 float currentTime = 0.0f;
 float timerActivation = 2.0f;
 
-void Coin::generateCoins(float deltaTime, Game& SpaceDefender, unsigned int texture)
+// Model coinModel = Model("Assets/Models/Coin.obj");
+
+void Coin::generateCoins(float deltaTime)
 {
 	//timer per gestire istanziazione monete nel tempo
 	currentTime += deltaTime;
@@ -60,8 +67,8 @@ void Coin::generateCoins(float deltaTime, Game& SpaceDefender, unsigned int text
 		std::pair<float, float> coordinates = generateValidCoordinates(MIN_WIDTH, MAX_WIDTH, MIN_HEIGHT, MAX_HEIGHT);
 		float x = coordinates.first;
 		float y = coordinates.second;
-		SpaceDefender.InstantiateGameObject(new Coin(5, SpaceDefender, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(0.f, 0.f, 0.f), coinScale), texture);
-		// std::cout << "New coin in position ( " << x << " : " << y << ")" << std::endl;
+		Game::Instance().InstantiateGameObject(new Coin(5, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
+		std::cout << "New coin in position ( " << x << " : " << y << ")" << std::endl;
 	}
 }
 

@@ -7,11 +7,11 @@ private:
 	int maxHealth;
 	int currentHealth;
 	float rotationRate;
-
+	
 	void rotatePlanet(float deltaTime);
 	void explode();
 public:
-	Planet(int maxHealth = 100, float rotationRate = 45.f);
+	Planet(int maxHealth = 100, float rotationRate = 20.f);
 
 	int getCurrentHealth();
 	float getCurrentHealthRatio();

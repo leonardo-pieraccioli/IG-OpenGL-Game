@@ -1,6 +1,5 @@
 #pragma once
 #include "MiniEngine/GameObject.h"
-#include "MiniEngine/Game.h"
 #include <random>
 
 // Range di "coordinate" (ad occhio) per l'istanziazione di Coins.
@@ -18,11 +17,13 @@ private:
 
 public:
 	Coin(int initialAmount, unsigned int texture);
-	Coin(int initialAmount, Game& SpaceDefender, float x, float y);
+	Coin(int initialAmount, float x, float y);
+
+	void Update(float deltaTime) override;
 
 	void setMoney(int money);
 	int getMoney();
 	bool shouldDestroy(glm::vec3 mouseWorldCoord);
-	static void generateCoins(float deltaTime, Game& SpaceDefender, unsigned int texture);
+	static void generateCoins(float deltaTime);
 };
 
