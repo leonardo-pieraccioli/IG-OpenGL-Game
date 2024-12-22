@@ -9,6 +9,8 @@
 
 #include "../Player.h"
 #include "SoundManager.h"
+#include "ResourceLoader.h"
+#include "../ResourceManager.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -16,6 +18,14 @@
 // Singleton
 class Game final
 {
+private:
+	/// Holds all state information relevant to a character as loaded using FreeType
+	struct Character {
+		unsigned int TextureID; // ID handle of the glyph texture
+		glm::ivec2   Size;      // Size of glyph
+		glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
+		unsigned int Advance;   // Horizontal offset to advance to next glyph
+	};
 public:
 	~Game() = default;							// destructor
 	Game(const Game& obj) = delete;				// removal of copy constructor 
@@ -36,13 +46,18 @@ public:
 	void Update(float deltaTime);
 	void Draw(Shader ourShader);
 	int fontSetup();
-	void RenderText(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color);
+	void RenderText(std::string text, float x, float y, float scale, glm::vec3 color);
 
 	// ---------------------
 	// GameObject management
 	bool InstantiateGameObject(GameObject* newGameObject, Transform* spawnTransform, unsigned int texture);
 	bool InstantiateGameObject(GameObject* newGameObject, glm::vec3 position);
 	void DestroyGameObject(GameObject* gameObject);
+
+	// ---------------------
+	// Setters and Getters
+	void setPlayer(Player* player);
+	Player* getPlayer();
 
 	void CheckCoins(glm::vec3 coinPosition, Player* ptr_player);
 
@@ -55,6 +70,27 @@ private:
 	};
 	std::list<GameObject*> activeObjects;
 
+	// VAOs and VBOs
+	unsigned int VAOtext, VBOtext;
+	unsigned int VBO, VAO;
+
+	// matrices
 	glm::mat4 textProjection;
+	glm::mat4 view;
+
+	// camera and window parameters
+	const unsigned int SCR_WIDTH = 1280;
+	const unsigned int SCR_HEIGHT = 720;
+	const float zNear = -20.0f;
+	const float zFar = 20.0f;
+	const float orthScale = 50.0f; // Parametro per zoomare e dezoomare gli oggetti con la camera ortografica
+
+	// shaders
+	Shader textShader;
+	Shader ourShader;
+	
+	unsigned int text_coin;
+	std::map<GLchar, Character> Characters;
+	Player* player;
 };
 

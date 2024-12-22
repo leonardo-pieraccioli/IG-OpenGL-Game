@@ -18,11 +18,11 @@ private:
 
 public:
 	Coin(int initialAmount, unsigned int texture);
-	Coin(int initialAmount, Game& SpaceDefender, float x, float y);
+	Coin(int initialAmount, float x, float y);
 
 	void setMoney(int money);
 	int getMoney();
 	bool shouldDestroy(glm::vec3 mouseWorldCoord);
-	static void generateCoins(float deltaTime, Game& SpaceDefender, unsigned int texture);
+	static void generateCoins(float deltaTime, unsigned int texture);
 };
 

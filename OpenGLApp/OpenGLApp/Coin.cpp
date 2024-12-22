@@ -20,7 +20,7 @@ Coin::Coin(int initialAmount, unsigned int texture)
 	// -------------------------------------------------------------------
 }
 
-Coin::Coin(int initialAmount, Game& SpaceDefender, float x, float y)
+Coin::Coin(int initialAmount, float x, float y)
 {
 	moneyAmount = initialAmount;
 	// TEMP: colliders are doubled to account for bad mouse click tracking
@@ -47,7 +47,7 @@ bool Coin::shouldDestroy(glm::vec3 mouseWorldCoord)
 float currentTime = 0.0f;
 float timerActivation = 2.0f;
 
-void Coin::generateCoins(float deltaTime, Game& SpaceDefender, unsigned int texture)
+void Coin::generateCoins(float deltaTime, unsigned int texture)
 {
 	//timer per gestire istanziazione monete nel tempo
 	currentTime += deltaTime;
@@ -56,7 +56,7 @@ void Coin::generateCoins(float deltaTime, Game& SpaceDefender, unsigned int text
 		std::pair<float, float> coordinates = generateValidCoordinates(MIN_WIDTH, MAX_WIDTH, MIN_HEIGHT, MAX_HEIGHT);
 		float x = coordinates.first;
 		float y = coordinates.second;
-		SpaceDefender.InstantiateGameObject(new Coin(5, SpaceDefender, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(0.f, 0.f, 0.f), coinScale), texture);
+		Game::Instance().InstantiateGameObject(new Coin(5, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(0.f, 0.f, 0.f), coinScale), texture);
 		// std::cout << "New coin in position ( " << x << " : " << y << ")" << std::endl;
 	}
 }

@@ -40,7 +40,7 @@ void GameObject::Draw(Shader ourShader)
     model = glm::rotate(model, glm::radians(this->transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
     model = glm::scale(model, this->transform.getScale());
 
-    ourShader.setMat4("model", model);
+    ourShader.SetMatrix4("model", model);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }

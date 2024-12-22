@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "Transform.h"
-#include "../shader_s.h"
+#include "../Shader.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 class GameObject

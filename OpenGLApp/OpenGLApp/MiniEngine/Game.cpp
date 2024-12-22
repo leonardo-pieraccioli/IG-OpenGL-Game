@@ -7,19 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "../Coin.h"
-
-/// Holds all state information relevant to a character as loaded using FreeType
-struct Character {
-    unsigned int TextureID; // ID handle of the glyph texture
-    glm::ivec2   Size;      // Size of glyph
-    glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
-    unsigned int Advance;   // Horizontal offset to advance to next glyph
-};
-
-std::map<GLchar, Character> Characters;
-unsigned int VAO, VBO;
-const unsigned int SCR_WIDTH = 1280;
-const unsigned int SCR_HEIGHT = 720;
+#include "../Planet.h"
 
 // ---------------
 // INPUT CALLBACKS
@@ -100,19 +88,153 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     {
         throw std::runtime_error("Failed to initialize GLAD");
     }
+
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+
+    // Default Shader
+    ourShader = ResourceManager::LoadShader("shader.vs", "shader.fs", nullptr, "DefaultShader");
+
+    // Text Shader
+    textShader = ResourceManager::LoadShader("textShader.vs", "textShader.fs", nullptr, "TextShader");
+    //textShader = new Shader("textShader.vs", "textShader.fs");
+
+    // --------------------------------------
+    // TEMPORARY SECTION: CUBE INITIALIZATION
+
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // ------------------------------------------------------------------
+    float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture coord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    // --------------------------
+
+    // load and create textures 
+    // -------------------------
+    //unsigned int text_container = LoadTexture("container.jpg", false);
+    //unsigned int text_awesomeFace = LoadTexture("awesomeface.png", true);
+    text_coin = LoadTexture("coin_black.png", true);
+    //unsigned int text_coinBlack = LoadTexture("coin_black.png", true);
+    unsigned int text_spaceship = LoadTexture("spaceship.png", true);
+    unsigned int text_planet = LoadTexture("planet.png", false);
+    //unsigned int text_spaceshipBlack = LoadTexture("spaceship_black.png", true);
+
+    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
+    // -------------------------------------------------------------------------------------------
+    ourShader.Use();
+    ourShader.SetInteger("texture1", 0);
+    ourShader.SetInteger("texture2", 1);
+
+
+    // Example data structure of all game objects
+    // Esempio temporaneo per dimostrare funzionamento del polimorfismo
+
+    glm::vec3 planetScale = glm::vec3(3.0f, 3.0f, 3.0f);
+    InstantiateGameObject(new Planet(), new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), planetScale), text_planet);
+    
+    player = new Player();
+    InstantiateGameObject(player, new Transform(), text_spaceship);
+    //SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale));
+
+    // CAMERA SETUP
+    // ------------
+    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 15.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+
+    fontSetup();
+
+    
+
+    
 
     return window;
 }
 
 void Game::Update(float deltaTime)
 {
+    ourShader.Use();
+    
+    // Mi trovo la matrice ortografica per la camera
+    glm::mat4 projection = glm::ortho(-((float)SCR_WIDTH / 2), (float)SCR_WIDTH / 2, -((float)SCR_HEIGHT / 2), (float)SCR_HEIGHT / 2, zNear, zFar);
+
+    projection = glm::scale(projection, glm::vec3(orthScale, orthScale, 1.0f));
+    ourShader.SetMatrix4("projection", projection);
+
+    // camera/view transformation
+    //glm::mat4 view = camera.GetViewMatrix();
+    ourShader.SetMatrix4("view", view);
+
+    // render boxes
+    glBindVertexArray(VAO);
+
+    // generazione monete
+    Coin::generateCoins(deltaTime, text_coin);
+
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
         (*obj)->Update(deltaTime);
     }
+    Draw(ourShader);
+
+    std::string scoreText = "Score: " + std::to_string(player->getMoney());
+    RenderText(scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void Game::Draw(Shader ourShader)
@@ -171,6 +293,16 @@ void Game::DestroyGameObject(GameObject* gameObject)
 	activeObjects.remove(gameObject);
 }
 
+void Game::setPlayer(Player* player)
+{
+    this->player = player;
+}
+
+Player* Game::getPlayer()
+{
+    return player;
+}
+
 // TEMP: colliders should have a more general behavior and polling every game object
 //       at every click of the mouse is a waste of performance
 void Game::CheckCoins(glm::vec3 coinPosition, Player* ptr_player)
@@ -198,6 +330,10 @@ void Game::CheckCoins(glm::vec3 coinPosition, Player* ptr_player)
 
 int Game::fontSetup()
 {
+    glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
+    textShader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(textShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(textProjection));
+
     // FreeType
     // --------
     FT_Library ft;
@@ -276,10 +412,10 @@ int Game::fontSetup()
 
     // configure VAO/VBO for texture quads
     // -----------------------------------
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glGenVertexArrays(1, &VAOtext);
+    glGenBuffers(1, &VBOtext);
+    glBindVertexArray(VAOtext);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOtext);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
@@ -289,16 +425,16 @@ int Game::fontSetup()
 
 // render line of text
 // -------------------
-void Game::RenderText(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color)
+void Game::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
 {
     // activate corresponding render state
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    shader.use();
-    glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
+    textShader.Use();
+    glUniform3f(glGetUniformLocation(textShader.ID, "textColor"), color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(VAO);
+    glBindVertexArray(VAOtext);
 
     // iterate through all characters
     std::string::const_iterator c;
@@ -324,7 +460,7 @@ void Game::RenderText(Shader& shader, std::string text, float x, float y, float 
         // render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
         // update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBOtext);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);

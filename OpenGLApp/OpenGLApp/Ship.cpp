@@ -35,7 +35,7 @@ void Ship::Draw(Shader ourShader)
     model = glm::translate(model, this->transform.getPosition());
     model = glm::scale(model, this->transform.getScale());
 
-    ourShader.setMat4("model", model);
+    ourShader.SetMatrix4("model", model);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
