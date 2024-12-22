@@ -1,5 +1,5 @@
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef MODEL_SHADER_H
+#define MODEL_SHADER_H
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -9,13 +9,13 @@
 #include <sstream>
 #include <iostream>
 
-class Shader
+class ModelShader
 {
 public:
     unsigned int ID;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
+    ModelShader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
     {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;

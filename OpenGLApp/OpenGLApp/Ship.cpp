@@ -29,7 +29,6 @@ void Ship::Draw(Shader shader)
     model = glm::translate(model, this->transform.getPosition());
     model = glm::scale(model, this->transform.getScale());
 
-    shader.use();
-    shader.setMat4("model", model);
+    shader.SetMatrix4("model", model);
     objectModel.Draw(shader);
 }

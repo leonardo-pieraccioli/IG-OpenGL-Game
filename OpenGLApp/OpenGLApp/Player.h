@@ -17,5 +17,8 @@ public:
 	void Update(float deltaTime) override;
 	void Draw(Shader shader) override;
 	void moveHip(int direction, float deltaTime);
+	int getMoney();
+	void setMoney(int money);
+	void addMoney(int moneyAmount);
 };
 

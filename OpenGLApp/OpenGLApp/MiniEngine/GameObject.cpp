@@ -34,7 +34,7 @@ void GameObject::Draw(Shader shader)
     model_mat = glm::rotate(model_mat, glm::radians(transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
     model_mat = glm::rotate(model_mat, glm::radians(transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
     model_mat = glm::scale(model_mat, transform.getScale());
-    shader.setMat4("model", model_mat);
+    shader.SetMatrix4("model", model_mat);
     objectModel.Draw(shader);
 }
 

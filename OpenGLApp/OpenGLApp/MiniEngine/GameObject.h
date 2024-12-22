@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 #include "Transform.h"
-#include "assimp_API/shader.h"
+#include "../Shader.h"
 #include "assimp_API/model.h"
 
 class GameObject

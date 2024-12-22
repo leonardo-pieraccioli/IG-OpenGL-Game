@@ -46,11 +46,7 @@ int Coin::getMoney()
 
 bool Coin::shouldDestroy(glm::vec3 mouseWorldCoord)
 {
-	if (mouseWorldCoord.x >= colliderCorners[0].x && mouseWorldCoord.x <= colliderCorners[1].x && mouseWorldCoord.y <= colliderCorners[0].y && mouseWorldCoord.y >= colliderCorners[1].y) {
-		Game::Instance().DestroyGameObject(this);
-		return true;
-	}
-	return false;
+	return (mouseWorldCoord.x >= colliderCorners[0].x && mouseWorldCoord.x <= colliderCorners[1].x && mouseWorldCoord.y <= colliderCorners[0].y && mouseWorldCoord.y >= colliderCorners[1].y) ? true : false;
 }
 
 float currentTime = 0.0f;
@@ -68,7 +64,6 @@ void Coin::generateCoins(float deltaTime)
 		float x = coordinates.first;
 		float y = coordinates.second;
 		Game::Instance().InstantiateGameObject(new Coin(5, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
-		std::cout << "New coin in position ( " << x << " : " << y << ")" << std::endl;
 	}
 }
 

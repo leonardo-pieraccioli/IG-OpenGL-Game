@@ -31,3 +31,18 @@ void Player::moveHip(int direction, float deltaTime)
 		shipArray[i].transform.rotation.z += direction == 0 ? -(shipArray[i].getShipMovementRate() * deltaTime) : shipArray[i].getShipMovementRate() * deltaTime;
 	}
 }
+
+int Player::getMoney()
+{
+	return money;
+}
+
+void Player::setMoney(int money)
+{
+	this->money = money;
+}
+
+void Player::addMoney(int moneyAmount)
+{
+	money += moneyAmount;
+}

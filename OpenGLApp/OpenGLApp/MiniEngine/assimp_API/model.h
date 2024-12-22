@@ -7,7 +7,7 @@
 #include <assimp/postprocess.h>
 
 #include "mesh.h"
-#include "shader.h"
+#include "../../Shader.h"
 
 #include <string>
 
