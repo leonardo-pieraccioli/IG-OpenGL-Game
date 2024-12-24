@@ -155,6 +155,7 @@
     <ClCompile Include="ShootingEntity.cpp" />
     <ClCompile Include="MiniEngine\SoundManager.cpp" />
     <ClCompile Include="MiniEngine\Transform.cpp" />
+    <ClCompile Include="TextManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MiniEngine\camera.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="MiniEngine\SoundManager.h" />
     <ClInclude Include="MiniEngine\assimp_API\stb_image.h" />
     <ClInclude Include="MiniEngine\Transform.h" />
+    <ClInclude Include="TextManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.fs" />

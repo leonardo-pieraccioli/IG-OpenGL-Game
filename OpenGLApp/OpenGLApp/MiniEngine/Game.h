@@ -4,14 +4,16 @@
 #include <GLFW/glfw3.h>
 
 #include <list>
-#include <map>
+//#include <map>
 
 #include "GameObject.h"
 #include "../Shader.h"
 #include "SoundManager.h"
+#include "../TextManager.h"
+#include "../ResourceManager.h"
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+//#include <ft2build.h>
+//#include FT_FREETYPE_H
 
 #include "../Planet.h"
 #include "../Player.h"
@@ -22,12 +24,12 @@ class Game final
 {
 private:
 	/// Holds all state information relevant to a character as loaded using FreeType
-	struct Character {
+	/*struct Character {
 		unsigned int TextureID; // ID handle of the glyph texture
 		glm::ivec2   Size;      // Size of glyph
 		glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
 		unsigned int Advance;   // Horizontal offset to advance to next glyph
-	};
+	};*/
 public:
 	~Game()
 	{
@@ -52,8 +54,8 @@ public:
 	void Update(float deltaTime);
 	void ProcessInput(float deltaTime);
 	void Draw(Shader shader);
-	int fontSetup();
-	void RenderText(std::string text, float x, float y, float scale, glm::vec3 color);
+	//int fontSetup();
+	//void RenderText(std::string text, float x, float y, float scale, glm::vec3 color);
 
 	// ---------------------
 	// GameObject management
@@ -98,10 +100,10 @@ private:
 	const float orthScale = 50.0f; // Parametro per zoomare e dezoomare gli oggetti con la camera ortografica
 
 	// shaders
-	Shader textShader;
+	//Shader textShader;
 	Shader shader;
 	
 	unsigned int text_coin;
-	std::map<GLchar, Character> Characters;
+	//std::map<GLchar, Character> Characters;
 };
 
