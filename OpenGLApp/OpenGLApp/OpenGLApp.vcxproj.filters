@@ -63,6 +63,12 @@
     <ClCompile Include="TextManager.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="TimerManager.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -111,6 +117,12 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="TextManager.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerManager.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

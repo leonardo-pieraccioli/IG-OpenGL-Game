@@ -98,10 +98,6 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     // Default Shader
     shader = ResourceManager::LoadShader("shader.vs", "shader.fs", nullptr, "DefaultShader");
 
-    // Text Shader
-    //textShader = ResourceManager::LoadShader("textShader.vs", "textShader.fs", nullptr, "TextShader");
-    //textShader = new Shader("textShader.vs", "textShader.fs");
-
   
     // CAMERA SETUP
     // ------------
@@ -111,6 +107,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 
     TextManager::Instance().InitManager(SCR_WIDTH, SCR_HEIGHT);
     TextManager::Instance().LoadFont("resources/fonts/Space Age/space age.ttf", "Space Age");
+    TimerManager::CreateTimer(300.0f, true, "Round Timer");
     //TextManager::Instance().LoadFont("resources/fonts/Antonio/static/Antonio-Bold.ttf", "Antonio-Bold");
 
     return gameWindow;
@@ -137,6 +134,11 @@ void Game::Update(float deltaTime)
         (*obj)->Update(deltaTime);
     }
     Draw(shader);
+
+    TimerManager::updateTimers(deltaTime);
+
+    std::string roundTimeText = TimerManager::GetTimer("Round Timer").getHH_MM_SS_MS();
+    TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
     std::string scoreText = "Score: " + std::to_string(player->getMoney());
     TextManager::Instance().RenderText(scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
