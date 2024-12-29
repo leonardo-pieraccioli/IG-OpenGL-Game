@@ -10,6 +10,7 @@
 #include "../Planet.h"
 
 GLFWwindow* gameWindow;
+glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 15.0f);
 
 // ---------------
 // INPUT CALLBACKS
@@ -97,7 +98,32 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 
     // Default Shader
     shader = ResourceManager::LoadShader("shader.vs", "shader.fs", nullptr, "DefaultShader");
+    //lightShader = ResourceManager::LoadShader("shader_light.vs", "shader_light.fs", nullptr, "LightShader");
+    lightingShader = ResourceManager::LoadShader("shaderLighting.vs", "shaderLighting.fs", nullptr, "LightingShader");
 
+    // TEMPORANEO, UNA SCHIFEZZA ASSOLUTA MA PER IL MOMENTO SEMBRA ANDARE ------------------------------------------------------------------------------ //
+
+    lightingShader.Use();
+    lightingShader.SetVector3f("light.position", lightPos);
+    lightingShader.SetVector3f("viewPos", cameraPosition);
+    // light properties
+    glm::vec3 lightColor;
+    lightColor.x = 1.0f;
+    lightColor.y = 1.0f;
+    lightColor.z = 1.0f;
+    glm::vec3 diffuseColor = lightColor * glm::vec3(0.7f); // decrease the influence
+    glm::vec3 ambientColor = diffuseColor * glm::vec3(0.4f); // low influence
+    lightingShader.SetVector3f("light.ambient", ambientColor);
+    lightingShader.SetVector3f("light.diffuse", diffuseColor);
+    lightingShader.SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
+
+    // material properties
+    lightingShader.SetVector3f("material.ambient", 1.0f, 1.0f, 1.0f);
+    lightingShader.SetVector3f("material.diffuse", 1.0f, 1.0f, 1.0f);
+    lightingShader.SetVector3f("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
+    lightingShader.SetFloat("material.shininess", 10.0f);
+
+    // --------------------------------------------------------------------------------------------------------------------------------------------------- //
   
     // CAMERA SETUP
     // ------------
@@ -133,7 +159,7 @@ void Game::Update(float deltaTime)
     {
         (*obj)->Update(deltaTime);
     }
-    Draw(shader);
+    Draw(lightingShader);
 
     TimerManager::updateTimers(deltaTime);
 

@@ -16,6 +16,7 @@ public:
 	int getCurrentHealth();
 	float getCurrentHealthRatio();
 	void Update(float deltaTime) override;
+	//void Draw(Shader shader) override;
 	void damageActor(int damage);
 };
 

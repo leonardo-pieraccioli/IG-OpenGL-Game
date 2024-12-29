@@ -79,6 +79,7 @@ private:
 	// matrices
 	glm::mat4 textProjection;
 	glm::mat4 view;
+	glm::vec3 lightPos = glm::vec3(10.0f, 0.0f, 8.0f);
 
 	// camera and window parameters
 	const unsigned int SCR_WIDTH = 1280;
@@ -89,6 +90,8 @@ private:
 
 	// shaders
 	Shader shader;
+	Shader lightShader;
+	Shader lightingShader;
 	
 	unsigned int text_coin;
 };
