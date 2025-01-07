@@ -7,9 +7,13 @@
 std::map<std::string, Timer> TimerManager::Timers;
 
 
-Timer TimerManager::CreateTimer(const float timeAmount, bool isTicking, std::string name)
+Timer TimerManager::CreateTimer(const float timeAmount, bool isTicking, std::string name, bool shouldNotify, IObserver* observer)
 {
-    Timers[name] = Timer(timeAmount, isTicking);
+    if (shouldNotify && !observer) {
+        std::cerr << "Cannot instantiate a notifying Timer if a valid IObserver isn't passed to this function. Created a not notifying Timer instead\n";
+        shouldNotify = false;
+    }
+    Timers[name] = Timer(name, timeAmount, isTicking, shouldNotify, observer);
     return Timers[name];
 }
 

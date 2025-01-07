@@ -160,6 +160,7 @@
     <ClCompile Include="TimerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IObserver.h" />
     <ClInclude Include="MiniEngine\camera.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Enemy.h" />

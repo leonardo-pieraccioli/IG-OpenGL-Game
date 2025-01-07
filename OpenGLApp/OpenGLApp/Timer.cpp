@@ -1,17 +1,25 @@
 #include "Timer.h"
 
-Timer::Timer(float timeAmount, bool isTicking)
+Timer::Timer(std::string name, float timeAmount, bool isTicking, bool shouldNotify, IObserver* observer)
 {
 	currentTimeAmount = timeAmount;
 	initialTimeAmount = timeAmount;
 	this->isTicking = isTicking;
+	this->shouldNotify = shouldNotify;
+	this->observer = observer;
+	this->name = name;
 }
 
 void Timer::updateTimer(float deltaTime)
 {
 	currentTimeAmount = currentTimeAmount - deltaTime <= 0.f ? 0.0f : currentTimeAmount - deltaTime;
-	if (currentTimeAmount <= 0.f)
+	if (currentTimeAmount <= 0.f) {
 		isTicking = false;
+		if (shouldNotify && observer) {
+			observer->getNotified(name, shouldNotify);
+		}
+	}
+		
 }
 
 void Timer::setNewTime(float currentTimeAmount, bool isTicking)

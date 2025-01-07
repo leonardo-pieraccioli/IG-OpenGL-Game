@@ -15,10 +15,11 @@
 
 #include "../Planet.h"
 #include "../Player.h"
+#include "../IObserver.h"
 
 
 // Singleton
-class Game final
+class Game final : IObserver
 {
 public:
 	~Game()
@@ -57,6 +58,10 @@ public:
 	// ----------
 	// Game Logic
 	void CheckCoins(glm::vec3 coinPosition);
+
+	// ----------------------------------
+	// IObserver functions implementation
+	void getNotified(std::string timerName, bool isCallbackEnabled) override;
 
 	// -----------------
 	// Permanent Objects

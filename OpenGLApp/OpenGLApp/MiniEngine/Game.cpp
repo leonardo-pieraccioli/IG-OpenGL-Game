@@ -133,7 +133,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 
     TextManager::Instance().InitManager(SCR_WIDTH, SCR_HEIGHT);
     TextManager::Instance().LoadFont("resources/fonts/Space Age/space age.ttf", "Space Age");
-    TimerManager::CreateTimer(300.0f, true, "Round Timer");
+    TimerManager::CreateTimer(300.0f, true, "Round Timer", true, this);
     //TextManager::Instance().LoadFont("resources/fonts/Antonio/static/Antonio-Bold.ttf", "Antonio-Bold");
 
     return gameWindow;
@@ -286,4 +286,10 @@ void Game::CheckCoins(glm::vec3 coinPosition)
             ++obj;
         }
     }
+}
+
+void Game::getNotified(std::string timerName, bool isCallbackEnabled)
+{
+    if(timerName == "Round Timer")
+        cout << "Il tempo per questo round è finito!\n";
 }
