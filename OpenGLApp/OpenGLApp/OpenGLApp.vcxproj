@@ -150,6 +150,7 @@
     <ClCompile Include="MiniEngine\UtilsF.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Ship.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="MiniEngine\UtilsF.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="shader_s.h" />

@@ -1,6 +1,14 @@
 #pragma once
 #include <utility>
+#include <complex>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace utilsF {
 	std::pair<float, float> calculateForwardXY(float alpha, float deltaTime, float oldX, float oldY, float movementRate);
+
+	float distance2DSquare(float a_x, float a_y, float b_x, float b_y);
+
+	glm::vec3 rotateAroundZ(float deltaAlpha, float oldAlpha, float radius);
 };

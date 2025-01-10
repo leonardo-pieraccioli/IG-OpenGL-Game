@@ -5,7 +5,7 @@ Player::Player()
 	glm::vec3 shipScale = glm::vec3(.35, .35, .35);
 
 	shipArray[0] = Ship();
-	shipArray[0].transform = Transform(glm::vec3(2.25f, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
+	shipArray[0].transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
 	shipArray[0].objectModel = Model("Assets/Models/spaceship.obj");
 	money = 0;
 
@@ -28,7 +28,9 @@ void Player::Draw(Shader shader)
 void Player::moveHip(int direction, float deltaTime)
 {
 	for (int i = 0; i < shipArray.size(); i++) {
+		shipArray[i].transform.position = utilsF::rotateAroundZ(direction == 0 ? -(shipArray[i].getShipMovementRate() * deltaTime) : shipArray[i].getShipMovementRate() * deltaTime, shipArray[i].transform.rotation.z, shipDistance);
 		shipArray[i].transform.rotation.z += direction == 0 ? -(shipArray[i].getShipMovementRate() * deltaTime) : shipArray[i].getShipMovementRate() * deltaTime;
+		
 	}
 }
 
@@ -45,4 +47,31 @@ void Player::setMoney(int money)
 void Player::addMoney(int moneyAmount)
 {
 	money += moneyAmount;
+}
+
+void Player::setShootingRate(float shootingRate)
+{
+	this->shootingRate = shootingRate;
+}
+
+float Player::getShootingRate()
+{
+	return shootingRate;
+}
+
+void Player::shootWithShips()
+{
+	if(canShoot) {
+		canShoot = false;
+		TimerManager::CreateTimer(1 / shootingRate, true, "PlayerShootingTimer", true, this);
+		//for (auto ships : shipArray) {
+		//	ships.Shoot();
+		//}
+		shipArray[0].Shoot();
+	}
+}
+
+void Player::getNotified(std::string timerName, bool isCallbackEnabled)
+{
+	canShoot = true;
 }

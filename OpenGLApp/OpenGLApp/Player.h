@@ -2,13 +2,18 @@
 #include "MiniEngine/GameObject.h"
 #include "Ship.h"
 #include <array>
+#include "IObserver.h"
+#include "TimerManager.h"
 
-class Player : public GameObject
+class Player : public GameObject, IObserver
 {
 private:
 	static const int NUM_OF_SHIPS = 4;
 	std::array<Ship, NUM_OF_SHIPS> shipArray;
 	int money;
+	float shootingRate = 0.5f;
+	bool canShoot = true;
+	float shipDistance = 2.25f;
 	// upgrade
 
 public:
@@ -20,5 +25,12 @@ public:
 	int getMoney();
 	void setMoney(int money);
 	void addMoney(int moneyAmount);
+	void setShootingRate(float shootingRate);
+	float getShootingRate();
+	void shootWithShips();
+
+	// ----------------------------------
+	// IObserver functions implementation
+	void getNotified(std::string timerName, bool isCallbackEnabled) override;
 };
 

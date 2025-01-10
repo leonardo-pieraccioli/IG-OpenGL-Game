@@ -204,6 +204,8 @@ void Game::ProcessInput(float deltaTime)
         player->moveHip(1, deltaTime);                  // Da sostituire
     if (glfwGetKey(gameWindow, GLFW_KEY_D) == GLFW_PRESS)
         player->moveHip(0, deltaTime);
+    if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
+        player->shootWithShips();
 
     double xpos, ypos;
     glfwGetCursorPos(gameWindow, &xpos, &ypos);

@@ -12,4 +12,19 @@ namespace utilsF {
         return std::pair<float, float>(newX, newY);
     }
 
+    float distance2DSquare(float a_x, float a_y, float b_x, float b_y)
+    {
+        std::complex<float> a(a_x, a_y);
+        std::complex<float> b(b_x, b_y);
+            
+        return std::abs(b - a);
+    }
+
+    glm::vec3 rotateAroundZ(float deltaAlpha, float oldAlpha, float radius)
+    {
+        float x = cos((oldAlpha+deltaAlpha) * (M_PI / 180)) * radius;
+        float y = sin((oldAlpha + deltaAlpha) * (M_PI / 180)) * radius;
+        return glm::vec3(x, y, 0.0f);
+    }
+
 }
