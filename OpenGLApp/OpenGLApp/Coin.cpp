@@ -51,9 +51,6 @@ bool Coin::shouldDestroy(glm::vec3 mouseWorldCoord)
 
 float currentTime = 0.0f;
 float timerActivation = 2.0f;
-
-// Model coinModel = Model("Assets/Models/Coin.obj");
-
 void Coin::generateCoins(float deltaTime)
 {
 	//timer per gestire istanziazione monete nel tempo

@@ -175,8 +175,7 @@ void Game::Draw(Shader shader)
     shader.Use();
 
     // Mi trovo la matrice ortografica per la camera
-    glm::mat4 projection = glm::ortho(-((float)SCR_WIDTH / 2), (float)SCR_WIDTH / 2, -((float)SCR_HEIGHT / 2), (float)SCR_HEIGHT / 2, zNear, zFar);
-
+    projection = glm::ortho(-((float)SCR_WIDTH / 2), (float)SCR_WIDTH / 2, -((float)SCR_HEIGHT / 2), (float)SCR_HEIGHT / 2, zNear, zFar);
     projection = glm::scale(projection, glm::vec3(orthScale, orthScale, 1.0f));
     shader.SetMatrix4("projection", projection);
 
@@ -207,22 +206,37 @@ void Game::ProcessInput(float deltaTime)
     if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
         player->shootWithShips();
 
-    double xpos, ypos;
-    glfwGetCursorPos(gameWindow, &xpos, &ypos);
-
     if (glfwGetMouseButton(gameWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
-        // TEMPORARY: 12.5 and 6.5 are the approximate coordinates of the limits
-        //            of what we can see with the camera.
-        //            The function should map mouse coordinates more precisely
-        // ---------------------------------------------------------------------
-        // xpos : 1280 = xworld : 12.5 -> xworld = xpos * 12.5 / 1280
-        double xworld = (xpos * 26 / SCREEN_WIDTH) - 13;
-        double yworld = -((ypos * 13 / SCREEN_HEIGHT) - 6.5);
-        // ---------------------------------------------------------------------
+        double mouseX, mouseY;
+        glfwGetCursorPos(gameWindow, &mouseX, &mouseY);
 
-        // std::cout << "Mouse clicked in " << xworld << ":" << yworld << std::endl;
-        CheckCoins(glm::vec3(xworld, yworld, 0.0));
+        // Get window size
+        int width, height;
+        glfwGetWindowSize(gameWindow, &width, &height);
+
+        // Convert mouse position to normalized device coordinates (NDC)
+        float x = (2.0f * mouseX) / width - 1.0f;
+        float y = 1.0f - (2.0f * mouseY) / height; // Invert y to match OpenGL's coordinate system
+        float z = 0.0f; // z is 0 in NDC for a 2D orthographic projection
+
+        // Convert NDC to world coordinates
+        glm::vec4 ndcPos(x, y, z, 1.0f);
+
+        // Compute the inverse of the view-projection matrix
+        glm::mat4 invViewProj = glm::inverse(projection * view);
+
+        // Transform NDC to world coordinates
+        glm::vec4 worldPos = invViewProj * ndcPos;
+
+        // Normalize if w is not 1 (perspective divide)
+        if (worldPos.w != 0.0f) {
+            worldPos /= worldPos.w;
+        }
+
+        auto worldCoordinates = glm::vec3(worldPos); // x, y, z in world coordinates
+
+        CheckCoins(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
     }
 
 }

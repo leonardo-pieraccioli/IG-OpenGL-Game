@@ -84,6 +84,7 @@ private:
 	// matrices
 	glm::mat4 textProjection;
 	glm::mat4 view;
+	glm::mat4 projection;
 	glm::vec3 lightPos = glm::vec3(10.0f, 0.0f, 8.0f);
 
 	// camera and window parameters
