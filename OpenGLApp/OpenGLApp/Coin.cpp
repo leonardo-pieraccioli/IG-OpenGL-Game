@@ -44,7 +44,7 @@ int Coin::getMoney()
 	return moneyAmount;
 }
 
-bool Coin::shouldDestroy(glm::vec3 mouseWorldCoord)
+bool Coin::doesCoinOverlap(glm::vec3 mouseWorldCoord)
 {
 	return (mouseWorldCoord.x >= colliderCorners[0].x && mouseWorldCoord.x <= colliderCorners[1].x && mouseWorldCoord.y <= colliderCorners[0].y && mouseWorldCoord.y >= colliderCorners[1].y) ? true : false;
 }

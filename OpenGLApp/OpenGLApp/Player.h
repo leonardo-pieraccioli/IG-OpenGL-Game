@@ -11,7 +11,7 @@ private:
 	static const int NUM_OF_SHIPS = 4;
 	std::array<Ship, NUM_OF_SHIPS> shipArray;
 	int money;
-	float shootingRate = 0.5f;
+	float shootingRate = 2.5f;
 	bool canShoot = true;
 	float shipDistance = 2.25f;
 	// upgrade

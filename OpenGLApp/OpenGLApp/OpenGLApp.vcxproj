@@ -141,6 +141,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Coin.cpp" />
+    <ClCompile Include="MiniEngine\Collider.cpp" />
+    <ClCompile Include="MiniEngine\Health.cpp" />
     <ClCompile Include="MiniEngine\assimp_API\model.cpp" />
     <ClCompile Include="MiniEngine\Game.cpp" />
     <ClCompile Include="MiniEngine\GameObject.cpp" />
@@ -162,6 +164,8 @@
     <ClCompile Include="TimerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MiniEngine\Collider.h" />
+    <ClInclude Include="MiniEngine\Health.h" />
     <ClInclude Include="IObserver.h" />
     <ClInclude Include="MiniEngine\camera.h" />
     <ClInclude Include="Coin.h" />

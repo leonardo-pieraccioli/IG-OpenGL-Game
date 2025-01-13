@@ -59,6 +59,8 @@ public:
 	// Game Logic
 	void CheckCoins(glm::vec3 coinPosition);
 
+	GameObject* CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale);
+
 	// ----------------------------------
 	// IObserver functions implementation
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;

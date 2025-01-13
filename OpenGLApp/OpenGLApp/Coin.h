@@ -2,7 +2,7 @@
 #include "MiniEngine/GameObject.h"
 #include <random>
 
-// Range di "coordinate" (ad occhio) per l'istanziazione di Coins.
+// Range di "coordinate" per l'istanziazione di Coins.
 const float MIN_WIDTH = -12.0f;
 const float MAX_WIDTH = 12.0f;
 const float MIN_HEIGHT = -6.5f;
@@ -23,7 +23,7 @@ public:
 
 	void setMoney(int money);
 	int getMoney();
-	bool shouldDestroy(glm::vec3 mouseWorldCoord);
+	bool doesCoinOverlap(glm::vec3 mouseWorldCoord);
 	static void generateCoins(float deltaTime);
 };
 

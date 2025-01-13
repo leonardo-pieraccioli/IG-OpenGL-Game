@@ -12,6 +12,8 @@ Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistan
 	this->shootingDistance = shootingDistance;
 	this->shootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
 
+	this->health.UpgradeMax(20);
+
 	objectModel = Model("Assets/Models/spaceship.obj");
 }
 

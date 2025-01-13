@@ -1,16 +1,16 @@
 #pragma once
 #include "MiniEngine/GameObject.h"
+#include "MiniEngine/Health.h"
 
 class ShootingEntity : public GameObject
 {
 protected:
-	int maxHealth;
-	int currentHealth;
 	int damage;
 	float shootingRate;
 
 public:
-	ShootingEntity(int maxHealth = 100, int damage = 5, float shootingRate = 1.f);
+	Health health = Health(0);
+	ShootingEntity(int damage = 5, float shootingRate = 1.f);
 
 	void Move();
 	void Shoot();

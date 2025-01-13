@@ -17,11 +17,11 @@
 
 // settings
 std::string gameName = "Space Defender";
-const unsigned int SCR_WIDTH = 1280;
-const unsigned int SCR_HEIGHT = 720;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 900;
 const float zNear = -20.0f;
 const float zFar = 20.0f;
-const float orthScale = 50.0f; // Parametro per zoomare e dezoomare gli oggetti con la camera ortografica
+const float orthScale = 75.0f; // Parametro per zoomare e dezoomare gli oggetti con la camera ortografica
 
 
 // camera

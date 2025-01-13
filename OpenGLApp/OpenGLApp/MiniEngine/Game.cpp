@@ -8,6 +8,7 @@
 
 #include "../Coin.h"
 #include "../Planet.h"
+#include "../Enemy.h"
 
 GLFWwindow* gameWindow;
 glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 15.0f);
@@ -139,13 +140,23 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     return gameWindow;
 }
 
-
 void Game::Init()
 {
     player = new Player();
     planet = new Planet();
+    
     InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.25f, 1.25f, 1.25f)));
     InstantiateGameObject(player, new Transform());
+	
+    auto enemy = new Enemy();
+    InstantiateGameObject(enemy, new Transform(glm::vec3(-15.f, 15.0f, 0.0f), glm::vec3(0.f, 0.f, 315.f), glm::vec3(.25f, .25f, .25f)));
+	auto enemy2 = new Enemy();
+	InstantiateGameObject(enemy2, new Transform(glm::vec3(15.f, 15.0f, 0.0f), glm::vec3(0.f, 0.f, 225.f), glm::vec3(.25f, .25f, .25f)));
+	auto enemy3 = new Enemy();
+	InstantiateGameObject(enemy3, new Transform(glm::vec3(15.f, -15.0f, 0.0f), glm::vec3(0.f, 0.f, 135.f), glm::vec3(.25f, .25f, .25f)));
+	auto enemy4 = new Enemy();
+	InstantiateGameObject(enemy4, new Transform(glm::vec3(-15.f, -15.0f, 0.0f), glm::vec3(0.f, 0.f, 45.f), glm::vec3(.25f, .25f, .25f)));
+
     // SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale));
 }
 
@@ -155,15 +166,23 @@ void Game::Update(float deltaTime)
     // generazione monete
     Coin::generateCoins(deltaTime);
 
-    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
+    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
     {
         (*obj)->Update(deltaTime);
-    }
+        if (!(*obj)->isActive)
+        {
+            obj = activeObjects.erase(obj);
+        }
+        else
+        {
+            obj++;
+        }
+    }  
     Draw(lightingShader);
 
     TimerManager::updateTimers(deltaTime);
 
-    std::string roundTimeText = TimerManager::GetTimer("Round Timer").getHH_MM_SS_MS();
+        std::string roundTimeText = TimerManager::GetTimer("Round Timer").getHH_MM_SS_MS();
     TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
     std::string scoreText = "Score: " + std::to_string(player->getMoney());
@@ -204,7 +223,7 @@ void Game::ProcessInput(float deltaTime)
     if (glfwGetKey(gameWindow, GLFW_KEY_D) == GLFW_PRESS)
         player->moveHip(0, deltaTime);
     if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
-        player->shootWithShips();
+              player->shootWithShips();
 
     if (glfwGetMouseButton(gameWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
@@ -258,15 +277,15 @@ bool Game::InstantiateGameObject(GameObject* newGameObject, Transform* spawnTran
         throw std::runtime_error("Game: Trying to instantiate a new GameObject but transform is nullptr");
     }
 
+    newGameObject->isActive = true;
 	newGameObject->transform = *spawnTransform;
-    //newGameObject->objectModel = model;
 	activeObjects.push_back(newGameObject);
 	return true;
 }
 
 void Game::DestroyGameObject(GameObject* gameObject)
 {
-	activeObjects.remove(gameObject);
+    gameObject->isActive = false;
 }
 
 void Game::setPlayer(Player* player)
@@ -284,24 +303,42 @@ Player* Game::getPlayer()
 void Game::CheckCoins(glm::vec3 coinPosition)
 {
     
-    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
+    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
         Coin* coin = dynamic_cast<Coin*>(*obj);
         if (coin) {
-            if (coin->shouldDestroy(coinPosition)) {  // coordinate da sostituire
+            if (coin->doesCoinOverlap(coinPosition)) {
                 player->addMoney(coin->getMoney());
                 SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
-                obj = activeObjects.erase(obj);
                 DestroyGameObject(coin);
+                break;
             }
-            else {
-                ++obj;
-            }
-        }
-        else {
-            ++obj;
         }
     }
+}
+
+GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale)
+{
+    auto upperLeft = std::pair<float, float>(position.x - scale.x/2, position.y - scale.y/2);
+    auto lowerRight = std::pair<float, float>(position.x + scale.x / 2, position.y + scale.y / 2);
+
+    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
+    {
+		if ((*obj) == &caller)
+			continue;
+
+		auto otherUpperLeft = std::pair<float, float>((*obj)->transform.getPosition().x - (*obj)->transform.getScale().x, (*obj)->transform.getPosition().y - (*obj)->transform.getScale().y);
+		auto otherLowerRight = std::pair<float, float>((*obj)->transform.getPosition().x + (*obj)->transform.getScale().x, (*obj)->transform.getPosition().y + (*obj)->transform.getScale().y);
+
+		if (upperLeft.first < otherLowerRight.first && lowerRight.first > otherUpperLeft.first &&
+			upperLeft.second < otherLowerRight.second && lowerRight.second > otherUpperLeft.second)
+		{
+            std::cout << "Collision detected between two objects" << std::endl;
+			return *obj;
+		}
+    }
+    
+    return nullptr;
 }
 
 void Game::getNotified(std::string timerName, bool isCallbackEnabled)

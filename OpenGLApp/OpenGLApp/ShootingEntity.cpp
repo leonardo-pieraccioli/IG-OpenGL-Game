@@ -1,9 +1,7 @@
 #include "ShootingEntity.h"
 
-ShootingEntity::ShootingEntity(int maxHealth, int damage, float shootingRate)
+ShootingEntity::ShootingEntity(int damage, float shootingRate)
 {
-	this->maxHealth = maxHealth;
-	this->currentHealth = maxHealth;
 	this->damage = damage;
 	this->shootingRate = shootingRate;
 }
