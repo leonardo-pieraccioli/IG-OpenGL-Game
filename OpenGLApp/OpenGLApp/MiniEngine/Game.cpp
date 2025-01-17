@@ -166,7 +166,7 @@ void Game::Update(float deltaTime)
 
     TimerManager::updateTimers(deltaTime);
 
-    std::string roundTimeText = TimerManager::GetTimer("Round Timer").getHH_MM_SS_MS();
+    std::string roundTimeText = TimerManager::GetTimer("Round Timer")->getHH_MM_SS_MS();
     TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
     std::string scoreText = "Score: " + std::to_string(player->getMoney());

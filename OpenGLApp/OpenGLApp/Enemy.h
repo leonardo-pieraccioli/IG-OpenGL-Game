@@ -15,7 +15,7 @@ private:
 	float shootingRate;
 	bool canShoot = true;
 	static int enemyID;
-	Timer shootingTimer;
+	Timer* shootingTimer;
 
 public:
 	Enemy(int rewardMoney = 100, int rewardScore = 100, float speed = 5.f, float shootingDistance = 5.0f, float shootingRate = 0.2f);

@@ -14,6 +14,7 @@ private:
 	float shootingRate = 0.5f;
 	bool canShoot = true;
 	float shipDistance = 2.25f;
+	Timer* shootingTimer;
 	// upgrade
 
 public:

@@ -8,7 +8,7 @@ Player::Player()
 	shipArray[0].transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
 	shipArray[0].objectModel = Model("Assets/Models/spaceship.obj");
 	money = 0;
-
+	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "PlayerShootingTimer", true, this);
 }
 
 void Player::Update(float deltaTime)
@@ -63,7 +63,7 @@ void Player::shootWithShips()
 {
 	if(canShoot) {
 		canShoot = false;
-		TimerManager::CreateTimer(1 / shootingRate, true, "PlayerShootingTimer", true, this);
+		shootingTimer->resetTimer(true);
 		//for (auto ships : shipArray) {
 		//	ships.Shoot();
 		//}
