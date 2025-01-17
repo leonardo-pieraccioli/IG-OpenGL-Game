@@ -26,5 +26,11 @@ namespace utilsF {
         float y = sin((oldAlpha + deltaAlpha) * (M_PI / 180)) * radius;
         return glm::vec3(x, y, 0.0f);
     }
-
+    
+    float randomNumberInInterval(float min, float max) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> distr(min, max);
+        return distr(gen);
+    }
 }

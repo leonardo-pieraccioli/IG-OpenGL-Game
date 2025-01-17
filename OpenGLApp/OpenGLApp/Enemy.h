@@ -3,6 +3,7 @@
 #include "MiniEngine/UtilsF.h"
 #include "MiniEngine/Game.h"
 #include "Projectile.h"
+#include <random>
 
 class Enemy : public ShootingEntity, IObserver
 {
@@ -25,5 +26,6 @@ public:
 	void Shoot();
 
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;
+	static void generateEnemies(float deltaTime);
 };
 

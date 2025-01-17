@@ -1,13 +1,12 @@
 #pragma once
 #include "MiniEngine/GameObject.h"
-#include <random>
+#include "MiniEngine/UtilsF.h"
 
 // Range di "coordinate" (ad occhio) per l'istanziazione di Coins.
 const float MIN_WIDTH = -12.0f;
 const float MAX_WIDTH = 12.0f;
 const float MIN_HEIGHT = -6.5f;
 const float MAX_HEIGHT = 6.5f;
-
 
 class Coin : public GameObject
 {

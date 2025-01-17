@@ -2,7 +2,6 @@
 #include <utility>
 #include "MiniEngine/Game.h"
 
-float random_number(float min, float max);
 std::pair<float, float> generateValidCoordinates(float x_min, float x_max, float y_min, float y_max);
 static glm::vec3 coinScale = glm::vec3(0.25f, 0.25f, 0.25f);
 
@@ -60,7 +59,7 @@ void Coin::generateCoins(float deltaTime)
 		std::pair<float, float> coordinates = generateValidCoordinates(MIN_WIDTH, MAX_WIDTH, MIN_HEIGHT, MAX_HEIGHT);
 		float x = coordinates.first;
 		float y = coordinates.second;
-		Game::Instance().InstantiateGameObject(new Coin(5, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
+		Game::Instance().InstantiateGameObject(new Coin(5, x, y), new Transform(glm::vec3(x, y, -4.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
 	}
 }
 
@@ -68,16 +67,8 @@ void Coin::generateCoins(float deltaTime)
 std::pair<float, float> generateValidCoordinates(float x_min, float x_max, float y_min, float y_max) {
 	float x, y;
 	do {
-		x = random_number(x_min, x_max);
-		y = random_number(y_min, y_max);
+		x = utilsF::randomNumberInInterval(x_min, x_max);
+		y = utilsF::randomNumberInInterval(y_min, y_max);
 	} while (x >= -3 && x <= 3 && y >= -3 && y <= 3); // Scarta solo se sia x che y sono nell'intervallo proibito
-	return std::make_pair(x, y); // Restituisce le coordinate come std::pair
-}
-
-//Ritorna un numero random nell'intervallo (min, max)
-float random_number(float min, float max) {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> distr(min, max);
-	return distr(gen);
+	return std::make_pair(x, y);
 }

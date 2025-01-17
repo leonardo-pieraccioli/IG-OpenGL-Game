@@ -1,6 +1,7 @@
 #pragma once
 #include <utility>
 #include <complex>
+#include <random>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,4 +12,6 @@ namespace utilsF {
 	float distance2DSquare(float a_x, float a_y, float b_x, float b_y);
 
 	glm::vec3 rotateAroundZ(float deltaAlpha, float oldAlpha, float radius);
+
+	float randomNumberInInterval(float min, float max);
 };

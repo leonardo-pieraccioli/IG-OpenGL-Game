@@ -8,6 +8,7 @@
 
 #include "../Coin.h"
 #include "../Planet.h"
+#include "../Enemy.h"
 
 GLFWwindow* gameWindow;
 glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 15.0f);
@@ -154,6 +155,8 @@ void Game::Update(float deltaTime)
     
     // generazione monete
     Coin::generateCoins(deltaTime);
+    // generazione nemici
+    Enemy::generateEnemies(deltaTime);
 
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
