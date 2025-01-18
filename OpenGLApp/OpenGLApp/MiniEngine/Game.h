@@ -94,11 +94,21 @@ private:
 	const float zFar = 20.0f;
 	const float orthScale = 50.0f; // Parametro per zoomare e dezoomare gli oggetti con la camera ortografica
 
+	// ENUM GameState
+	enum class GameState { Play, Pause, Menu, GameOver, Shop };
+	GameState gameState;
+
 	// shaders
 	Shader shader;
 	Shader lightShader;
 	Shader lightingShader;
 	
 	unsigned int text_coin;
+
+	Timer* roundTimer;
+	std::string roundTimeText;
+	std::string scoreText;
+
+	bool pHeldDown = false;
 };
 

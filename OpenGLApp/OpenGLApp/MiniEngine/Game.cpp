@@ -134,8 +134,10 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 
     TextManager::Instance().InitManager(SCR_WIDTH, SCR_HEIGHT);
     TextManager::Instance().LoadFont("resources/fonts/Space Age/space age.ttf", "Space Age");
-    TimerManager::CreateTimer(300.0f, true, "Round Timer", true, this);
+    roundTimer = TimerManager::CreateTimer(300.0f, true, "Round Timer", true, this);
     //TextManager::Instance().LoadFont("resources/fonts/Antonio/static/Antonio-Bold.ttf", "Antonio-Bold");
+
+    gameState = GameState::Menu;
 
     return gameWindow;
 }
@@ -152,25 +154,48 @@ void Game::Init()
 
 void Game::Update(float deltaTime)
 {
-    
-    // generazione monete
-    Coin::generateCoins(deltaTime);
-    // generazione nemici
-    Enemy::generateEnemies(deltaTime);
+    switch (gameState) {
+        case GameState::Play:
 
-    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
-    {
-        (*obj)->Update(deltaTime);
+            // generazione monete
+            Coin::generateCoins(deltaTime);
+            // generazione nemici
+            Enemy::generateEnemies(deltaTime);
+
+            for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
+            {
+                (*obj)->Update(deltaTime);
+            }
+            Draw(lightingShader);
+
+            TimerManager::updateTimers(deltaTime);
+
+            roundTimeText = TimerManager::GetTimer("Round Timer")->getHH_MM_SS_MS();
+            TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+
+            scoreText = "Score: " + std::to_string(player->getMoney());
+            TextManager::Instance().RenderText(scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+
+            break;
+        case GameState::Pause:
+
+            TextManager::Instance().RenderText("Gioco in pausa. Premere 'p' per riprendere", 0, 360, 0.88f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+            
+
+            break;
+        case GameState::Menu:
+
+            TextManager::Instance().RenderText("Menu del gioco. Premere 'Invio' per iniziare", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+
+            break;
+        case GameState::GameOver:
+            break;
+        case GameState::Shop:
+
+            TextManager::Instance().RenderText("Shop del gioco. Premere 'Invio' per iniziare", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+
+            break;
     }
-    Draw(lightingShader);
-
-    TimerManager::updateTimers(deltaTime);
-
-    std::string roundTimeText = TimerManager::GetTimer("Round Timer")->getHH_MM_SS_MS();
-    TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
-
-    std::string scoreText = "Score: " + std::to_string(player->getMoney());
-    TextManager::Instance().RenderText(scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 }
 
 void Game::Draw(Shader shader)
@@ -199,47 +224,75 @@ void Game::Draw(Shader shader)
 // ---------------------------------------------------------------------------------------------------------
 void Game::ProcessInput(float deltaTime)
 {
-    if (glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Temporanea finchè non implementiamo il menu! <----------------------------------------------------------------------------------------------------
         glfwSetWindowShouldClose(gameWindow, true);
 
-    if (glfwGetKey(gameWindow, GLFW_KEY_A) == GLFW_PRESS)
-        player->moveHip(1, deltaTime);                  // Da sostituire
-    if (glfwGetKey(gameWindow, GLFW_KEY_D) == GLFW_PRESS)
-        player->moveHip(0, deltaTime);
-    if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
-        player->shootWithShips();
-
-    if (glfwGetMouseButton(gameWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-    {
-        double mouseX, mouseY;
-        glfwGetCursorPos(gameWindow, &mouseX, &mouseY);
-
-        // Get window size
-        int width, height;
-        glfwGetWindowSize(gameWindow, &width, &height);
-
-        // Convert mouse position to normalized device coordinates (NDC)
-        float x = (2.0f * mouseX) / width - 1.0f;
-        float y = 1.0f - (2.0f * mouseY) / height; // Invert y to match OpenGL's coordinate system
-        float z = 0.0f; // z is 0 in NDC for a 2D orthographic projection
-
-        // Convert NDC to world coordinates
-        glm::vec4 ndcPos(x, y, z, 1.0f);
-
-        // Compute the inverse of the view-projection matrix
-        glm::mat4 invViewProj = glm::inverse(projection * view);
-
-        // Transform NDC to world coordinates
-        glm::vec4 worldPos = invViewProj * ndcPos;
-
-        // Normalize if w is not 1 (perspective divide)
-        if (worldPos.w != 0.0f) {
-            worldPos /= worldPos.w;
+    if (gameState == GameState::Play){
+        if (glfwGetKey(gameWindow, GLFW_KEY_A) == GLFW_PRESS)
+            player->moveHip(1, deltaTime);                  // Da sostituire
+        if (glfwGetKey(gameWindow, GLFW_KEY_D) == GLFW_PRESS)
+            player->moveHip(0, deltaTime);
+        if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
+            player->shootWithShips();
+        if (glfwGetKey(gameWindow, GLFW_KEY_P) == GLFW_PRESS)
+            pHeldDown = true;
+        if (pHeldDown && glfwGetKey(gameWindow, GLFW_KEY_P) == GLFW_RELEASE) {
+            pHeldDown = false;
+            gameState = GameState::Pause;
         }
+        /*if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
+            player->shootWithShips();
+        if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
+            player->shootWithShips();*/
 
-        auto worldCoordinates = glm::vec3(worldPos); // x, y, z in world coordinates
+        if (glfwGetMouseButton(gameWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        {
+            double mouseX, mouseY;
+            glfwGetCursorPos(gameWindow, &mouseX, &mouseY);
 
-        CheckCoins(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
+            // Get window size
+            int width, height;
+            glfwGetWindowSize(gameWindow, &width, &height);
+
+            // Convert mouse position to normalized device coordinates (NDC)
+            float x = (2.0f * mouseX) / width - 1.0f;
+            float y = 1.0f - (2.0f * mouseY) / height; // Invert y to match OpenGL's coordinate system
+            float z = 0.0f; // z is 0 in NDC for a 2D orthographic projection
+
+            // Convert NDC to world coordinates
+            glm::vec4 ndcPos(x, y, z, 1.0f);
+
+            // Compute the inverse of the view-projection matrix
+            glm::mat4 invViewProj = glm::inverse(projection * view);
+
+            // Transform NDC to world coordinates
+            glm::vec4 worldPos = invViewProj * ndcPos;
+
+            // Normalize if w is not 1 (perspective divide)
+            if (worldPos.w != 0.0f) {
+                worldPos /= worldPos.w;
+            }
+
+            auto worldCoordinates = glm::vec3(worldPos); // x, y, z in world coordinates
+
+            CheckCoins(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
+        }
+    }
+    else if (gameState == GameState::Pause) {
+        if (glfwGetKey(gameWindow, GLFW_KEY_P) == GLFW_PRESS)
+            pHeldDown = true;
+        if (pHeldDown && glfwGetKey(gameWindow, GLFW_KEY_P) == GLFW_RELEASE) {
+            pHeldDown = false;
+            gameState = GameState::Play;
+        }
+    }
+    else if (gameState == GameState::Menu) {
+        if (glfwGetKey(gameWindow, GLFW_KEY_ENTER) == GLFW_PRESS)
+            gameState = GameState::Play;
+    }
+    else if (gameState == GameState::Shop) {
+        if (glfwGetKey(gameWindow, GLFW_KEY_ENTER) == GLFW_PRESS)
+            gameState = GameState::Play;
     }
 
 }
@@ -309,6 +362,8 @@ void Game::CheckCoins(glm::vec3 coinPosition)
 
 void Game::getNotified(std::string timerName, bool isCallbackEnabled)
 {
-    if(timerName == "Round Timer")
-        cout << "Il tempo per questo round è finito!\n";
+    if(timerName == "Round Timer") {
+        gameState = GameState::Shop;
+        roundTimer->resetTimer(true);
+    }
 }
