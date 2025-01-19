@@ -49,6 +49,20 @@ void Player::addMoney(int moneyAmount)
 	money += moneyAmount;
 }
 
+int Player::getScore()
+{
+	return score;
+}
+void Player::setScore(int score)
+{
+	this->score = score;
+
+}
+void Player::addScore(int scoreAmount)
+{
+	score += scoreAmount;
+}
+
 void Player::setShootingRate(float shootingRate)
 {
 	this->shootingRate = shootingRate;

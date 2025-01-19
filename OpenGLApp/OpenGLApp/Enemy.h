@@ -13,7 +13,6 @@ private:
 	float shootingDistance;
 	float shootingRate;
 	bool canShoot = true;
-	static int enemyID;
 	Timer shootingTimer;
 
 public:
@@ -23,6 +22,7 @@ public:
 	void Draw(Shader shader) override;
 	void Move(std::pair<float, float> newCoords);
 	void Shoot();
+	void Die() override;
 
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;
 };

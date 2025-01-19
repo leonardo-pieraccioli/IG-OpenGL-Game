@@ -1,4 +1,5 @@
 #include "ShootingEntity.h"
+#include "MiniEngine/Game.h"
 
 ShootingEntity::ShootingEntity(int damage, float shootingRate)
 {
@@ -14,4 +15,9 @@ void ShootingEntity::Move()
 void ShootingEntity::Shoot()
 {
 	// da implementare
+}
+
+void ShootingEntity::Die()
+{
+	Game::Instance().DestroyGameObject(this);
 }

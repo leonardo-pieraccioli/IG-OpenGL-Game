@@ -7,6 +7,7 @@ const float MIN_WIDTH = -12.0f;
 const float MAX_WIDTH = 12.0f;
 const float MIN_HEIGHT = -6.5f;
 const float MAX_HEIGHT = 6.5f;
+const static glm::vec3 coinScale = glm::vec3(0.25f, 0.25f, 0.25f);
 
 
 class Coin : public GameObject

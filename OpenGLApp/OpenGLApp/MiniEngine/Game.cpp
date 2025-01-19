@@ -112,7 +112,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     lightColor.x = 1.0f;
     lightColor.y = 1.0f;
     lightColor.z = 1.0f;
-    glm::vec3 diffuseColor = lightColor * glm::vec3(0.7f); // decrease the influence
+    glm::vec3 diffuseColor = lightColor * glm::vec3(0.8f); // decrease the influence
     glm::vec3 ambientColor = diffuseColor * glm::vec3(0.4f); // low influence
     lightingShader.SetVector3f("light.ambient", ambientColor);
     lightingShader.SetVector3f("light.diffuse", diffuseColor);
@@ -145,7 +145,7 @@ void Game::Init()
     player = new Player();
     planet = new Planet();
     
-    InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.25f, 1.25f, 1.25f)));
+    InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.5f, 1.5f, 1.5f)));
     InstantiateGameObject(player, new Transform());
 	
     // TEST ENEMIES
@@ -166,7 +166,7 @@ void Game::Update(float deltaTime)
 {
     
     // generazione monete
-    Coin::generateCoins(deltaTime);
+    // Coin::generateCoins(deltaTime);
 
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
     {
@@ -184,10 +184,10 @@ void Game::Update(float deltaTime)
 
     TimerManager::updateTimers(deltaTime);
 
-        std::string roundTimeText = TimerManager::GetTimer("Round Timer").getHH_MM_SS_MS();
+    std::string roundTimeText = TimerManager::GetTimer("Round Timer").getHH_MM_SS_MS();
     TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
-    std::string scoreText = "Score: " + std::to_string(player->getMoney());
+    std::string scoreText = "Score: " + std::to_string(player->getScore());
     TextManager::Instance().RenderText(scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 }
 
@@ -321,21 +321,19 @@ void Game::CheckCoins(glm::vec3 coinPosition)
 
 GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale)
 {
-    auto upperLeft = std::pair<float, float>(position.x - scale.x/2, position.y - scale.y/2);
-    auto lowerRight = std::pair<float, float>(position.x + scale.x / 2, position.y + scale.y / 2);
-
+	auto thisRadius = scale.x / 2.0f;
+    auto thisCenter = position;
+    
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
 		if ((*obj) == &caller)
 			continue;
 
-		auto otherUpperLeft = std::pair<float, float>((*obj)->transform.getPosition().x - (*obj)->transform.getScale().x, (*obj)->transform.getPosition().y - (*obj)->transform.getScale().y);
-		auto otherLowerRight = std::pair<float, float>((*obj)->transform.getPosition().x + (*obj)->transform.getScale().x, (*obj)->transform.getPosition().y + (*obj)->transform.getScale().y);
+		auto otherRadius = (*obj)->transform.getScale().x / 2.0f;
+		auto otherCenter = (*obj)->transform.getPosition();
 
-		if (upperLeft.first < otherLowerRight.first && lowerRight.first > otherUpperLeft.first &&
-			upperLeft.second < otherLowerRight.second && lowerRight.second > otherUpperLeft.second)
+		if (glm::distance(thisCenter, otherCenter) < thisRadius + otherRadius)
 		{
-            std::cout << "Collision detected between two objects" << std::endl;
 			return *obj;
 		}
     }

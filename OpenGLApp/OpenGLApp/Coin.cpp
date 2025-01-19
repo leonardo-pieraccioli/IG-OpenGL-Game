@@ -4,7 +4,6 @@
 
 float random_number(float min, float max);
 std::pair<float, float> generateValidCoordinates(float x_min, float x_max, float y_min, float y_max);
-static glm::vec3 coinScale = glm::vec3(0.25f, 0.25f, 0.25f);
 
 
 Coin::Coin(int initialAmount, unsigned int texture)

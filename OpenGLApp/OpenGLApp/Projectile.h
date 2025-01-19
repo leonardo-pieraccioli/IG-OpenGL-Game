@@ -13,6 +13,5 @@ public:
 private:
 	float speed;
 	float destroyDistance;
-	
 };
 

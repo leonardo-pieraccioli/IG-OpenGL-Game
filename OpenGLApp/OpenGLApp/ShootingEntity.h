@@ -14,5 +14,7 @@ public:
 
 	void Move();
 	void Shoot();
+
+	virtual void Die();
 };
 

@@ -1,4 +1,5 @@
 #include "Projectile.h"
+#include "Enemy.h"
 #include "MiniEngine/Game.h"
 
 Projectile::Projectile(float speed, float destroyDistance)
@@ -22,12 +23,12 @@ void Projectile::Update(float deltaTime)
 	GameObject* hit = Game::Instance().CheckCollision(*this, this->transform.position, this->transform.scale);
 	if(hit != nullptr)
 	{
-		ShootingEntity* shootingEntity = dynamic_cast<ShootingEntity*>(hit);
-		if (shootingEntity != nullptr)
+		ShootingEntity* shootingEntityHit = dynamic_cast<ShootingEntity*>(hit);
+		if (shootingEntityHit != nullptr)
 		{
-			if (shootingEntity->health.Damage(10) <= 0)
+			if (shootingEntityHit->health.Damage(10) <= 0)
 			{
-				Game::Instance().DestroyGameObject(hit);
+				shootingEntityHit->Die();
 			}
 		}
 		Game::Instance().DestroyGameObject(this);
