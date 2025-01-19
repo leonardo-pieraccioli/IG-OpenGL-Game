@@ -148,6 +148,8 @@ void Game::Init()
     InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.25f, 1.25f, 1.25f)));
     InstantiateGameObject(player, new Transform());
 	
+    // TEST ENEMIES
+    // ------------
     auto enemy = new Enemy();
     InstantiateGameObject(enemy, new Transform(glm::vec3(-15.f, 15.0f, 0.0f), glm::vec3(0.f, 0.f, 315.f), glm::vec3(.25f, .25f, .25f)));
 	auto enemy2 = new Enemy();

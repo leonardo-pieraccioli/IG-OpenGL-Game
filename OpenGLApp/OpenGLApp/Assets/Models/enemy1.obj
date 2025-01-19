@@ -1,6 +1,6 @@
 # Blender 4.2.2 LTS
 # www.blender.org
-mtllib spaceship.mtl
+mtllib enemy1.mtl
 o Spaceship.Baked
 v -1.702688 0.609205 -0.028176
 v -1.702688 0.756643 -0.057760

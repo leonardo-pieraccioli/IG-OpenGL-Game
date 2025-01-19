@@ -14,7 +14,7 @@ Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistan
 
 	this->health.UpgradeMax(20);
 
-	objectModel = Model("Assets/Models/spaceship.obj");
+	objectModel = Model("Assets/Models/enemy1.obj");
 }
 
 void Enemy::Update(float deltaTime)
