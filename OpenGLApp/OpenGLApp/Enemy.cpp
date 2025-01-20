@@ -1,24 +1,21 @@
 #include "Enemy.h"
 #include "TimerManager.h"
+#include "Coin.h"
 
 std::pair<float, float> generateEnemyCoordinates(float radius);
 static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
-
-int Enemy::enemyID = -1;
-
 Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistance, float shootingRate)
 {
-	enemyID++;
 	this->rewardMoney = rewardMoney;
 	this->rewardScore = rewardScore;
 	this->speed = speed;
 	this->shootingDistance = shootingDistance;
 	this->shootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
 
-	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + Enemy::enemyID, true, this);
+	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + std::to_string(this->GetID()), true, this);
 
-	objectModel = Model("Assets/Models/spaceship.obj");
+	objectModel = Model("Assets/Models/enemy1.obj");
 }
 
 void Enemy::Update(float deltaTime)
@@ -32,7 +29,7 @@ void Enemy::Update(float deltaTime)
 	else {
 		if (canShoot) {
 			canShoot = false;
-			Shoot();
+			// Shoot();
 		}
 	}
 }
@@ -62,6 +59,15 @@ void Enemy::Shoot()
 	std::pair<float, float> pCoords = utilsF::calculateForwardXY(this->transform.rotation.z, 1.0f, this->transform.position.x, this->transform.position.y, 0.8f);
 	Game::Instance().InstantiateGameObject(new Projectile(), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
 	shootingTimer->resetTimer(true);
+}
+
+void Enemy::Die()
+{
+	Game::Instance().player->addScore(rewardScore);
+	auto x = transform.position.x;
+	auto y = transform.position.y;
+	Game::Instance().InstantiateGameObject(new Coin(rewardMoney, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
+	Game::Instance().DestroyGameObject(this);
 }
 
 void Enemy::getNotified(std::string timerName, bool isCallbackEnabled)
@@ -98,7 +104,7 @@ void Enemy::generateEnemies(float deltaTime)
 		glm::vec3 eulerAngles(0.0f, 0.0f, angleInDegrees);
 
 		// Instanzia l'oggetto con la rotazione calcolata
-		Game::Instance().InstantiateGameObject(new Enemy(), new Transform(glm::vec3(x, y, -2.0f), eulerAngles, enemyScale));
+		Game::Instance().InstantiateGameObject(new Enemy(), new Transform(glm::vec3(x, y, 0), eulerAngles, enemyScale));
 	}
 }
 

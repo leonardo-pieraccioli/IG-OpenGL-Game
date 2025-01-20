@@ -18,8 +18,8 @@ public:
 	bool operator == (const GameObject& go);
 	bool operator != (const GameObject& go);
 	
+	bool isActive = false;
 	Transform transform;
-	
 	Model objectModel;
 
 	unsigned int GetID() const;

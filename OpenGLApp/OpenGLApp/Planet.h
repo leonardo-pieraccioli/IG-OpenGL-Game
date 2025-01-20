@@ -1,22 +1,21 @@
 #pragma once
 #include "MiniEngine/GameObject.h"
+#include "MiniEngine/Health.h"
+
+#define INITIAL_HEALTH 100
 
 class Planet : public GameObject
 {
 private:
-	int maxHealth;
-	int currentHealth;
 	float rotationRate;
 	
 	void rotatePlanet(float deltaTime);
 	void explode();
 public:
-	Planet(int maxHealth = 100, float rotationRate = 20.f);
+	Health health = Health(INITIAL_HEALTH);
 
-	int getCurrentHealth();
-	float getCurrentHealthRatio();
+	Planet(float rotationRate = 20.f);
+
 	void Update(float deltaTime) override;
-	//void Draw(Shader shader) override;
-	void damageActor(int damage);
+	void Damage(int damage);
 };
-

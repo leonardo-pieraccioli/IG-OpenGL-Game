@@ -59,6 +59,8 @@ public:
 	// Game Logic
 	void CheckCoins(glm::vec3 coinPosition);
 
+	GameObject* CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale);
+
 	// ----------------------------------
 	// IObserver functions implementation
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;
@@ -85,7 +87,7 @@ private:
 	glm::mat4 textProjection;
 	glm::mat4 view;
 	glm::mat4 projection;
-	glm::vec3 lightPos = glm::vec3(10.0f, 0.0f, 8.0f);
+	glm::vec3 lightPos = glm::vec3(10.0f, 2.0f, 12.0f);
 
 	// camera and window parameters
 	const unsigned int SCR_WIDTH = 1280;

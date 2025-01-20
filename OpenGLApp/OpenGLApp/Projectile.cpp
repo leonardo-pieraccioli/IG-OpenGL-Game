@@ -1,4 +1,5 @@
 #include "Projectile.h"
+#include "Enemy.h"
 #include "MiniEngine/Game.h"
 
 Projectile::Projectile(float speed, float destroyDistance)
@@ -14,10 +15,32 @@ void Projectile::Update(float deltaTime)
 	float a_x = this->transform.position.x;
 	float a_y = this->transform.position.y;
 
-	if (utilsF::distance2DSquare(a_x, a_y, 0.0f, 0.0f) > destroyDistance) {
-		//Game::Instance().DestroyGameObject(this); -----------------------------------> da fixare destroyGameObject, al momento l'implementazione causa problemi perchè non si può eliminare un elemento mentre si sta usando l'iteratore
+  	if (utilsF::distance2DSquare(a_x, a_y, 0.0f, 0.0f) > destroyDistance) {
+		Game::Instance().DestroyGameObject(this);
 	}
 	Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, speed));
+
+	GameObject* hit = Game::Instance().CheckCollision(*this, this->transform.position, this->transform.scale);
+	if(hit != nullptr)
+	{
+		Planet* planet = dynamic_cast<Planet*>(hit);
+		if (planet)
+			return;
+
+		Projectile* projectile = dynamic_cast<Projectile*>(hit);
+		if (projectile)
+			return;
+
+		ShootingEntity* shootingEntityHit = dynamic_cast<ShootingEntity*>(hit);
+		if (shootingEntityHit != nullptr)
+		{
+			if (shootingEntityHit->health.Damage(10) <= 0)
+			{
+				shootingEntityHit->Die();
+			}
+		}
+		Game::Instance().DestroyGameObject(this);
+	}
 }
 
 //void Projectile::Draw(Shader shader)

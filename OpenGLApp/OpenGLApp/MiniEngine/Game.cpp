@@ -112,7 +112,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     lightColor.x = 1.0f;
     lightColor.y = 1.0f;
     lightColor.z = 1.0f;
-    glm::vec3 diffuseColor = lightColor * glm::vec3(0.7f); // decrease the influence
+    glm::vec3 diffuseColor = lightColor * glm::vec3(0.8f); // decrease the influence
     glm::vec3 ambientColor = diffuseColor * glm::vec3(0.4f); // low influence
     lightingShader.SetVector3f("light.ambient", ambientColor);
     lightingShader.SetVector3f("light.diffuse", diffuseColor);
@@ -142,29 +142,33 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     return gameWindow;
 }
 
-
 void Game::Init()
 {
     player = new Player();
     planet = new Planet();
-    InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.25f, 1.25f, 1.25f)));
+    
+    InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.5f, 1.5f, 1.5f)));
     InstantiateGameObject(player, new Transform());
-    // SpaceDefender.InstantiateGameObject(new Ship(), new Transform(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale));
 }
 
 void Game::Update(float deltaTime)
 {
     switch (gameState) {
         case GameState::Play:
-
-            // generazione monete
-            Coin::generateCoins(deltaTime);
             // generazione nemici
             Enemy::generateEnemies(deltaTime);
 
-            for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
+            for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
             {
                 (*obj)->Update(deltaTime);
+                if (!(*obj)->isActive)
+                {
+                    obj = activeObjects.erase(obj);
+                }
+                else
+                {
+                    obj++;
+                }
             }
             Draw(lightingShader);
 
@@ -173,7 +177,7 @@ void Game::Update(float deltaTime)
             roundTimeText = TimerManager::GetTimer("Round Timer")->getHH_MM_SS_MS();
             TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
-            scoreText = "Score: " + std::to_string(player->getMoney());
+            scoreText = "Score: " + std::to_string(player->getScore());
             TextManager::Instance().RenderText(scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
             break;
@@ -314,15 +318,15 @@ bool Game::InstantiateGameObject(GameObject* newGameObject, Transform* spawnTran
         throw std::runtime_error("Game: Trying to instantiate a new GameObject but transform is nullptr");
     }
 
+    newGameObject->isActive = true;
 	newGameObject->transform = *spawnTransform;
-    //newGameObject->objectModel = model;
 	activeObjects.push_back(newGameObject);
 	return true;
 }
 
 void Game::DestroyGameObject(GameObject* gameObject)
 {
-	activeObjects.remove(gameObject);
+    gameObject->isActive = false;
 }
 
 void Game::setPlayer(Player* player)
@@ -340,24 +344,40 @@ Player* Game::getPlayer()
 void Game::CheckCoins(glm::vec3 coinPosition)
 {
     
-    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
+    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
         Coin* coin = dynamic_cast<Coin*>(*obj);
         if (coin) {
-            if (coin->shouldDestroy(coinPosition)) {  // coordinate da sostituire
+            if (coin->doesCoinOverlap(coinPosition)) {
                 player->addMoney(coin->getMoney());
                 SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
-                obj = activeObjects.erase(obj);
                 DestroyGameObject(coin);
+                break;
             }
-            else {
-                ++obj;
-            }
-        }
-        else {
-            ++obj;
         }
     }
+}
+
+GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale)
+{
+	auto thisRadius = scale.x * 2;
+    auto thisCenter = position;
+    
+    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
+    {
+		if ((*obj) == &caller)
+			continue;
+
+		auto otherRadius = (*obj)->transform.getScale().x * 2;
+		auto otherCenter = (*obj)->transform.getPosition();
+
+		if (glm::distance(thisCenter, otherCenter) < thisRadius + otherRadius)
+		{
+ 			return *obj;
+		}
+    }
+    
+    return nullptr;
 }
 
 void Game::getNotified(std::string timerName, bool isCallbackEnabled)

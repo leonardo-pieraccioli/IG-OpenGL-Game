@@ -4,7 +4,7 @@
 
 class Projectile : public GameObject {
 public:
-	Projectile(float speed = 10.0f, float destroyDistance = 30.0f);
+	Projectile(float speed = 10.0f, float destroyDistance = 30.f);
 
 	void Update(float deltaTime) override;
 	//void Draw(Shader shader) override;
@@ -13,6 +13,5 @@ public:
 private:
 	float speed;
 	float destroyDistance;
-	
 };
 
