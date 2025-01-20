@@ -29,7 +29,7 @@ void Enemy::Update(float deltaTime)
 	else {
 		if (canShoot) {
 			canShoot = false;
-			// Shoot();
+			Shoot();
 		}
 	}
 }
