@@ -146,6 +146,7 @@ void Game::Init()
 {
     player = new Player();
     planet = new Planet();
+    Enemy::Init(Model("Assets/Models/enemy1.obj"));
     
     InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.5f, 1.5f, 1.5f)));
     InstantiateGameObject(player, new Transform());
@@ -360,7 +361,7 @@ void Game::CheckCoins(glm::vec3 coinPosition)
 
 GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale)
 {
-	auto thisRadius = scale.x * 2;
+	auto thisRadius = scale.x;
     auto thisCenter = position;
     
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
@@ -368,7 +369,7 @@ GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::ve
 		if ((*obj) == &caller)
 			continue;
 
-		auto otherRadius = (*obj)->transform.getScale().x * 2;
+		auto otherRadius = (*obj)->transform.getScale().x;
 		auto otherCenter = (*obj)->transform.getPosition();
 
 		if (glm::distance(thisCenter, otherCenter) < thisRadius + otherRadius)

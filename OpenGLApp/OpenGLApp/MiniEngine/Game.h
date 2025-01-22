@@ -17,6 +17,7 @@
 #include "../Player.h"
 #include "../IObserver.h"
 
+enum class GameState { Play, Pause, Menu, GameOver, Shop };
 
 // Singleton
 class Game final : IObserver
@@ -69,6 +70,9 @@ public:
 	// Permanent Objects
 	Player* player;
 	Planet* planet;
+
+	// GameState
+	GameState gameState;
 
 private:
 	Game()

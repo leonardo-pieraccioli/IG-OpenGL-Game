@@ -5,6 +5,8 @@
 std::pair<float, float> generateEnemyCoordinates(float radius);
 static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
+static Model enemyModel;
+
 Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistance, float shootingRate)
 {
 	this->rewardMoney = rewardMoney;
@@ -14,8 +16,11 @@ Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistan
 	this->shootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
 
 	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + std::to_string(this->GetID()), true, this);
+}
 
-	objectModel = Model("Assets/Models/enemy1.obj");
+void Enemy::Init(Model model)
+{
+	enemyModel = Model("Assets/Models/enemy1.obj");
 }
 
 void Enemy::Update(float deltaTime)
@@ -45,7 +50,7 @@ void Enemy::Draw(Shader shader)
 	model = glm::scale(model, this->transform.getScale());
 
 	shader.SetMatrix4("model", model);
-	objectModel.Draw(shader);
+	enemyModel.Draw(shader);
 }
 
 void Enemy::Move(std::pair<float, float> newCoords)
