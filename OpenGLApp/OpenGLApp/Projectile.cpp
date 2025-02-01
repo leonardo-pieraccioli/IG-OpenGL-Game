@@ -6,7 +6,8 @@ Projectile::Projectile(float speed, float destroyDistance)
 {
 	this->speed = speed;
 	this->destroyDistance = destroyDistance;
-
+	this->damage = 10;
+	this->tag = "Projectile";
 	objectModel = Model("Assets/Models/laserbeam.obj");
 }
 
@@ -23,22 +24,31 @@ void Projectile::Update(float deltaTime)
 	GameObject* hit = Game::Instance().CheckCollision(*this, this->transform.position, this->transform.scale);
 	if(hit != nullptr)
 	{
-		Planet* planet = dynamic_cast<Planet*>(hit);
-		if (planet)
-			return;
-
-		Projectile* projectile = dynamic_cast<Projectile*>(hit);
-		if (projectile)
-			return;
-
-		ShootingEntity* shootingEntityHit = dynamic_cast<ShootingEntity*>(hit);
-		if (shootingEntityHit != nullptr)
+		if (hit->CompareTag("Planet"))
 		{
-			if (shootingEntityHit->health.Damage(10) <= 0)
+			Planet* p = dynamic_cast<Planet*>(hit);
+			p->Damage(damage);
+		}
+
+		if (hit->CompareTag("Projectile"))
+		{
+			Game::Instance().DestroyGameObject(hit);
+		}
+
+		if (hit->CompareTag("Enemy"))
+		{
+			ShootingEntity* shootingEntityHit = dynamic_cast<ShootingEntity*>(hit);
+			if (shootingEntityHit->health.Damage(damage) <= 0)
 			{
 				shootingEntityHit->Die();
 			}
 		}
+
+		if (hit->CompareTag("Ship"))
+		{
+			
+		}
+
 		Game::Instance().DestroyGameObject(this);
 	}
 }

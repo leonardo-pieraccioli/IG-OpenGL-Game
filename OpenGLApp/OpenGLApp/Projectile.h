@@ -10,6 +10,8 @@ public:
 	//void Draw(Shader shader) override;
 	void Move(std::pair<float, float> newCoords);
 
+	float damage;
+
 private:
 	float speed;
 	float destroyDistance;

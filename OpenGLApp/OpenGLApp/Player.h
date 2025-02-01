@@ -34,6 +34,8 @@ public:
 	float getShootingRate();
 	void shootWithShips();
 
+	GameObject* CheckShipCollision(glm::vec3 position, float radius);
+
 	// ----------------------------------
 	// IObserver functions implementation
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;

@@ -51,16 +51,16 @@ public:
 	// GameObject management
 	bool InstantiateGameObject(GameObject* newGameObject, Transform* spawnTransform); // , Model model);
 	void DestroyGameObject(GameObject* gameObject);
+	void CheckCoins(glm::vec3 coinPosition);
+	GameObject* CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale);
 
 	// ---------------------
 	// Setters and Getters
 	void setPlayer(Player* player);
 	Player* getPlayer();
-	// ----------
-	// Game Logic
-	void CheckCoins(glm::vec3 coinPosition);
-
-	GameObject* CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale);
+	
+	// Game State
+	void ChangeGameState(GameState newGameState);
 
 	// ----------------------------------
 	// IObserver functions implementation
@@ -70,9 +70,6 @@ public:
 	// Permanent Objects
 	Player* player;
 	Planet* planet;
-
-	// GameState
-	GameState gameState;
 
 private:
 	Game()
@@ -101,7 +98,6 @@ private:
 	const float orthScale = 50.0f; // Parametro per zoomare e dezoomare gli oggetti con la camera ortografica
 
 	// ENUM GameState
-	enum class GameState { Play, Pause, Menu, GameOver, Shop };
 	GameState gameState;
 
 	// shaders

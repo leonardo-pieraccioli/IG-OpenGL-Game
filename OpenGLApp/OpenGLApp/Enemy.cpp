@@ -14,7 +14,7 @@ Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistan
 	this->speed = speed;
 	this->shootingDistance = shootingDistance;
 	this->shootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
-
+	this->tag = "Enemy";
 	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + std::to_string(this->GetID()), true, this);
 }
 

@@ -12,10 +12,9 @@ private:
 
 public:
 	Ship(int nProjectiles = 1);
-
+	
 	void Update(float deltaTime) override;
 	//void Draw(Shader shader) override;
-	void restoreHealth();
 	void Shoot();
 
 	float getShipMovementRate();
