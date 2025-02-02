@@ -20,6 +20,15 @@ public:
     static Timer* GetTimer(std::string name);
 
     static void updateTimers(float deltaTime);
+
+    static void DestroyTimers()
+    {
+        /*
+        for (auto& currentTimer : Timers) {
+            delete currentTimer.second;
+        }*/
+        Timers.clear();
+    }
 private:
     TimerManager() {}
 };

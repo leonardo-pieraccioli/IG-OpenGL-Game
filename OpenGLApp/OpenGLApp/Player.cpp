@@ -3,7 +3,7 @@
 Player::Player()
 {
 	glm::vec3 shipScale = glm::vec3(.35, .35, .35);
-
+	objectModel = Model("Assets/Models/spaceship.obj");
 	shipArray[0] = Ship();
 	shipArray[0].transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
 	shipArray[0].objectModel = Model("Assets/Models/spaceship.obj");

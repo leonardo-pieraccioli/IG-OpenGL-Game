@@ -9,6 +9,7 @@ class GameObject
 {
 public:
 	GameObject();
+	GameObject(std::string tag);
 
 	virtual ~GameObject() = default;
 	virtual void Update(float deltaTime);

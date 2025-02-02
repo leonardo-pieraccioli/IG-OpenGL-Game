@@ -9,6 +9,12 @@ GameObject::GameObject()
 	ID = lastID++;
 	transform = Transform();
 }
+GameObject::GameObject(std::string tag)
+{
+    this->tag = tag;
+    ID = lastID++;
+    transform = Transform();
+}
 
 bool GameObject::operator==(const GameObject& go)
 {

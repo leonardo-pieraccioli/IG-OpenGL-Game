@@ -134,7 +134,6 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 
     TextManager::Instance().InitManager(SCR_WIDTH, SCR_HEIGHT);
     TextManager::Instance().LoadFont("resources/fonts/Space Age/space age.ttf", "Space Age");
-    roundTimer = TimerManager::CreateTimer(300.0f, true, "Round Timer", true, this);
     //TextManager::Instance().LoadFont("resources/fonts/Antonio/static/Antonio-Bold.ttf", "Antonio-Bold");
 
     gameState = GameState::Menu;
@@ -144,10 +143,16 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 
 void Game::Init()
 {
+    roundTimer = TimerManager::CreateTimer(300.0f, true, "Round Timer", true, this);
+
     player = new Player();
     planet = new Planet();
     Enemy::Init(Model("Assets/Models/enemy1.obj"));
 
+    GameObject* sky = new GameObject("Sky");
+    sky->objectModel = Model("Assets/Models/sky.obj");
+
+    InstantiateGameObject(sky, new Transform(glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(8.5f, 8.5f, 6.0f)));
     InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.5f, 1.5f, 1.5f)));
     InstantiateGameObject(player, new Transform());
     
@@ -161,6 +166,8 @@ void Game::Init()
 
 }
 
+// -----
+// IMGUI
 void TextCentered(std::string text, float posY) {
     auto windowWidth = ImGui::GetWindowSize().x;
     auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
@@ -219,7 +226,7 @@ void Game::Update(float deltaTime)
 
             ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
             ImGui::SetNextWindowPos({ 0,0 });
-            ImGui::SetNextWindowBgAlpha(0.35f);
+            ImGui::SetNextWindowBgAlpha(0.50f);
             ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
             ImGui::PushFont(font_SA_large);
@@ -253,8 +260,19 @@ void Game::Update(float deltaTime)
         }
         case GameState::Menu:
         {
+            glm::mat4 model_mat = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+            model_mat = glm::translate(model_mat, glm::vec3(4,0,0));
+            model_mat = glm::rotate(model_mat, -45.f, glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
+            model_mat = glm::rotate(model_mat, 0.f, glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
+            model_mat = glm::rotate(model_mat, 15.f, glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
+            model_mat = glm::scale(model_mat, glm::vec3(2.f, 2.f, 2.f));
+            shader.SetMatrix4("model", model_mat);
+            player->objectModel.Draw(lightingShader);
+			Draw(lightingShader);
+
             ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
             ImGui::SetNextWindowPos({ 0,0 });
+            ImGui::SetNextWindowBgAlpha(0.15f);
             ImGui::Begin("Main Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
             ImGui::PushFont(font_SA_menu);
@@ -278,7 +296,7 @@ void Game::Update(float deltaTime)
             }
 
             ImGui::PopFont();
-            ImGui::End();            
+            ImGui::End();
             break;
         }
         case GameState::GameOver:
@@ -300,9 +318,17 @@ void Game::Update(float deltaTime)
             ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
             if (ImGui::Button("Retry", { buttonWidth, 0.f }))
             {
+                /*
                 while (!activeObjects.empty()) delete activeObjects.front(), activeObjects.pop_front();
+                delete roundTimer;
+                TimerManager::DestroyTimers();
+
+                ImGui::PopFont();
+                ImGui::End();
                 Init();
+
                 ChangeGameState(GameState::Play);
+                */
             }
 
             ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
@@ -509,6 +535,11 @@ GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::ve
     
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
+        if ((*obj)->CompareTag("Sky"))
+        {
+            continue;
+        }
+
         if ( (*obj)->CompareTag("Player"))
         {
             GameObject* hit = player->CheckShipCollision(position, scale.x);

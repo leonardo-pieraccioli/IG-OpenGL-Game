@@ -16,6 +16,7 @@ Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistan
 	this->shootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
 	this->tag = "Enemy";
 	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + std::to_string(this->GetID()), true, this);
+	srand((unsigned)time(NULL));
 }
 
 void Enemy::Init(Model model)
@@ -61,6 +62,7 @@ void Enemy::Move(std::pair<float, float> newCoords)
 
 void Enemy::Shoot()
 {
+	ShootingEntity::Shoot();
 	std::pair<float, float> pCoords = utilsF::calculateForwardXY(this->transform.rotation.z, 1.0f, this->transform.position.x, this->transform.position.y, 0.8f);
 	Game::Instance().InstantiateGameObject(new Projectile(), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
 	shootingTimer->resetTimer(true);
@@ -68,6 +70,9 @@ void Enemy::Shoot()
 
 void Enemy::Die()
 {
+	int random = rand() % 7 + 1;
+	std::string path = "Assets/Sounds/explosion/explosion" + to_string(random) + ".mp3";
+	SoundManager::Instance().playSound(path.c_str(), false);
 	Game::Instance().player->addScore(rewardScore);
 	auto x = transform.position.x;
 	auto y = transform.position.y;
