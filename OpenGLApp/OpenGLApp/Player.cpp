@@ -89,3 +89,15 @@ void Player::getNotified(std::string timerName, bool isCallbackEnabled)
 {
 	canShoot = true;
 }
+
+GameObject* Player::CheckShipCollision(glm::vec3 position, float radius)
+{
+	for (int i = 0; i < shipArray.size(); i++) {
+
+		if (glm::distance(shipArray[i].transform.position, position) < shipArray[i].transform.scale.x + radius)
+		{
+			return &shipArray[i];
+		}
+	}
+	return nullptr;
+}

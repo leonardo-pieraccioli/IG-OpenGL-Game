@@ -40,4 +40,14 @@ void GameObject::Draw(Shader shader)
 
 unsigned int GameObject::GetID() const { return ID; }
 
+std::string GameObject::GetTag()
+{
+    return std::string();
+}
+
+bool GameObject::CompareTag(std::string otherTag)
+{
+    return this->tag == otherTag;
+}
+
 

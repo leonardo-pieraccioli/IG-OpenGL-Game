@@ -23,7 +23,10 @@ public:
 	Model objectModel;
 
 	unsigned int GetID() const;
-
+	std::string GetTag();
+	bool CompareTag(std::string otherTag);
+protected:
+	std::string tag;
 private:
 	unsigned int ID;
 };

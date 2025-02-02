@@ -1,9 +1,13 @@
 #include "Ship.h"
 #include "MiniEngine/Game.h"
 
+#define SHIP_INITIAL_HEALTH 50
+
 Ship::Ship(int nProjectiles)
 {
 	this->nProjectiles = nProjectiles;
+    this->tag = "Ship";
+    this->health.UpgradeMax(SHIP_INITIAL_HEALTH);
 }
 
 void Ship::Shoot()

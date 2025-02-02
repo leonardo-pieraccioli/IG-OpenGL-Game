@@ -19,6 +19,7 @@ private:
 public:
 	Enemy(int rewardMoney = 100, int rewardScore = 100, float speed = 5.f, float shootingDistance = 5.0f, float shootingRate = 0.2f);
 
+	static void Init(Model model);
 	void Update(float deltaTime) override;
 	void Draw(Shader shader) override;
 	void Move(std::pair<float, float> newCoords);

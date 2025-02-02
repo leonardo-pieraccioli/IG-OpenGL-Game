@@ -146,6 +146,7 @@ void Game::Init()
 {
     player = new Player();
     planet = new Planet();
+    Enemy::Init(Model("Assets/Models/enemy1.obj"));
     
     InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.5f, 1.5f, 1.5f)));
     InstantiateGameObject(player, new Transform());
@@ -173,7 +174,9 @@ void Game::Update(float deltaTime)
             Draw(lightingShader);
 
             TimerManager::updateTimers(deltaTime);
-
+            
+            TextManager::Instance().RenderText(std::to_string(planet->health.healthStatus()), 590, 345, 1.0f, glm::vec3(.1f, 1.0f, .1f), "Space Age");
+            
             roundTimeText = TimerManager::GetTimer("Round Timer")->getHH_MM_SS_MS();
             TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
@@ -193,6 +196,7 @@ void Game::Update(float deltaTime)
 
             break;
         case GameState::GameOver:
+            TextManager::Instance().RenderText("Game Over! Premere 'Invio' per ricominciare", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
             break;
         case GameState::Shop:
 
@@ -339,6 +343,29 @@ Player* Game::getPlayer()
     return player;
 }
 
+// ----------
+// GAME STATE
+// ----------
+void Game::ChangeGameState(GameState newGameState)
+{
+    // make exit transitions
+    switch (gameState)
+    {
+    case GameState::Play:
+
+        break;
+
+    case GameState::Shop:
+
+        break;
+
+    case GameState::Pause:
+
+        break;
+    }
+    gameState = newGameState;
+}
+
 // TEMP: colliders should have a more general behavior and polling every game object
 //       at every click of the mouse is a waste of performance
 void Game::CheckCoins(glm::vec3 coinPosition)
@@ -360,21 +387,29 @@ void Game::CheckCoins(glm::vec3 coinPosition)
 
 GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale)
 {
-	auto thisRadius = scale.x * 2;
+	auto thisRadius = scale.x;
     auto thisCenter = position;
     
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
-		if ((*obj) == &caller)
-			continue;
+        if ( (*obj)->CompareTag("Player"))
+        {
+            GameObject* hit = player->CheckShipCollision(position, scale.x);
+            if (hit != nullptr)
+            {
+                return hit;
+            }
+        }
+        else if ((*obj) != &caller)
+        {
+            auto otherRadius = (*obj)->transform.getScale().x;
+            auto otherCenter = (*obj)->transform.getPosition();
 
-		auto otherRadius = (*obj)->transform.getScale().x * 2;
-		auto otherCenter = (*obj)->transform.getPosition();
-
-		if (glm::distance(thisCenter, otherCenter) < thisRadius + otherRadius)
-		{
- 			return *obj;
-		}
+            if (glm::distance(thisCenter, otherCenter) < thisRadius + otherRadius)
+            {
+                return *obj;
+            }
+        }
     }
     
     return nullptr;
