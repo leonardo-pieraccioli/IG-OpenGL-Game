@@ -147,15 +147,43 @@ void Game::Init()
     player = new Player();
     planet = new Planet();
     Enemy::Init(Model("Assets/Models/enemy1.obj"));
-    
+
     InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.5f, 1.5f, 1.5f)));
     InstantiateGameObject(player, new Transform());
+    
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontDefault();
+    
+    font_SA_menu = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 120.f);
+    font_SA_large = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 60.f);
+    font_SA_medium = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 30.f);
+    font_SA_small = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 20.f);
+
+}
+
+void TextCentered(std::string text, float posY) {
+    auto windowWidth = ImGui::GetWindowSize().x;
+    auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
+
+    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+    ImGui::SetCursorPosY(posY);
+    ImGui::Text(text.c_str());
+}
+
+void AlignForWidth(float width, float alignment = 0.5f)
+{
+    ImGuiStyle& style = ImGui::GetStyle();
+    float avail = ImGui::GetContentRegionAvail().x;
+    float off = (avail - width) * alignment;
+    if (off > 0.0f)
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
 }
 
 void Game::Update(float deltaTime)
 {
     switch (gameState) {
         case GameState::Play:
+        {
             // generazione nemici
             Enemy::generateEnemies(deltaTime);
 
@@ -174,9 +202,9 @@ void Game::Update(float deltaTime)
             Draw(lightingShader);
 
             TimerManager::updateTimers(deltaTime);
-            
+
             TextManager::Instance().RenderText(std::to_string(planet->health.healthStatus()), 590, 345, 1.0f, glm::vec3(.1f, 1.0f, .1f), "Space Age");
-            
+
             roundTimeText = TimerManager::GetTimer("Round Timer")->getHH_MM_SS_MS();
             TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
@@ -184,25 +212,117 @@ void Game::Update(float deltaTime)
             TextManager::Instance().RenderText(scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
             break;
+        }
         case GameState::Pause:
+        {
+            Draw(lightingShader);
 
-            TextManager::Instance().RenderText("Gioco in pausa. Premere 'p' per riprendere", 0, 360, 0.88f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
-            
+            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
+            ImGui::SetNextWindowPos({ 0,0 });
+            ImGui::SetNextWindowBgAlpha(0.35f);
+            ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
+            ImGui::PushFont(font_SA_large);
+
+            TextCentered("Pause", ImGui::GetWindowHeight() / 3);
+
+            float buttonWidth = ImGui::CalcTextSize("Pause").x;
+            ImGui::PopFont();
+            ImGui::PushFont(font_SA_medium);
+            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+            if (ImGui::Button("Resume", { buttonWidth, 0.f }))
+            {
+                ChangeGameState(GameState::Play);
+            }
+
+            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+            if (ImGui::Button("Restart", { buttonWidth, 0.f }))
+            {
+
+            }
+
+            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+            if (ImGui::Button("Quit", { buttonWidth, 0.f }))
+            {
+                glfwSetWindowShouldClose(gameWindow, true);
+            }
+
+            ImGui::PopFont();
+            ImGui::End();
             break;
+        }
         case GameState::Menu:
+        {
+            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
+            ImGui::SetNextWindowPos({ 0,0 });
+            ImGui::Begin("Main Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
-            TextManager::Instance().RenderText("Menu del gioco. Premere 'Invio' per iniziare", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+            ImGui::PushFont(font_SA_menu);
 
+            TextCentered("Space", ImGui::GetWindowHeight() / 4);
+            TextCentered("Defender", ImGui::GetWindowHeight() / 4 + 60);
+
+            float buttonWidth = ImGui::CalcTextSize("Defender").x;
+            ImGui::PopFont();
+            ImGui::PushFont(font_SA_large);
+            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+            if (ImGui::Button("Play", { buttonWidth, 0.f }))
+            {
+                ChangeGameState(GameState::Play);
+            }
+
+            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+            if (ImGui::Button("Quit", { buttonWidth, 0.f }))
+            {
+                glfwSetWindowShouldClose(gameWindow, true);
+            }
+
+            ImGui::PopFont();
+            ImGui::End();            
             break;
+        }
         case GameState::GameOver:
-            TextManager::Instance().RenderText("Game Over! Premere 'Invio' per ricominciare", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+        {
+            //TextManager::Instance().RenderText("Menu", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+
+            // UI
+            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
+            ImGui::SetNextWindowPos({ 0,0 });
+            ImGui::Begin("Game Over", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+
+            ImGui::PushFont(font_SA_large);
+
+            TextCentered("Game Over!", ImGui::GetWindowHeight() / 3);
+
+            float buttonWidth = ImGui::CalcTextSize("game over").x;
+            ImGui::PopFont();
+            ImGui::PushFont(font_SA_medium);
+            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+            if (ImGui::Button("Retry", { buttonWidth, 0.f }))
+            {
+                while (!activeObjects.empty()) delete activeObjects.front(), activeObjects.pop_front();
+                Init();
+                ChangeGameState(GameState::Play);
+            }
+
+            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+            if (ImGui::Button("Quit", { buttonWidth, 0.f }))
+            {
+                glfwSetWindowShouldClose(gameWindow, true);
+            }
+
+            ImGui::PopFont();
+            ImGui::End();
+
             break;
+        }
         case GameState::Shop:
+        {
 
             TextManager::Instance().RenderText("Shop del gioco. Premere 'Invio' per iniziare", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
 
             break;
+        }
     }
 }
 
@@ -232,9 +352,6 @@ void Game::Draw(Shader shader)
 // ---------------------------------------------------------------------------------------------------------
 void Game::ProcessInput(float deltaTime)
 {
-    if (glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Temporanea finchè non implementiamo il menu! <----------------------------------------------------------------------------------------------------
-        glfwSetWindowShouldClose(gameWindow, true);
-
     if (gameState == GameState::Play){
         if (glfwGetKey(gameWindow, GLFW_KEY_A) == GLFW_PRESS)
             player->moveHip(1, deltaTime);                  // Da sostituire
@@ -242,11 +359,11 @@ void Game::ProcessInput(float deltaTime)
             player->moveHip(0, deltaTime);
         if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
             player->shootWithShips();
-        if (glfwGetKey(gameWindow, GLFW_KEY_P) == GLFW_PRESS)
+        if (glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             pHeldDown = true;
-        if (pHeldDown && glfwGetKey(gameWindow, GLFW_KEY_P) == GLFW_RELEASE) {
+        if (pHeldDown && glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
             pHeldDown = false;
-            gameState = GameState::Pause;
+           gameState = GameState::Pause;
         }
         /*if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
             player->shootWithShips();
@@ -287,9 +404,9 @@ void Game::ProcessInput(float deltaTime)
         }
     }
     else if (gameState == GameState::Pause) {
-        if (glfwGetKey(gameWindow, GLFW_KEY_P) == GLFW_PRESS)
+        if (glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             pHeldDown = true;
-        if (pHeldDown && glfwGetKey(gameWindow, GLFW_KEY_P) == GLFW_RELEASE) {
+        if (pHeldDown && glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
             pHeldDown = false;
             gameState = GameState::Play;
         }

@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "imgui.h"
+
 #include <list>
 
 #include "GameObject.h"
@@ -70,6 +72,13 @@ public:
 	// Permanent Objects
 	Player* player;
 	Planet* planet;
+
+	// -----
+	// FONTS
+	ImFont* font_SA_menu;
+	ImFont* font_SA_large;
+	ImFont* font_SA_medium;
+	ImFont* font_SA_small;
 
 private:
 	Game()
