@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\glm-master;..\..\glad\include;..\..\glfw-3.3.8.bin.WIN64\include;..\..\assimp\include;..\..\irrKlang\include;..\..\freetype-2.13.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\imgui\backends;..\..\imgui;..\..\glm-master;..\..\glad\include;..\..\glfw-3.3.8.bin.WIN64\include;..\..\assimp\include;..\..\irrKlang\include;..\..\freetype-2.13.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,7 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\glm-master;..\..\glad\include;..\..\glfw-3.3.8.bin.WIN64\include;..\..\assimp\include;..\..\irrKlang\include;..\..\freetype-2.13.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\imgui\backends;..\..\imgui;..\..\glm-master;..\..\glad\include;..\..\glfw-3.3.8.bin.WIN64\include;..\..\assimp\include;..\..\irrKlang\include;..\..\freetype-2.13.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -140,6 +140,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\..\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="MiniEngine\Collider.cpp" />
     <ClCompile Include="MiniEngine\Health.cpp" />
@@ -164,6 +171,15 @@
     <ClCompile Include="TimerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="..\..\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\..\imgui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\..\imgui\imconfig.h" />
+    <ClInclude Include="..\..\imgui\imgui.h" />
+    <ClInclude Include="..\..\imgui\imgui_internal.h" />
+    <ClInclude Include="..\..\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\..\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\..\imgui\imstb_truetype.h" />
     <ClInclude Include="MiniEngine\Collider.h" />
     <ClInclude Include="MiniEngine\Health.h" />
     <ClInclude Include="IObserver.h" />
@@ -189,6 +205,9 @@
     <ClInclude Include="TimerManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\imgui\.editorconfig" />
+    <None Include="..\..\imgui\.gitattributes" />
+    <None Include="..\..\imgui\.gitignore" />
     <None Include="shader.fs" />
     <None Include="shader.vs" />
     <None Include="shaderLighting.fs" />
@@ -197,6 +216,9 @@
     <None Include="shader_light.vs" />
     <None Include="textShader.fs" />
     <None Include="textShader.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\imgui\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
