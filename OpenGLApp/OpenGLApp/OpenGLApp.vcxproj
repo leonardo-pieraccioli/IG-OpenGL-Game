@@ -162,6 +162,7 @@
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerManager.cpp" />
+    <ClCompile Include="UpgradeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MiniEngine\Collider.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerManager.h" />
+    <ClInclude Include="UpgradeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.fs" />

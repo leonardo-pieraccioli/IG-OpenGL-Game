@@ -12,7 +12,7 @@ private:
 	std::array<Ship, NUM_OF_SHIPS> shipArray;
 	int money;
 	int score;
-	float shootingRate = 2.5f;
+	float shootingRate = 1.0f;
 	bool canShoot = true;
 	float shipDistance = 2.25f;
 	Timer* shootingTimer;

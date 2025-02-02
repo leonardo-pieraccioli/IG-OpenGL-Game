@@ -81,6 +81,9 @@
     <ClCompile Include="MiniEngine\Collider.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="UpgradeManager.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -150,6 +153,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="MiniEngine\Collider.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="UpgradeManager.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
