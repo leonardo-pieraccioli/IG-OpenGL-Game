@@ -18,4 +18,5 @@ public:
 
 	void Update(float deltaTime) override;
 	void Damage(int damage);
+	void resetPlanet();
 };

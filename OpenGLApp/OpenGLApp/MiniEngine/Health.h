@@ -13,6 +13,8 @@ public:
 	bool isDead();
 	int healthStatus();
 
+	void resetHealth();
+
 private:
 	int max;
 	int current;

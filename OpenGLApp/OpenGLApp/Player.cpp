@@ -85,6 +85,20 @@ void Player::shootWithShips()
 	}
 }
 
+void Player::resetPlayer()
+{
+	shipArray[0].transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(.35, .35, .35));
+	for (int i = 1; i < shipArray.size(); i++) {
+		shipArray[i].Die();
+	}
+	std::fill(std::next(std::begin(shipArray)), std::end(shipArray), 0);
+	money = 0;
+	score = 0;
+	shootingRate = 1.0f;
+	canShoot = true;
+	shootingTimer->resetTimer(false);
+}
+
 void Player::getNotified(std::string timerName, bool isCallbackEnabled)
 {
 	canShoot = true;

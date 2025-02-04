@@ -11,6 +11,7 @@ public:
 	
 	void setup();
 	void playSound(const char* path, bool loop); //true if loop, false otherwise
+	void stopAllSounds();
 private:
 
 };

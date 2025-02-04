@@ -31,3 +31,8 @@ void Planet::Damage(int damage)
 	}
 }
 
+void Planet::resetPlanet()
+{
+	health.resetHealth();
+}
+

@@ -31,24 +31,28 @@ int UpgradeManager::getDamageIncrement()
     return currentUpgrades[4].currentValue;
 }
 
-int UpgradeManager::getGenericCurrentValue(int upgradeIndex)
+int UpgradeManager::getGenericCurrentValue(UpgradeIndex upgradeIndex)
 {
-    return (upgradeIndex < 0 || upgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[upgradeIndex].currentValue;
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[intUpgradeIndex].currentValue;
 }
 
-bool UpgradeManager::hasReachedMax(int upgradeIndex)
+bool UpgradeManager::hasReachedMax(UpgradeIndex upgradeIndex)
 {
-    return (upgradeIndex < 0 || upgradeIndex >= currentUpgrades.size()) ? true : ((currentUpgrades[upgradeIndex].currentValue == currentUpgrades[upgradeIndex].maxValue) ? true : false);
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? true : ((currentUpgrades[intUpgradeIndex].currentValue == currentUpgrades[intUpgradeIndex].maxValue) ? true : false);
 }
 
-int UpgradeManager::getUpgradeCost(int upgradeIndex)
+int UpgradeManager::getUpgradeCost(UpgradeIndex upgradeIndex)
 {
-    return (upgradeIndex < 0 || upgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[upgradeIndex].cost;
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[intUpgradeIndex].cost;
 }
 
-void UpgradeManager::makeUpgrade(int upgradeIndex)
+void UpgradeManager::makeUpgrade(UpgradeIndex upgradeIndex)
 {
-    if (upgradeIndex < 0 || upgradeIndex >= currentUpgrades.size())
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    if (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size())
         return;
-    currentUpgrades[upgradeIndex].cost = currentUpgrades[upgradeIndex].cost * currentUpgrades[upgradeIndex].costIncrementRate;
+    currentUpgrades[intUpgradeIndex].cost = currentUpgrades[intUpgradeIndex].cost * currentUpgrades[intUpgradeIndex].costIncrementRate;
 }
