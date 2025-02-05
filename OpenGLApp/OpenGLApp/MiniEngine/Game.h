@@ -87,6 +87,8 @@ private:
 		SCREEN_HEIGHT = 0;
 		GAME_NAME = "Game";
 	};
+	void drawMenuModel(Shader shader);
+
 	std::list<GameObject*> activeObjects;
 
 	// VAOs and VBOs

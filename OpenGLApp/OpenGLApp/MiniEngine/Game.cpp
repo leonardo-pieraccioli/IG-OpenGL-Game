@@ -260,18 +260,11 @@ void Game::Update(float deltaTime)
         }
         case GameState::Menu:
         {
-            glm::mat4 model_mat = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model_mat = glm::translate(model_mat, glm::vec3(4,0,0));
-            model_mat = glm::rotate(model_mat, -45.f, glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
-            model_mat = glm::rotate(model_mat, 0.f, glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
-            model_mat = glm::rotate(model_mat, 15.f, glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
-            model_mat = glm::scale(model_mat, glm::vec3(2.f, 2.f, 2.f));
-            shader.SetMatrix4("model", model_mat);
-            player->objectModel.Draw(lightingShader);
 			Draw(lightingShader);
+			drawMenuModel(lightingShader);
 
             ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
-            ImGui::SetNextWindowPos({ 0,0 });
+            ImGui::SetNextWindowPos({ 0,0 });            
             ImGui::SetNextWindowBgAlpha(0.15f);
             ImGui::Begin("Main Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
@@ -569,4 +562,26 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
         gameState = GameState::Shop;
         roundTimer->resetTimer(true);
     }
+}
+
+void Game::drawMenuModel(Shader shader)
+{
+    shader.Use();
+    // Mi trovo la matrice ortografica per la camera
+    projection = glm::ortho(-((float)SCR_WIDTH / 2), (float)SCR_WIDTH / 2, -((float)SCR_HEIGHT / 2), (float)SCR_HEIGHT / 2, zNear, zFar);
+    projection = glm::scale(projection, glm::vec3(orthScale, orthScale, 1.0f));
+    shader.SetMatrix4("projection", projection);
+    // camera/view transformation
+    //glm::mat4 view = camera.GetViewMatrix();
+    shader.SetMatrix4("view", view);
+    // render boxes
+    glBindVertexArray(VAO);
+    glm::mat4 model_mat = glm::mat4(1.0f);  // make sure to initialize matrix to identity matrix first
+    model_mat = glm::translate(model_mat, glm::vec3(3, 0, 3.5));
+    model_mat = glm::rotate(model_mat, -45.f, glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
+    model_mat = glm::rotate(model_mat, 0.f, glm::vec3(0.0f, 1.0f, 0.0f));   // Yaw
+    model_mat = glm::rotate(model_mat, 15.f, glm::vec3(0.0f, 0.0f, 1.0f));  // Roll
+    model_mat = glm::scale(model_mat, glm::vec3(2.f, 2.f, 2.f));
+    shader.SetMatrix4("model", model_mat);
+    player->objectModel.Draw(lightingShader);
 }
