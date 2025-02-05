@@ -33,6 +33,7 @@ public:
 	void setShootingRate(float shootingRate);
 	float getShootingRate();
 	void shootWithShips();
+	void resetPlayer();
 
 	GameObject* CheckShipCollision(glm::vec3 position, float radius);
 

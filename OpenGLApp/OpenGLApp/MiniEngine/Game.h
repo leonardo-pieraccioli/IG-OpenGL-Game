@@ -118,10 +118,13 @@ private:
 	
 	unsigned int text_coin;
 
+	// Text and Timers
 	Timer* roundTimer;
 	std::string roundTimeText;
 	std::string scoreText;
 
 	bool pHeldDown = false;
+
+	void resetGame();
 };
 

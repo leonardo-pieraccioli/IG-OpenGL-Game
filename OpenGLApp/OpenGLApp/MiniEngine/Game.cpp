@@ -245,7 +245,8 @@ void Game::Update(float deltaTime)
             ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
             if (ImGui::Button("Restart", { buttonWidth, 0.f }))
             {
-
+                resetGame();
+                ChangeGameState(GameState::Play);
             }
 
             ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
@@ -311,6 +312,8 @@ void Game::Update(float deltaTime)
             ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
             if (ImGui::Button("Retry", { buttonWidth, 0.f }))
             {
+                resetGame();
+                ChangeGameState(GameState::Play);
                 /*
                 while (!activeObjects.empty()) delete activeObjects.front(), activeObjects.pop_front();
                 delete roundTimer;
@@ -562,6 +565,26 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
         gameState = GameState::Shop;
         roundTimer->resetTimer(true);
     }
+}
+
+void Game::resetGame()
+{
+    SoundManager::Instance().stopAllSounds();
+    roundTimer->resetTimer(true);
+    player->resetPlayer();
+    planet->resetPlanet();
+    for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
+    {
+        if (dynamic_cast<Enemy*>(*obj) || dynamic_cast<Coin*>(*obj) || dynamic_cast<Projectile*>(*obj))
+        {
+            obj = activeObjects.erase(obj);
+        }
+        else
+        {
+            obj++;
+        }
+    }
+    SoundManager::Instance().playSound("Assets/Sounds/star_striker.mp3", true);
 }
 
 void Game::drawMenuModel(Shader shader)

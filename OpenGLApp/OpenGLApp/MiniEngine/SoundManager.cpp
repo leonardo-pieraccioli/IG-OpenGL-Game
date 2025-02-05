@@ -14,3 +14,8 @@ void SoundManager::setup() {
 void SoundManager::playSound(const char* path, bool loop) {
 	this->SoundEngine->play2D(path, loop);
 }
+
+void SoundManager::stopAllSounds()
+{
+	this->SoundEngine->stopAllSounds();
+}
