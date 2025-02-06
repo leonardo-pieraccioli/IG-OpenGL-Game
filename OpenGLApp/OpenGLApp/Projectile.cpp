@@ -23,7 +23,13 @@ void Projectile::Update(float deltaTime)
 
 	GameObject* hit = Game::Instance().CheckCollision(*this, this->transform.position, this->transform.scale);
 	if(hit != nullptr)
-	{		
+	{	
+		if (hit->CompareTag("Ship"))
+		{
+			Ship* shipHit = dynamic_cast<Ship*>(hit);
+			shipHit->Damage(damage);
+		}
+
 		if (hit->CompareTag("Planet"))
 		{
 			Planet* p = dynamic_cast<Planet*>(hit);

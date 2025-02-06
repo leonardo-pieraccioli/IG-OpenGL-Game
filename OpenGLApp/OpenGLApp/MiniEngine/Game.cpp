@@ -161,9 +161,8 @@ void Game::Init()
     
     font_SA_menu = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 120.f);
     font_SA_large = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 60.f);
-    font_SA_medium = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 30.f);
-    font_SA_small = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 20.f);
-
+    font_SA_medium = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 40.f);
+    font_SA_small = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 30.f);
 }
 
 // -----
@@ -210,14 +209,49 @@ void Game::Update(float deltaTime)
 
             TimerManager::updateTimers(deltaTime);
 
-            TextManager::Instance().RenderText(std::to_string(planet->health.healthStatus()), 590, 345, 1.0f, glm::vec3(.1f, 1.0f, .1f), "Space Age");
+            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
+            ImGui::SetNextWindowPos({ 0,0 });
+            ImGui::SetNextWindowBgAlpha(0.f);
+            ImGui::Begin("HUD", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
+            ImGui::PushFont(font_SA_small);
+            ImGui::SetCursorPosX(10);
+            ImGui::SetCursorPosY(100);
+            for (auto ship : player->shipArray)
+            {
+                if (ship.isActive)
+                {
+                    ImGui::Text(std::to_string(ship.health.healthStatus()).c_str());
+                }
+            }
+			ImGui::PopFont();
+
+			ImGui::PushFont(font_SA_large);
+            
+			ImVec2 planetHealthTextDim = ImGui::CalcTextSize(std::to_string(planet->health.healthStatus()).c_str());
+            ImGui::SetCursorPos({ ImGui::GetWindowWidth() / 2 - planetHealthTextDim.x / 2, ImGui::GetWindowHeight() / 2 - planetHealthTextDim.y / 2 });
+            ImGui::TextColored({ 0, 1, 0, 1 }, std::to_string(planet->health.healthStatus()).c_str());
+            ImGui::PopFont();
+
+            ImGui::PushFont(font_SA_medium);
             roundTimeText = TimerManager::GetTimer("Round Timer")->getHH_MM_SS_MS();
-            TextManager::Instance().RenderText(roundTimeText, 430, 680, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+            auto windowWidth = ImGui::GetWindowSize().x;
+            auto textWidth = ImGui::CalcTextSize("00:00:0,000").x;
+            ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+            ImGui::SetCursorPosY(10);
+            ImGui::Text(roundTimeText.c_str());
+            ImGui::PopFont();
 
+            ImGui::PushFont(font_SA_medium);
+            ImGui::SetCursorPos( { 10, (float) SCREEN_HEIGHT - 70 } );
             scoreText = "Score: " + std::to_string(player->getScore());
-            TextManager::Instance().RenderText(scoreText, 0, 0, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+            ImGui::Text(scoreText.c_str());
+            
+            ImGui::PopFont();
 
+
+            ImGui::End();
+            
             break;
         }
         case GameState::Pause:
@@ -314,17 +348,6 @@ void Game::Update(float deltaTime)
             {
                 resetGame();
                 ChangeGameState(GameState::Play);
-                /*
-                while (!activeObjects.empty()) delete activeObjects.front(), activeObjects.pop_front();
-                delete roundTimer;
-                TimerManager::DestroyTimers();
-
-                ImGui::PopFont();
-                ImGui::End();
-                Init();
-
-                ChangeGameState(GameState::Play);
-                */
             }
 
             ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
@@ -340,9 +363,101 @@ void Game::Update(float deltaTime)
         }
         case GameState::Shop:
         {
+            Draw(lightingShader);
 
-            TextManager::Instance().RenderText("Shop del gioco. Premere 'Invio' per iniziare", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
+            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
+            ImGui::SetNextWindowPos({ 0,0 });
+            ImGui::SetNextWindowBgAlpha(0.50f);
+            ImGui::Begin("Shop", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
+            ImGui::PushFont(font_SA_large);
+            TextCentered("Shop", 100);
+            ImGui::PopFont();
+
+            ImGui::PushFont(font_SA_small);
+
+            // ------------
+            // Ship healing
+
+			int healingCostFactor = 5;
+            
+			ImVec2 buttonDim = { ((ImGui::GetWindowWidth() - 20) / 4) - 5, 50};
+            ImGui::SeparatorText("Ship Health");
+            ImGui::SetCursorPosX(10);
+
+            if (ImGui::BeginTable("table1", 4))
+            {
+                ImGui::TableNextRow();
+                for (int i = 0; i < player->shipArray.size(); i++)
+                {
+                    ImGui::TableSetColumnIndex(i);
+                    float progress = player->shipArray[i].isActive ? (float)player->shipArray[i].health.healthStatus() / (float)player->shipArray[i].health.getMax() : 0.f;
+                    ImGui::ProgressBar(progress, buttonDim);
+                }
+                ImGui::TableNextRow();
+
+                for (int i = 0; i < player->shipArray.size(); i++)
+                {
+                    ImGui::TableSetColumnIndex(i);
+					std::string buttonText = "Heal Ship " + std::to_string(i + 1);
+					int healCost = (player->shipArray[i].health.getMax() - player->shipArray[i].health.healthStatus()) * healingCostFactor;
+                    if (!player->shipArray[i].isActive)
+                        ImGui::BeginDisabled();
+                    if (ImGui::Button(buttonText.c_str(), buttonDim) && player->getMoney() > healCost)
+                    {
+						player->addMoney(-healCost);
+                        player->shipArray[i].health.Heal(100);
+                    }
+                    if (!player->shipArray[i].isActive)
+                        ImGui::EndDisabled();
+                }
+                ImGui::EndTable();
+            }
+
+            ImGui::SeparatorText("Upgrades");
+			ImVec2 upgradeButton = { 300, 100 };
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth()/4 - upgradeButton.x / 2);
+			if (ImGui::Button("Add Ship\n500", upgradeButton) && player->getMoney() > 500)
+			{
+                for (int i = 0; i < player->shipArray.size(); i++)
+				{
+					if (!player->shipArray[i].isActive)
+					{
+						player->addMoney(-500);
+                        player->shipArray[i].isActive = true;
+						break;
+					}
+				}
+			}
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - upgradeButton.x / 2);
+            if (ImGui::Button("Heal Planet\n200", upgradeButton) && player->getMoney() > 200)
+            {
+				player->addMoney(-200);
+                planet->health.Heal(50);
+            }
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(3*ImGui::GetWindowWidth() / 4 - upgradeButton.x / 2);
+            if (ImGui::Button("Placeholder\n1500", upgradeButton) && player->getMoney() > 0)
+            {
+
+            }
+
+			TextCentered("Planet Health: " + std::to_string(planet->health.healthStatus()), ImGui::GetWindowHeight() / 2 + 100);
+
+            ImGui::SetCursorPos({ 1.5f * buttonDim.x / 2, ImGui::GetWindowHeight() - 100 + buttonDim.y / 2 });
+			string moneyText = "Money: " + std::to_string(player->getMoney());
+            ImGui::Text(moneyText.c_str());
+
+            ImGui::SetCursorPos({ ImGui::GetWindowWidth() - 3* buttonDim.x/2, ImGui::GetWindowHeight() - 100 });
+            if (ImGui::Button("Continue", { ImGui::CalcTextSize(" Continue ").x , buttonDim.y }))
+            {
+                ChangeGameState(GameState::Play);
+            }
+
+            ImGui::PopFont();
+            ImGui::End();
+               
             break;
         }
     }

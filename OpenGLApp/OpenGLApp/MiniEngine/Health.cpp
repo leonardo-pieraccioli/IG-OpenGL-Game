@@ -63,6 +63,11 @@ int Health::healthStatus()
 	return current;
 }
 
+int Health::getMax()
+{
+	return max;
+}
+
 void Health::resetHealth()
 {
 	current = max;

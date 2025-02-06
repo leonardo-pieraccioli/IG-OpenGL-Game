@@ -12,6 +12,7 @@ public:
 
 	bool isDead();
 	int healthStatus();
+	int getMax();
 
 	void resetHealth();
 

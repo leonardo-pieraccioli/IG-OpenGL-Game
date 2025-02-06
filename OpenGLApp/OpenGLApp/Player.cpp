@@ -1,27 +1,60 @@
 #include "Player.h"
+#include "MiniEngine/Game.h"
 
 Player::Player()
 {
-	glm::vec3 shipScale = glm::vec3(.35, .35, .35);
 	objectModel = Model("Assets/Models/spaceship.obj");
+	ShipSetup();
+	money = 0;
+	this->tag = "Player";
+	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "PlayerShootingTimer", true, this);
+}
+
+void Player::ShipSetup()
+{
+	glm::vec3 shipScale = glm::vec3(.35, .35, .35);
+
 	shipArray[0] = Ship();
 	shipArray[0].transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
-	shipArray[0].objectModel = Model("Assets/Models/spaceship.obj");
-	money = 0;
-	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "PlayerShootingTimer", true, this);
+	shipArray[0].objectModel = objectModel;
+	shipArray[0].isActive = true;
+
+	shipArray[1] = Ship();
+	shipArray[1].transform = Transform(glm::vec3(-shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 180.f), shipScale);
+	shipArray[1].objectModel = objectModel;
+	shipArray[1].isActive = false;
+
+	shipArray[2] = Ship();
+	shipArray[2].transform = Transform(glm::vec3(0.0f, shipDistance, 0.0f), glm::vec3(0.f, 0.f, 90.f), shipScale);
+	shipArray[2].objectModel = objectModel;
+	shipArray[2].isActive = false;
+
+	shipArray[3] = Ship();
+	shipArray[3].transform = Transform(glm::vec3(0.f, -shipDistance, 0.0f), glm::vec3(0.f, 0.f, -90.f), shipScale);
+	shipArray[3].objectModel = objectModel;
+	shipArray[3].isActive = false;
 }
 
 void Player::Update(float deltaTime)
 {
-	for (int i = 0; i < shipArray.size(); i++) {
-		shipArray[i].Update(deltaTime);
+	bool isOver = true;
+	for (auto ship : shipArray) {
+		if (ship.isActive)
+		{
+			ship.Update(deltaTime);
+			isOver = false;
+		}
+	}
+	if (isOver)
+	{
+		Game::Instance().ChangeGameState(GameState::GameOver);
 	}
 }
 
 void Player::Draw(Shader shader)
 {
-	for (int i = 0; i < shipArray.size(); i++) {
-		shipArray[i].Draw(shader);
+	for (auto ship : shipArray) {
+		if (ship.isActive) ship.Draw(shader);
 	}
 }
 
@@ -30,7 +63,6 @@ void Player::moveHip(int direction, float deltaTime)
 	for (int i = 0; i < shipArray.size(); i++) {
 		shipArray[i].transform.position = utilsF::rotateAroundZ(direction == 0 ? -(shipArray[i].getShipMovementRate() * deltaTime) : shipArray[i].getShipMovementRate() * deltaTime, shipArray[i].transform.rotation.z, shipDistance);
 		shipArray[i].transform.rotation.z += direction == 0 ? -(shipArray[i].getShipMovementRate() * deltaTime) : shipArray[i].getShipMovementRate() * deltaTime;
-		
 	}
 }
 
@@ -53,11 +85,13 @@ int Player::getScore()
 {
 	return score;
 }
+
 void Player::setScore(int score)
 {
 	this->score = score;
 
 }
+
 void Player::addScore(int scoreAmount)
 {
 	score += scoreAmount;
@@ -78,20 +112,16 @@ void Player::shootWithShips()
 	if(canShoot) {
 		canShoot = false;
 		shootingTimer->resetTimer(true);
-		//for (auto ships : shipArray) {
-		//	ships.Shoot();
-		//}
-		shipArray[0].Shoot();
+		for (auto ship : shipArray) 
+		{
+			if (ship.isActive) ship.Shoot();
+		}
 	}
 }
 
 void Player::resetPlayer()
 {
-	shipArray[0].transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(.35, .35, .35));
-	for (int i = 1; i < shipArray.size(); i++) {
-		shipArray[i].Die();
-	}
-	std::fill(std::next(std::begin(shipArray)), std::end(shipArray), 0);
+	ShipSetup();
 	money = 0;
 	score = 0;
 	shootingRate = 1.0f;
@@ -108,7 +138,7 @@ GameObject* Player::CheckShipCollision(glm::vec3 position, float radius)
 {
 	for (int i = 0; i < shipArray.size(); i++) {
 
-		if (glm::distance(shipArray[i].transform.position, position) < shipArray[i].transform.scale.x + radius)
+		if (shipArray[i].isActive && glm::distance(shipArray[i].transform.position, position) < shipArray[i].transform.scale.x + radius)
 		{
 			return &shipArray[i];
 		}

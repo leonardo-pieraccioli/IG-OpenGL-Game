@@ -16,6 +16,8 @@ public:
 	void Update(float deltaTime) override;
 	//void Draw(Shader shader) override;
 	void Shoot();
+	void Damage(int damage);
+	void Die() override;
 
 	float getShipMovementRate();
 };

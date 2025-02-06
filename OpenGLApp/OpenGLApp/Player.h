@@ -9,18 +9,19 @@ class Player : public GameObject, IObserver
 {
 private:
 	static const int NUM_OF_SHIPS = 4;
-	std::array<Ship, NUM_OF_SHIPS> shipArray;
 	int money;
 	int score;
 	float shootingRate = 1.0f;
 	bool canShoot = true;
 	float shipDistance = 2.25f;
 	Timer* shootingTimer;
+	void ShipSetup();
 	// upgrade
 
 public:
 	Player();
 
+	std::array<Ship, NUM_OF_SHIPS> shipArray;
 	void Update(float deltaTime) override;
 	void Draw(Shader shader) override;
 	void moveHip(int direction, float deltaTime);
