@@ -124,6 +124,8 @@ private:
 	std::string scoreText;
 
 	bool pHeldDown = false;
+	bool aHeldDown = false;
+	bool dHeldDown = false;
 
 	void resetGame();
 };

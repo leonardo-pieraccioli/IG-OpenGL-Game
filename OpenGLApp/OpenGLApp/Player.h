@@ -11,6 +11,7 @@ private:
 	static const int NUM_OF_SHIPS = 4;
 	int money;
 	int score;
+	int pitchRotationValue = 0;
 	float shootingRate = 1.0f;
 	bool canShoot = true;
 	float shipDistance = 2.25f;
@@ -21,7 +22,7 @@ private:
 public:
 	Player();
 
-	std::array<Ship, NUM_OF_SHIPS> shipArray;
+	std::array<Ship*, NUM_OF_SHIPS> shipArray;
 	void Update(float deltaTime) override;
 	void Draw(Shader shader) override;
 	void moveHip(int direction, float deltaTime);
@@ -35,6 +36,7 @@ public:
 	float getShootingRate();
 	void shootWithShips();
 	void resetPlayer();
+	void setPitchRotationValue(int pitchRotationValue);
 
 	GameObject* CheckShipCollision(glm::vec3 position, float radius);
 

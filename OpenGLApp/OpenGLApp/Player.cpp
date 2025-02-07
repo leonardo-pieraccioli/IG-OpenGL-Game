@@ -14,34 +14,35 @@ void Player::ShipSetup()
 {
 	glm::vec3 shipScale = glm::vec3(.35, .35, .35);
 
-	shipArray[0] = Ship();
-	shipArray[0].transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
-	shipArray[0].objectModel = objectModel;
-	shipArray[0].isActive = true;
+	shipArray[0] = new Ship();
+	shipArray[0]->transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
+	shipArray[0]->objectModel = objectModel;
+	shipArray[0]->isActive = true;
 
-	shipArray[1] = Ship();
-	shipArray[1].transform = Transform(glm::vec3(-shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 180.f), shipScale);
-	shipArray[1].objectModel = objectModel;
-	shipArray[1].isActive = false;
+	shipArray[1] = new Ship();
+	shipArray[1]->transform = Transform(glm::vec3(-shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 180.f), shipScale);
+	shipArray[1]->objectModel = objectModel;
+	shipArray[1]->isActive = false;
 
-	shipArray[2] = Ship();
-	shipArray[2].transform = Transform(glm::vec3(0.0f, shipDistance, 0.0f), glm::vec3(0.f, 0.f, 90.f), shipScale);
-	shipArray[2].objectModel = objectModel;
-	shipArray[2].isActive = false;
+	shipArray[2] = new Ship();
+	shipArray[2]->transform = Transform(glm::vec3(0.0f, shipDistance, 0.0f), glm::vec3(0.f, 0.f, 90.f), shipScale);
+	shipArray[2]->objectModel = objectModel;
+	shipArray[2]->isActive = false;
 
-	shipArray[3] = Ship();
-	shipArray[3].transform = Transform(glm::vec3(0.f, -shipDistance, 0.0f), glm::vec3(0.f, 0.f, -90.f), shipScale);
-	shipArray[3].objectModel = objectModel;
-	shipArray[3].isActive = false;
+	shipArray[3] = new Ship();
+	shipArray[3]->transform = Transform(glm::vec3(0.f, -shipDistance, 0.0f), glm::vec3(0.f, 0.f, -90.f), shipScale);
+	shipArray[3]->objectModel = objectModel;
+	shipArray[3]->isActive = false;
 }
 
 void Player::Update(float deltaTime)
 {
 	bool isOver = true;
 	for (auto ship : shipArray) {
-		if (ship.isActive)
+		if (ship->isActive)
 		{
-			ship.Update(deltaTime);
+			//ship.Update(deltaTime);
+			ship->updateTLerp(deltaTime, pitchRotationValue);
 			isOver = false;
 		}
 	}
@@ -54,15 +55,17 @@ void Player::Update(float deltaTime)
 void Player::Draw(Shader shader)
 {
 	for (auto ship : shipArray) {
-		if (ship.isActive) ship.Draw(shader);
+		if (ship->isActive) {
+			ship->Draw(shader);
+		}
 	}
 }
 
 void Player::moveHip(int direction, float deltaTime)
 {
 	for (int i = 0; i < shipArray.size(); i++) {
-		shipArray[i].transform.position = utilsF::rotateAroundZ(direction == 0 ? -(shipArray[i].getShipMovementRate() * deltaTime) : shipArray[i].getShipMovementRate() * deltaTime, shipArray[i].transform.rotation.z, shipDistance);
-		shipArray[i].transform.rotation.z += direction == 0 ? -(shipArray[i].getShipMovementRate() * deltaTime) : shipArray[i].getShipMovementRate() * deltaTime;
+		shipArray[i]->transform.position = utilsF::rotateAroundZ(direction == 0 ? -(shipArray[i]->getShipMovementRate() * deltaTime) : shipArray[i]->getShipMovementRate() * deltaTime, shipArray[i]->transform.rotation.z, shipDistance);
+		shipArray[i]->transform.rotation.z += direction == 0 ? -(shipArray[i]->getShipMovementRate() * deltaTime) : shipArray[i]->getShipMovementRate() * deltaTime;
 	}
 }
 
@@ -114,7 +117,7 @@ void Player::shootWithShips()
 		shootingTimer->resetTimer(true);
 		for (auto ship : shipArray) 
 		{
-			if (ship.isActive) ship.Shoot();
+			if (ship->isActive) ship->Shoot();
 		}
 	}
 }
@@ -129,6 +132,11 @@ void Player::resetPlayer()
 	shootingTimer->resetTimer(false);
 }
 
+void Player::setPitchRotationValue(int pitchRotationValue)
+{
+	this->pitchRotationValue = pitchRotationValue;
+}
+
 void Player::getNotified(std::string timerName, bool isCallbackEnabled)
 {
 	canShoot = true;
@@ -138,9 +146,9 @@ GameObject* Player::CheckShipCollision(glm::vec3 position, float radius)
 {
 	for (int i = 0; i < shipArray.size(); i++) {
 
-		if (shipArray[i].isActive && glm::distance(shipArray[i].transform.position, position) < shipArray[i].transform.scale.x + radius)
+		if (shipArray[i]->isActive && glm::distance(shipArray[i]->transform.position, position) < shipArray[i]->transform.scale.x + radius)
 		{
-			return &shipArray[i];
+			return shipArray[i];
 		}
 	}
 	return nullptr;

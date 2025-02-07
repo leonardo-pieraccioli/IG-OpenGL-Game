@@ -219,9 +219,9 @@ void Game::Update(float deltaTime)
             ImGui::SetCursorPosY(100);
             for (auto ship : player->shipArray)
             {
-                if (ship.isActive)
+                if (ship->isActive)
                 {
-                    ImGui::Text(std::to_string(ship.health.healthStatus()).c_str());
+                    ImGui::Text(std::to_string(ship->health.healthStatus()).c_str());
                 }
             }
 			ImGui::PopFont();
@@ -391,7 +391,7 @@ void Game::Update(float deltaTime)
                 for (int i = 0; i < player->shipArray.size(); i++)
                 {
                     ImGui::TableSetColumnIndex(i);
-                    float progress = player->shipArray[i].isActive ? (float)player->shipArray[i].health.healthStatus() / (float)player->shipArray[i].health.getMax() : 0.f;
+                    float progress = player->shipArray[i]->isActive ? (float)player->shipArray[i]->health.healthStatus() / (float)player->shipArray[i]->health.getMax() : 0.f;
                     ImGui::ProgressBar(progress, buttonDim);
                 }
                 ImGui::TableNextRow();
@@ -400,15 +400,15 @@ void Game::Update(float deltaTime)
                 {
                     ImGui::TableSetColumnIndex(i);
 					std::string buttonText = "Heal Ship " + std::to_string(i + 1);
-					int healCost = (player->shipArray[i].health.getMax() - player->shipArray[i].health.healthStatus()) * healingCostFactor;
-                    if (!player->shipArray[i].isActive)
+					int healCost = (player->shipArray[i]->health.getMax() - player->shipArray[i]->health.healthStatus()) * healingCostFactor;
+                    if (!player->shipArray[i]->isActive)
                         ImGui::BeginDisabled();
                     if (ImGui::Button(buttonText.c_str(), buttonDim) && player->getMoney() > healCost)
                     {
 						player->addMoney(-healCost);
-                        player->shipArray[i].health.Heal(100);
+                        player->shipArray[i]->health.Heal(100);
                     }
-                    if (!player->shipArray[i].isActive)
+                    if (!player->shipArray[i]->isActive)
                         ImGui::EndDisabled();
                 }
                 ImGui::EndTable();
@@ -421,10 +421,10 @@ void Game::Update(float deltaTime)
 			{
                 for (int i = 0; i < player->shipArray.size(); i++)
 				{
-					if (!player->shipArray[i].isActive)
+					if (!player->shipArray[i]->isActive)
 					{
 						player->addMoney(-500);
-                        player->shipArray[i].isActive = true;
+                        player->shipArray[i]->isActive = true;
 						break;
 					}
 				}
@@ -490,10 +490,24 @@ void Game::Draw(Shader shader)
 void Game::ProcessInput(float deltaTime)
 {
     if (gameState == GameState::Play){
-        if (glfwGetKey(gameWindow, GLFW_KEY_A) == GLFW_PRESS)
-            player->moveHip(1, deltaTime);                  // Da sostituire
-        if (glfwGetKey(gameWindow, GLFW_KEY_D) == GLFW_PRESS)
+        if (glfwGetKey(gameWindow, GLFW_KEY_A) == GLFW_PRESS) {
+            aHeldDown = true;
+            player->moveHip(1, deltaTime);
+            player->setPitchRotationValue(-1);
+        }
+        if (glfwGetKey(gameWindow, GLFW_KEY_D) == GLFW_PRESS) {
+            dHeldDown = true;
             player->moveHip(0, deltaTime);
+            player->setPitchRotationValue(1);
+        }
+        if (aHeldDown && glfwGetKey(gameWindow, GLFW_KEY_A) == GLFW_RELEASE) {
+            aHeldDown = false;
+            player->setPitchRotationValue(0);
+        }
+        if (dHeldDown && glfwGetKey(gameWindow, GLFW_KEY_D) == GLFW_RELEASE) {
+            dHeldDown = false;
+            player->setPitchRotationValue(0);
+        }
         if (glfwGetKey(gameWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
             player->shootWithShips();
         if (glfwGetKey(gameWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)

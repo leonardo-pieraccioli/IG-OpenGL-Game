@@ -7,12 +7,13 @@ static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
 static Model enemyModel;
 
-Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistance, float shootingRate)
+Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistance, float shootingRate, float decelerationDistance)
 {
 	this->rewardMoney = rewardMoney;
 	this->rewardScore = rewardScore;
 	this->speed = speed;
 	this->shootingDistance = shootingDistance;
+	this->decelerationDistance = decelerationDistance;
 	this->shootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
 	this->tag = "Enemy";
 	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + std::to_string(this->GetID()), true, this);
@@ -29,14 +30,41 @@ void Enemy::Update(float deltaTime)
 	float a_x = this->transform.position.x;
 	float a_y = this->transform.position.y;
 
-	if (utilsF::distance2DSquare(a_x, a_y, 0.0f, 0.0f) > shootingDistance) {
-		Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, speed));
+	float distanceFromCenter = utilsF::distance2DSquare(a_x, a_y, 0.0f, 0.0f);
+
+	if (!shouldStop && distanceFromCenter > shootingDistance && distanceFromCenter <= decelerationDistance) {
+		tDeceleration = utilsF::interpolateOnRadiuses(a_x, a_y, this->transform.rotation.z, shootingDistance, decelerationDistance);//a_x, a_y, ship_z, minR, maxR
+	}
+	if (!shouldStop && distanceFromCenter > shootingDistance) {
+		Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, speed*tDeceleration));
 	}
 	else {
-		if (canShoot) {
+		if (!shootingTimer->getIsTicking()) {
+			shootingTimer->resetTimer(true);
+			shouldStop = true;
+		}
+		if (canShoot && frameCounter == 0) {
 			canShoot = false;
 			Shoot();
 		}
+		switch (frameCounter) {
+			case 0:
+				tVibration = 1 - (shootingTimer->getRemainingTime() * shootingRate);
+				currentVibrationCoords = utilsF::generateVibrationCoords(tVibration * maxVibrationRadius);
+				Move(std::pair<float, float>(currentVibrationCoords.first + a_x, currentVibrationCoords.second + a_y));
+				break;
+			case 1:
+				Move(std::pair<float, float>(-currentVibrationCoords.first + a_x, -currentVibrationCoords.second + a_y));
+				break;
+			case 2:
+				Move(std::pair<float, float>(-currentVibrationCoords.first + a_x, -currentVibrationCoords.second + a_y));
+				break;
+			case 3:
+				Move(std::pair<float, float>(currentVibrationCoords.first + a_x, currentVibrationCoords.second + a_y));
+				frameCounter = -1;
+				break;
+		}
+		frameCounter++;
 	}
 }
 

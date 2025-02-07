@@ -14,4 +14,10 @@ namespace utilsF {
 	glm::vec3 rotateAroundZ(float deltaAlpha, float oldAlpha, float radius);
 
 	float randomNumberInInterval(float min, float max);
+
+	float lerp(float a, float b, float t);
+
+	float interpolateOnRadiuses(float a_x, float a_y, float ship_z, float minR, float maxR);
+
+	std::pair<float, float> generateVibrationCoords(float radius);
 };

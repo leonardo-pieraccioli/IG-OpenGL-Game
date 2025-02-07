@@ -12,12 +12,19 @@ private:
 	int rewardScore;
 	float speed;
 	float shootingDistance;
+	float decelerationDistance;
 	float shootingRate;
-	bool canShoot = true;
+	bool canShoot = false;
 	Timer* shootingTimer;
+	float tDeceleration = 1.0f;
+	float tVibration = 0.0f;
+	int frameCounter = 0;
+	const float maxVibrationRadius = 0.05f;
+	std::pair<float, float> currentVibrationCoords;
+	bool shouldStop = false;
 
 public:
-	Enemy(int rewardMoney = 100, int rewardScore = 100, float speed = 5.f, float shootingDistance = 5.0f, float shootingRate = 0.2f);
+	Enemy(int rewardMoney = 100, int rewardScore = 100, float speed = 5.f, float shootingDistance = 5.0f, float shootingRate = 0.2f, float decelerationDistance = 7.0f);
 
 	static void Init(Model model);
 	void Update(float deltaTime) override;
