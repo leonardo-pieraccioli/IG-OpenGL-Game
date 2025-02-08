@@ -7,7 +7,7 @@ public:
 	Projectile(float speed = 10.0f, float destroyDistance = 30.f);
 
 	void Update(float deltaTime) override;
-	//void Draw(Shader shader) override;
+	void Draw(Shader shader) override;
 	void Move(std::pair<float, float> newCoords);
 
 	float damage;

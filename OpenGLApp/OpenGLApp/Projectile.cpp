@@ -2,13 +2,20 @@
 #include "Enemy.h"
 #include "MiniEngine/Game.h"
 
+static Model projectileModel;
+static bool loaded;
+
 Projectile::Projectile(float speed, float destroyDistance)
 {
 	this->speed = speed;
 	this->destroyDistance = destroyDistance;
 	this->damage = 10;
 	this->tag = "Projectile";
-	objectModel = Model("Assets/Models/laserbeam.obj");
+	if(!loaded)
+	{ 
+		projectileModel = Model("Assets/Models/laserbeam.obj");
+		loaded = true;
+	}
 }
 
 void Projectile::Update(float deltaTime)
@@ -59,9 +66,17 @@ void Projectile::Update(float deltaTime)
 	}
 }
 
-//void Projectile::Draw(Shader shader)
-//{
-//}
+void Projectile::Draw(Shader shader)
+{
+	glm::mat4 model_mat = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+	model_mat = glm::translate(model_mat, transform.position);
+	model_mat = glm::rotate(model_mat, glm::radians(transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
+	model_mat = glm::rotate(model_mat, glm::radians(transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
+	model_mat = glm::rotate(model_mat, glm::radians(transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
+	model_mat = glm::scale(model_mat, transform.getScale());
+	shader.SetMatrix4("model", model_mat);
+	projectileModel.Draw(shader);
+}
 
 void Projectile::Move(std::pair<float, float> newCoords)
 {
