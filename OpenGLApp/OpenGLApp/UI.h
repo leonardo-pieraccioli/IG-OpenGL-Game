@@ -33,26 +33,33 @@ void UIPlay()
     ImGui::Begin("HUD", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
     ImGui::PushFont(Game::Instance().font_SA_small);
-    ImGui::SetCursorPosX(10);
-    ImGui::SetCursorPosY(100);
-
+    ImVec2 ShipProgressBarDim = {300, 30};
+    float sh_currentPosY = 50;
+    int i = 1;
     for (auto ship : Game::Instance().player->shipArray)
     {
+        ImGui::SetCursorPosX( ImGui::GetWindowWidth() - (ShipProgressBarDim.x + ImGui::CalcTextSize("Ship 0").x + 20));
+        ImGui::SetCursorPosY( ImGui::GetWindowHeight() - sh_currentPosY);
         if (ship->isActive)
         {
-            ImGui::Text(std::to_string(ship->health.healthStatus()).c_str());
+            float shipHealthProgress = (float) ship->health.healthStatus() / (float) ship->health.getMax();
+            ImGui::ProgressBar(shipHealthProgress, ShipProgressBarDim);
+            ImGui::SameLine();
+            std::string shipHealthBarText = "Ship " + std::to_string(i);
+            ImGui::Text(shipHealthBarText.c_str());
         }
+        sh_currentPosY += 40;
+        i++;
     }
     ImGui::PopFont();
 
-
     // PLANET HEALTH
-    // -------------s
+    // -------------
     ImGui::PushFont(Game::Instance().font_SA_small);
-    ImVec2 progressBarDim = {500, 40};
-    ImGui::SetCursorPos({ ImGui::GetWindowWidth() / 2 - progressBarDim.x / 2, (float)Game::Instance().SCREEN_HEIGHT - 70 });
+    ImVec2 PlanetProgressBarDim = {500, 40};
+    ImGui::SetCursorPos({ ImGui::GetWindowWidth() / 2 - PlanetProgressBarDim.x / 2, (float)Game::Instance().SCREEN_HEIGHT - 70 });
     float planetHealthProgress = (float) Game::Instance().planet->health.healthStatus() / (float) Game::Instance().planet->health.getMax();
-    ImGui::ProgressBar(planetHealthProgress, progressBarDim, "Planet Health");
+    ImGui::ProgressBar(planetHealthProgress, PlanetProgressBarDim, "Planet Health");
     ImGui::PopFont();
 
     // TIMER
@@ -345,8 +352,9 @@ void UIShop()
     // -----------
     ImGui::PushFont(Game::Instance().font_SA_small);
     ImVec2 progressBarDim = { 500, 40 };
+    int healPlanetCost = 200;
     ImGui::SetCursorPos({ ImGui::GetWindowWidth() / 2 - progressBarDim.x / 2, ImGui::GetWindowHeight() - 75 - progressBarDim.y});
-    if (ImGui::Button("Heal Planet by 10: 200", progressBarDim) && Game::Instance().player->getMoney() >= 0 && Game::Instance().planet->health.healthStatus() != Game::Instance().planet->health.getMax())
+    if (ImGui::Button(std::string("Heal Planet by 10: " + std::to_string(healPlanetCost)).c_str(), progressBarDim) && Game::Instance().player->getMoney() >= 200 && Game::Instance().planet->health.healthStatus() != Game::Instance().planet->health.getMax())
     {
         Game::Instance().player->addMoney(-200);
         Game::Instance().planet->health.Heal(10);
