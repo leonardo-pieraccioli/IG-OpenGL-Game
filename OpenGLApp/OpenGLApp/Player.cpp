@@ -146,7 +146,7 @@ GameObject* Player::CheckShipCollision(glm::vec3 position, float radius)
 {
 	for (int i = 0; i < shipArray.size(); i++) {
 
-		if (shipArray[i]->isActive && glm::distance(shipArray[i]->transform.position, position) < shipArray[i]->transform.scale.x + radius)
+		if (shipArray[i]->isActive && glm::distance(shipArray[i]->transform.position, position) < shipArray[i]->transform.collisionRadius + radius)
 		{
 			return shipArray[i];
 		}

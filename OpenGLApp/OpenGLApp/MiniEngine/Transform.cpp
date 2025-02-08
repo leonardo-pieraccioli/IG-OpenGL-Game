@@ -5,6 +5,7 @@ Transform::Transform(vec3 position, vec3 rotation, vec3 scale)
 	this->position = position;
 	this->rotation = rotation;
 	this->scale = scale;
+	collisionRadius = this->scale.x;
 }
 
 void Transform::setPosition(vec3 position)

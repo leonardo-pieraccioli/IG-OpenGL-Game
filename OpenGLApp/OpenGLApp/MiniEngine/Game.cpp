@@ -655,7 +655,7 @@ void Game::CheckCoins(glm::vec3 coinPosition)
 
 GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale)
 {
-	auto thisRadius = scale.x;
+	auto thisRadius = caller.transform.collisionRadius;
     auto thisCenter = position;
     
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
@@ -667,7 +667,7 @@ GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::ve
 
         if ( (*obj)->CompareTag("Player"))
         {
-            GameObject* hit = player->CheckShipCollision(position, scale.x);
+            GameObject* hit = player->CheckShipCollision(position, thisRadius);
             if (hit != nullptr)
             {
                 return hit;
@@ -675,7 +675,7 @@ GameObject* Game::CheckCollision(GameObject& caller, glm::vec3 position, glm::ve
         }
         else if ((*obj) != &caller)
         {
-            auto otherRadius = (*obj)->transform.getScale().x;
+            auto otherRadius = (*obj)->transform.collisionRadius;
             auto otherCenter = (*obj)->transform.getPosition();
 
             if (glm::distance(thisCenter, otherCenter) < thisRadius + otherRadius)

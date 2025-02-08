@@ -142,7 +142,9 @@ void Enemy::generateEnemies(float deltaTime)
 		glm::vec3 eulerAngles(0.0f, 0.0f, angleInDegrees);
 
 		// Instanzia l'oggetto con la rotazione calcolata
-		Game::Instance().InstantiateGameObject(new Enemy(), new Transform(glm::vec3(x, y, 0), eulerAngles, enemyScale));
+		Transform *newTransform = new Transform(glm::vec3(x, y, 0), eulerAngles, enemyScale);
+		newTransform->collisionRadius = .5f;
+		Game::Instance().InstantiateGameObject(new Enemy(), newTransform);
 	}
 }
 
