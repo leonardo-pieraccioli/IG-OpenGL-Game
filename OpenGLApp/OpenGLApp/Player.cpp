@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "MiniEngine/Game.h"
+#include "MiniEngine/SoundManager.h"
 
 Player::Player()
 {
@@ -81,6 +82,10 @@ void Player::setMoney(int money)
 
 void Player::addMoney(int moneyAmount)
 {
+	if (moneyAmount < 0)
+	{
+		SoundManager::Instance().playSound("Assets/Sounds/purchase.mp3", false);
+	}
 	money += moneyAmount;
 }
 
