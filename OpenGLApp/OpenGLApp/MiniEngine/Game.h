@@ -22,7 +22,8 @@
 enum class GameState { 
 	Play, 
 	Pause, 
-	Menu, 
+	Menu,
+	Controls,
 	GameOver, 
 	Shop,
 	Quit

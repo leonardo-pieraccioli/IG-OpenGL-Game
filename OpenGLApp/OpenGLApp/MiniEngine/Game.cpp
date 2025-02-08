@@ -12,7 +12,7 @@
 #include "../UI.h"
 
 
-constexpr auto TIMER_DURATION = 10.f;
+constexpr auto TIMER_DURATION = 30.f;
 
 GLFWwindow* gameWindow;
 glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 15.0f);
@@ -166,7 +166,7 @@ void Game::Init()
     font_SA_menu = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 120.f);
     font_SA_large = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 60.f);
     font_SA_medium = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 40.f);
-    font_SA_small = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 30.f);
+    font_SA_small = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 25.f);
 }
 
 void Game::Update(float deltaTime)
@@ -210,6 +210,12 @@ void Game::Update(float deltaTime)
 			drawMenuModel(lightingShader);
             UIMenu();
 
+            break;
+        }
+        case GameState::Controls:
+        {
+            activeObjects.begin()._Ptr->_Myval->Draw(lightingShader);
+            UIControls();
             break;
         }
         case GameState::GameOver:
