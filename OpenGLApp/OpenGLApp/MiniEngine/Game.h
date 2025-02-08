@@ -19,7 +19,14 @@
 #include "../Player.h"
 #include "../IObserver.h"
 
-enum class GameState { Play, Pause, Menu, GameOver, Shop };
+enum class GameState { 
+	Play, 
+	Pause, 
+	Menu, 
+	GameOver, 
+	Shop,
+	Quit
+};
 
 // Singleton
 class Game final : IObserver
@@ -63,6 +70,7 @@ public:
 	
 	// Game State
 	void ChangeGameState(GameState newGameState);
+	void resetGame();
 
 	// ----------------------------------
 	// IObserver functions implementation
@@ -120,13 +128,9 @@ private:
 
 	// Text and Timers
 	Timer* roundTimer;
-	std::string roundTimeText;
-	std::string scoreText;
 
 	bool pHeldDown = false;
 	bool aHeldDown = false;
 	bool dHeldDown = false;
-
-	void resetGame();
 };
 

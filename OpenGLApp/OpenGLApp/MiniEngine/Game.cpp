@@ -9,6 +9,10 @@
 #include "../Coin.h"
 #include "../Planet.h"
 #include "../Enemy.h"
+#include "../UI.h"
+
+
+constexpr auto TIMER_DURATION = 10.f;
 
 GLFWwindow* gameWindow;
 glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 15.0f);
@@ -143,7 +147,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 
 void Game::Init()
 {
-    roundTimer = TimerManager::CreateTimer(300.0f, true, "Round Timer", true, this);
+    roundTimer = TimerManager::CreateTimer(TIMER_DURATION, true, "Round Timer", true, this);
 
     player = new Player();
     planet = new Planet();
@@ -163,26 +167,6 @@ void Game::Init()
     font_SA_large = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 60.f);
     font_SA_medium = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 40.f);
     font_SA_small = io.Fonts->AddFontFromFileTTF("resources/fonts/Space Age/space age.ttf", 30.f);
-}
-
-// -----
-// IMGUI
-void TextCentered(std::string text, float posY) {
-    auto windowWidth = ImGui::GetWindowSize().x;
-    auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
-
-    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-    ImGui::SetCursorPosY(posY);
-    ImGui::Text(text.c_str());
-}
-
-void AlignForWidth(float width, float alignment = 0.5f)
-{
-    ImGuiStyle& style = ImGui::GetStyle();
-    float avail = ImGui::GetContentRegionAvail().x;
-    float off = (avail - width) * alignment;
-    if (off > 0.0f)
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
 }
 
 void Game::Update(float deltaTime)
@@ -209,255 +193,42 @@ void Game::Update(float deltaTime)
 
             TimerManager::updateTimers(deltaTime);
 
-            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
-            ImGui::SetNextWindowPos({ 0,0 });
-            ImGui::SetNextWindowBgAlpha(0.f);
-            ImGui::Begin("HUD", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+            UIPlay();
 
-            ImGui::PushFont(font_SA_small);
-            ImGui::SetCursorPosX(10);
-            ImGui::SetCursorPosY(100);
-            for (auto ship : player->shipArray)
-            {
-                if (ship->isActive)
-                {
-                    ImGui::Text(std::to_string(ship->health.healthStatus()).c_str());
-                }
-            }
-			ImGui::PopFont();
-
-			ImGui::PushFont(font_SA_large);
-            
-			ImVec2 planetHealthTextDim = ImGui::CalcTextSize(std::to_string(planet->health.healthStatus()).c_str());
-            ImGui::SetCursorPos({ ImGui::GetWindowWidth() / 2 - planetHealthTextDim.x / 2, ImGui::GetWindowHeight() / 2 - planetHealthTextDim.y / 2 });
-            ImGui::TextColored({ 0, 1, 0, 1 }, std::to_string(planet->health.healthStatus()).c_str());
-            ImGui::PopFont();
-
-            ImGui::PushFont(font_SA_medium);
-            roundTimeText = TimerManager::GetTimer("Round Timer")->getHH_MM_SS_MS();
-            auto windowWidth = ImGui::GetWindowSize().x;
-            auto textWidth = ImGui::CalcTextSize("00:00:0,000").x;
-            ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-            ImGui::SetCursorPosY(10);
-            ImGui::Text(roundTimeText.c_str());
-            ImGui::PopFont();
-
-            ImGui::PushFont(font_SA_medium);
-            ImGui::SetCursorPos( { 10, (float) SCREEN_HEIGHT - 70 } );
-            scoreText = "Score: " + std::to_string(player->getScore());
-            ImGui::Text(scoreText.c_str());
-            
-            ImGui::PopFont();
-
-
-            ImGui::End();
-            
             break;
         }
         case GameState::Pause:
         {
             Draw(lightingShader);
-
-            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
-            ImGui::SetNextWindowPos({ 0,0 });
-            ImGui::SetNextWindowBgAlpha(0.50f);
-            ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
-
-            ImGui::PushFont(font_SA_large);
-
-            TextCentered("Pause", ImGui::GetWindowHeight() / 3);
-
-            float buttonWidth = ImGui::CalcTextSize("Pause").x;
-            ImGui::PopFont();
-            ImGui::PushFont(font_SA_medium);
-            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-            if (ImGui::Button("Resume", { buttonWidth, 0.f }))
-            {
-                ChangeGameState(GameState::Play);
-            }
-
-            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-            if (ImGui::Button("Restart", { buttonWidth, 0.f }))
-            {
-                resetGame();
-                ChangeGameState(GameState::Play);
-            }
-
-            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-            if (ImGui::Button("Quit", { buttonWidth, 0.f }))
-            {
-                glfwSetWindowShouldClose(gameWindow, true);
-            }
-
-            ImGui::PopFont();
-            ImGui::End();
+            UIPause();
+            
             break;
         }
         case GameState::Menu:
         {
 			Draw(lightingShader);
 			drawMenuModel(lightingShader);
+            UIMenu();
 
-            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
-            ImGui::SetNextWindowPos({ 0,0 });            
-            ImGui::SetNextWindowBgAlpha(0.15f);
-            ImGui::Begin("Main Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
-
-            ImGui::PushFont(font_SA_menu);
-
-            TextCentered("Space", ImGui::GetWindowHeight() / 4);
-            TextCentered("Defender", ImGui::GetWindowHeight() / 4 + 60);
-
-            float buttonWidth = ImGui::CalcTextSize("Defender").x;
-            ImGui::PopFont();
-            ImGui::PushFont(font_SA_large);
-            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-            if (ImGui::Button("Play", { buttonWidth, 0.f }))
-            {
-                ChangeGameState(GameState::Play);
-            }
-
-            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-            if (ImGui::Button("Quit", { buttonWidth, 0.f }))
-            {
-                glfwSetWindowShouldClose(gameWindow, true);
-            }
-
-            ImGui::PopFont();
-            ImGui::End();
             break;
         }
         case GameState::GameOver:
         {
-            //TextManager::Instance().RenderText("Menu", 300, 360, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), "Space Age");
-
-            // UI
-            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
-            ImGui::SetNextWindowPos({ 0,0 });
-            ImGui::Begin("Game Over", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
-
-            ImGui::PushFont(font_SA_large);
-
-            TextCentered("Game Over!", ImGui::GetWindowHeight() / 3);
-
-            float buttonWidth = ImGui::CalcTextSize("game over").x;
-            ImGui::PopFont();
-            ImGui::PushFont(font_SA_medium);
-            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-            if (ImGui::Button("Retry", { buttonWidth, 0.f }))
-            {
-                resetGame();
-                ChangeGameState(GameState::Play);
-            }
-
-            ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-            if (ImGui::Button("Quit", { buttonWidth, 0.f }))
-            {
-                glfwSetWindowShouldClose(gameWindow, true);
-            }
-
-            ImGui::PopFont();
-            ImGui::End();
-
+            Draw(lightingShader);
+            UIGameOver();
             break;
         }
         case GameState::Shop:
         {
             Draw(lightingShader);
 
-            ImGui::SetNextWindowSize({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT });
-            ImGui::SetNextWindowPos({ 0,0 });
-            ImGui::SetNextWindowBgAlpha(0.50f);
-            ImGui::Begin("Shop", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
-
-            ImGui::PushFont(font_SA_large);
-            TextCentered("Shop", 100);
-            ImGui::PopFont();
-
-            ImGui::PushFont(font_SA_small);
-
-            // ------------
-            // Ship healing
-
-			int healingCostFactor = 5;
-            
-			ImVec2 buttonDim = { ((ImGui::GetWindowWidth() - 20) / 4) - 5, 50};
-            ImGui::SeparatorText("Ship Health");
-            ImGui::SetCursorPosX(10);
-
-            if (ImGui::BeginTable("table1", 4))
-            {
-                ImGui::TableNextRow();
-                for (int i = 0; i < player->shipArray.size(); i++)
-                {
-                    ImGui::TableSetColumnIndex(i);
-                    float progress = player->shipArray[i]->isActive ? (float)player->shipArray[i]->health.healthStatus() / (float)player->shipArray[i]->health.getMax() : 0.f;
-                    ImGui::ProgressBar(progress, buttonDim);
-                }
-                ImGui::TableNextRow();
-
-                for (int i = 0; i < player->shipArray.size(); i++)
-                {
-                    ImGui::TableSetColumnIndex(i);
-					std::string buttonText = "Heal Ship " + std::to_string(i + 1);
-					int healCost = (player->shipArray[i]->health.getMax() - player->shipArray[i]->health.healthStatus()) * healingCostFactor;
-                    if (!player->shipArray[i]->isActive)
-                        ImGui::BeginDisabled();
-                    if (ImGui::Button(buttonText.c_str(), buttonDim) && player->getMoney() > healCost)
-                    {
-						player->addMoney(-healCost);
-                        player->shipArray[i]->health.Heal(100);
-                    }
-                    if (!player->shipArray[i]->isActive)
-                        ImGui::EndDisabled();
-                }
-                ImGui::EndTable();
-            }
-
-            ImGui::SeparatorText("Upgrades");
-			ImVec2 upgradeButton = { 300, 100 };
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth()/4 - upgradeButton.x / 2);
-			if (ImGui::Button("Add Ship\n500", upgradeButton) && player->getMoney() > 500)
-			{
-                for (int i = 0; i < player->shipArray.size(); i++)
-				{
-					if (!player->shipArray[i]->isActive)
-					{
-						player->addMoney(-500);
-                        player->shipArray[i]->isActive = true;
-						break;
-					}
-				}
-			}
-            ImGui::SameLine();
-            ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - upgradeButton.x / 2);
-            if (ImGui::Button("Heal Planet\n200", upgradeButton) && player->getMoney() > 200)
-            {
-				player->addMoney(-200);
-                planet->health.Heal(50);
-            }
-            ImGui::SameLine();
-            ImGui::SetCursorPosX(3*ImGui::GetWindowWidth() / 4 - upgradeButton.x / 2);
-            if (ImGui::Button("Placeholder\n1500", upgradeButton) && player->getMoney() > 0)
-            {
-
-            }
-
-			TextCentered("Planet Health: " + std::to_string(planet->health.healthStatus()), ImGui::GetWindowHeight() / 2 + 100);
-
-            ImGui::SetCursorPos({ 1.5f * buttonDim.x / 2, ImGui::GetWindowHeight() - 100 + buttonDim.y / 2 });
-			string moneyText = "Money: " + std::to_string(player->getMoney());
-            ImGui::Text(moneyText.c_str());
-
-            ImGui::SetCursorPos({ ImGui::GetWindowWidth() - 3* buttonDim.x/2, ImGui::GetWindowHeight() - 100 });
-            if (ImGui::Button("Continue", { ImGui::CalcTextSize(" Continue ").x , buttonDim.y }))
-            {
-                ChangeGameState(GameState::Play);
-            }
-
-            ImGui::PopFont();
-            ImGui::End();
+            UIShop();
                
+            break;
+        }
+        case GameState::Quit:
+        {
+            glfwSetWindowShouldClose(gameWindow, true);
             break;
         }
     }
@@ -634,8 +405,6 @@ void Game::ChangeGameState(GameState newGameState)
     gameState = newGameState;
 }
 
-// TEMP: colliders should have a more general behavior and polling every game object
-//       at every click of the mouse is a waste of performance
 void Game::CheckCoins(glm::vec3 coinPosition)
 {
     

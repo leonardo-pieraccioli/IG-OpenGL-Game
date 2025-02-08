@@ -206,6 +206,9 @@
     <ClInclude Include="UpgradeManager.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>File di origine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.vs">

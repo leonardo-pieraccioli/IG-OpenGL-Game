@@ -204,6 +204,7 @@
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerManager.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="UpgradeManager.h" />
   </ItemGroup>
   <ItemGroup>
