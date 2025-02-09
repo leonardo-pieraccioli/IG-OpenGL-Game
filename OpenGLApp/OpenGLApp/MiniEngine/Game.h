@@ -61,7 +61,7 @@ public:
 	// GameObject management
 	bool InstantiateGameObject(GameObject* newGameObject, Transform* spawnTransform); // , Model model);
 	void DestroyGameObject(GameObject* gameObject);
-	void CheckCoins(glm::vec3 coinPosition);
+	void CheckCollectables(glm::vec3 collectablePosition);
 	GameObject* CheckCollision(GameObject& caller, glm::vec3 position, glm::vec3 scale);
 
 	// ---------------------
@@ -129,6 +129,8 @@ private:
 
 	// Text and Timers
 	Timer* roundTimer;
+	Timer* bonusTimer;
+	Timer* malusTimer;
 
 	bool pHeldDown = false;
 	bool aHeldDown = false;

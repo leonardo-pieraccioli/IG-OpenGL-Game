@@ -148,6 +148,7 @@
     <ClCompile Include="..\..\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Coin.cpp" />
+    <ClCompile Include="Collectables.cpp" />
     <ClCompile Include="MiniEngine\Collider.cpp" />
     <ClCompile Include="MiniEngine\Health.cpp" />
     <ClCompile Include="MiniEngine\assimp_API\model.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="MiniEngine\UtilsF.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PowerUpNerf.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -181,6 +183,7 @@
     <ClInclude Include="..\..\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\..\imgui\imstb_textedit.h" />
     <ClInclude Include="..\..\imgui\imstb_truetype.h" />
+    <ClInclude Include="Collectables.h" />
     <ClInclude Include="MiniEngine\Collider.h" />
     <ClInclude Include="MiniEngine\Health.h" />
     <ClInclude Include="IObserver.h" />
@@ -192,6 +195,7 @@
     <ClInclude Include="MiniEngine\UtilsF.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PowerUpNerf.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />

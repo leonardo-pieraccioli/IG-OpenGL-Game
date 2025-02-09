@@ -22,6 +22,9 @@ private:
 	const float maxVibrationRadius = 0.05f;
 	std::pair<float, float> currentVibrationCoords;
 	bool shouldStop = false;
+	irrklang::ISound* chargeSound;
+
+	void playChargeSound();
 
 public:
 	Enemy(int rewardMoney = 100, int rewardScore = 100, float speed = 5.f, float shootingDistance = 5.0f, float shootingRate = 0.2f, float decelerationDistance = 7.0f);

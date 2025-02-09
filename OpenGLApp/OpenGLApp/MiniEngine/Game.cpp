@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 #include "../Coin.h"
+#include "../PowerUpNerf.h"
 #include "../Planet.h"
 #include "../Enemy.h"
 #include "../UI.h"
@@ -148,6 +149,8 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 void Game::Init()
 {
     roundTimer = TimerManager::CreateTimer(TIMER_DURATION, true, "Round Timer", true, this);
+    bonusTimer = TimerManager::CreateTimer(modifierTimeAmount, false, "Bonus Timer", true, this);
+    malusTimer = TimerManager::CreateTimer(modifierTimeAmount, false, "Malus Timer", true, this);
 
     player = new Player();
     planet = new Planet();
@@ -328,7 +331,7 @@ void Game::ProcessInput(float deltaTime)
 
             auto worldCoordinates = glm::vec3(worldPos); // x, y, z in world coordinates
 
-            CheckCoins(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
+            CheckCollectables(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
         }
     }
     else if (gameState == GameState::Pause) {
@@ -411,17 +414,33 @@ void Game::ChangeGameState(GameState newGameState)
     gameState = newGameState;
 }
 
-void Game::CheckCoins(glm::vec3 coinPosition)
+void Game::CheckCollectables(glm::vec3 collectablePosition)
 {
-    
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
-        Coin* coin = dynamic_cast<Coin*>(*obj);
-        if (coin) {
-            if (coin->doesCoinOverlap(coinPosition)) {
-                player->addMoney(coin->getMoney());
-                SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
-                DestroyGameObject(coin);
+        Collectables* collectable = dynamic_cast<Collectables*>(*obj);
+        if (collectable) {
+            if (collectable->CompareTag("Coin")) {
+                Coin* coin = dynamic_cast<Coin*>(collectable);
+                if (coin && coin->doesCoinOverlap(collectablePosition)) {
+                    player->addMoney(coin->getMoney());
+                    SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
+                    DestroyGameObject(coin);
+                    break;
+                }
+            }
+            else if (collectable->CompareTag("PowerUp")) {
+                //modifica attributi tutti nemici
+                bonusTimer->resetTimer(true);
+                SoundManager::Instance().playSound("Assets/Sounds/bonus.mp3", false);
+                DestroyGameObject(collectable);
+                break;
+            }
+            else if (collectable->CompareTag("Nerf")) {
+                //modifica attributi player
+                malusTimer->resetTimer(true);
+                SoundManager::Instance().playSound("Assets/Sounds/malus.mp3", false);
+                DestroyGameObject(collectable);
                 break;
             }
         }
@@ -468,6 +487,14 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
     if(timerName == "Round Timer") {
         gameState = GameState::Shop;
         roundTimer->resetTimer(true);
+    }
+    if (timerName == "Bonus Timer") {
+        //reimpostare i parametri di tutti i nemici
+        cout << "Bonus timer ended" << endl;
+    }
+    if (timerName == "Malus Timer") {
+        //reimpostare i parametri del giocatore
+        cout << "Malus timer ended" << endl;
     }
 }
 

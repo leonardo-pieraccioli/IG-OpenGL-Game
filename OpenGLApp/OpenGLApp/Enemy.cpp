@@ -1,11 +1,13 @@
 #include "Enemy.h"
 #include "TimerManager.h"
 #include "Coin.h"
+#include "PowerUpNerf.h"
 
 std::pair<float, float> generateEnemyCoordinates(float radius);
 static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
 static Model enemyModel;
+
 
 Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistance, float shootingRate, float decelerationDistance)
 {
@@ -104,13 +106,27 @@ void Enemy::Die()
 	Game::Instance().player->addScore(rewardScore);
 	auto x = transform.position.x;
 	auto y = transform.position.y;
-	Game::Instance().InstantiateGameObject(new Coin(rewardMoney, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
+	if (random > 0 && random < 6) {
+		Game::Instance().InstantiateGameObject(new Coin(rewardMoney, 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
+	}
+	else if (random == 6) {
+		Game::Instance().InstantiateGameObject(new PowerUpNerf("PowerUp", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), pwupnScale));
+	}
+	else if (random == 7) {
+		Game::Instance().InstantiateGameObject(new PowerUpNerf("Nerf", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(270.f, 0.f, 0.f), pwupnScale));
+	}
 	Game::Instance().DestroyGameObject(this);
 }
 
 void Enemy::getNotified(std::string timerName, bool isCallbackEnabled)
 {
 	canShoot = true;
+}
+
+void Enemy::playChargeSound()
+{
+	std::string path = "Assets/Sounds/chargingShot.mp3";
+	chargeSound = SoundManager::Instance().playSoundWithRetP(path.c_str(), true);
 }
 
 float currentsTime = 0.0f;

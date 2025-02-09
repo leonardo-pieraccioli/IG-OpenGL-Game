@@ -105,6 +105,12 @@
     <ClCompile Include="UpgradeManager.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="Collectables.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="PowerUpNerf.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -208,6 +214,12 @@
     </ClInclude>
     <ClInclude Include="UI.h">
       <Filter>File di origine</Filter>
+    </ClInclude>
+    <ClInclude Include="Collectables.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerUpNerf.h">
+      <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

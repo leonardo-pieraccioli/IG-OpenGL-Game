@@ -37,6 +37,7 @@ public:
 	void shootWithShips();
 	void resetPlayer();
 	void setPitchRotationValue(int pitchRotationValue);
+	void playShootSound();
 
 	GameObject* CheckShipCollision(glm::vec3 position, float radius);
 
