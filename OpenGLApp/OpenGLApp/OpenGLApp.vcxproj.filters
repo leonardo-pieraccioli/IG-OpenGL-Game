@@ -234,4 +234,12 @@
   <ItemGroup>
     <Text Include="..\..\imgui\LICENSE.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\..\..\Desktop\Cancel_16.wav">
+      <Filter>File di risorse</Filter>
+    </Media>
+    <Media Include="..\..\..\..\..\Desktop\Modern3.wav">
+      <Filter>File di risorse</Filter>
+    </Media>
+  </ItemGroup>
 </Project>

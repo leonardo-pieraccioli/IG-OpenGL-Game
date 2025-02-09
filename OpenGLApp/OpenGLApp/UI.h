@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "MiniEngine/Game.h"
+#include "MiniEngine/SoundManager.h"
 
 // UTILS
 // -----
@@ -21,6 +22,25 @@ void AlignForWidth(float width, float alignment = 0.5f)
     float off = (avail - width) * alignment;
     if (off > 0.0f)
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+}
+
+enum UISound
+{
+    ok,
+    cancel,
+    upgrade,
+    heal
+};
+
+void playsound(UISound soundID)
+{
+    switch (soundID)
+    {
+    case ok:        SoundManager::Instance().playSound("Assets/Sounds/UI/ok.mp3", false); break;
+    case cancel:    SoundManager::Instance().playSound("Assets/Sounds/UI/cancel.wav", false); break;
+    case upgrade:   SoundManager::Instance().playSound("Assets/Sounds/powerup.wav", false); break;
+    case heal:      SoundManager::Instance().playSound("Assets/Sounds/heal.wav", false); break;
+    }
 }
 
 #pragma region Play
@@ -107,12 +127,14 @@ void UIPause()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Resume", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Play);
     }
 
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Restart", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().resetGame();
         Game::Instance().ChangeGameState(GameState::Play);
     }
@@ -120,6 +142,7 @@ void UIPause()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Main menu", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().resetGame();
         Game::Instance().ChangeGameState(GameState::Menu);
     }
@@ -127,6 +150,7 @@ void UIPause()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Quit", { buttonWidth, 0.f }))
     {
+        playsound(cancel);
         Game::Instance().ChangeGameState(GameState::Quit);
     }
 
@@ -156,18 +180,21 @@ void UIMenu()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Play", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Play);
     }
 
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Controls", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Controls);
     }
 
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Quit", { buttonWidth, 0.f }))
     {
+        playsound(cancel);
         Game::Instance().ChangeGameState(GameState::Quit);
     }
 
@@ -212,6 +239,7 @@ void UIControls()
     ImGui::SetCursorPosY(4 * ImGui::GetWindowHeight() / 5);
     if (ImGui::Button("Back to Menu", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Menu);
     }
 
@@ -241,6 +269,7 @@ void UIGameOver()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Retry", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().resetGame();
         Game::Instance().ChangeGameState(GameState::Play);
     }
@@ -248,6 +277,7 @@ void UIGameOver()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Quit", { buttonWidth, 0.f }))
     {
+        playsound(cancel);
         Game::Instance().ChangeGameState(GameState::Quit);
     }
 
@@ -306,6 +336,7 @@ void UIShop()
             ImGui::PushID(i);
             if (ImGui::Button(buttonText.c_str(), buttonDim) && Game::Instance().player->getMoney() >= healCost)
             {
+                playsound(heal);
                 Game::Instance().player->addMoney(-healCost);
                 ships[i]->health.Heal(100);
             }
@@ -328,6 +359,7 @@ void UIShop()
         {
             if (!ships[i]->isActive)
             {
+                playsound(upgrade);
                 Game::Instance().player->addMoney(-500);
                 ships[i]->isActive = true;
                 break;
@@ -338,12 +370,14 @@ void UIShop()
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - upgradeButton.x / 2);
     if (ImGui::Button("Placeholder: 200", upgradeButton) && Game::Instance().player->getMoney() >= 0)
     {
+        playsound(upgrade);
 
     }
     ImGui::SameLine();
     ImGui::SetCursorPosX(4 * ImGui::GetWindowWidth() / 5 - upgradeButton.x / 2);
     if (ImGui::Button("Placeholder: 1500", upgradeButton) && Game::Instance().player->getMoney() >= 0)
     {
+        playsound(upgrade);
 
     }
     ImGui::PopFont();
@@ -356,6 +390,7 @@ void UIShop()
     ImGui::SetCursorPos({ ImGui::GetWindowWidth() / 2 - progressBarDim.x / 2, ImGui::GetWindowHeight() - 75 - progressBarDim.y});
     if (ImGui::Button(std::string("Heal Planet by 10: " + std::to_string(healPlanetCost)).c_str(), progressBarDim) && Game::Instance().player->getMoney() >= 200 && Game::Instance().planet->health.healthStatus() != Game::Instance().planet->health.getMax())
     {
+        playsound(heal);
         Game::Instance().player->addMoney(-200);
         Game::Instance().planet->health.Heal(10);
     }
@@ -379,6 +414,7 @@ void UIShop()
     ImGui::SetCursorPosX(ImGui::GetWindowWidth()*3/4);
     if (ImGui::Button("Continue", { ImGui::CalcTextSize(" Continue ").x , progressBarDim.y }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Play);
     }
 
