@@ -31,10 +31,21 @@ int UpgradeManager::getDamageIncrement()
     return currentUpgrades[4].currentValue;
 }
 
+int UpgradeManager::getPlanetHealth()
+{
+    return currentUpgrades[5].currentValue;
+}
+
 int UpgradeManager::getGenericCurrentValue(UpgradeIndex upgradeIndex)
 {
     int intUpgradeIndex = static_cast<int>(upgradeIndex);
     return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[intUpgradeIndex].currentValue;
+}
+
+const char * UpgradeManager::getUpgradeName(UpgradeIndex upgradeIndex)
+{
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? "" : currentUpgrades[intUpgradeIndex].upgradeName;
 }
 
 bool UpgradeManager::hasReachedMax(UpgradeIndex upgradeIndex)
@@ -51,8 +62,10 @@ int UpgradeManager::getUpgradeCost(UpgradeIndex upgradeIndex)
 
 void UpgradeManager::makeUpgrade(UpgradeIndex upgradeIndex)
 {
-    int intUpgradeIndex = static_cast<int>(upgradeIndex);
-    if (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size())
+    if (upgradeIndex < 0 || upgradeIndex >= currentUpgrades.size())
         return;
-    currentUpgrades[intUpgradeIndex].cost = currentUpgrades[intUpgradeIndex].cost * currentUpgrades[intUpgradeIndex].costIncrementRate;
+    if (currentUpgrades[upgradeIndex].currentValue >= currentUpgrades[upgradeIndex].maxValue) return;
+    currentUpgrades[upgradeIndex].currentValue += currentUpgrades[upgradeIndex].valueIncrement;
+    currentUpgrades[upgradeIndex].cost = currentUpgrades[upgradeIndex].cost * currentUpgrades[upgradeIndex].costIncrementRate;
 }
+ 

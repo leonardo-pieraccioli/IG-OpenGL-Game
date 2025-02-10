@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "MiniEngine/Game.h"
 #include "MiniEngine/SoundManager.h"
+#include "UpgradeManager.h"
 
 // UTILS
 // -----
@@ -260,7 +261,7 @@ void UIGameOver()
     ImGui::Begin("Game Over", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
     ImGui::PushFont(Game::Instance().font_SA_large);
-
+     
     TextCentered("Game Over!", ImGui::GetWindowHeight() / 3);
 
     float buttonWidth = ImGui::CalcTextSize("game over").x;
@@ -291,7 +292,7 @@ void UIGameOver()
 
 void UIShop()
 {
-    auto &ships = Game::Instance().player->shipArray;
+    auto& ships = Game::Instance().player->shipArray;
 
     ImGui::SetNextWindowSize({ (float)Game::Instance().SCREEN_WIDTH, (float)Game::Instance().SCREEN_HEIGHT });
     ImGui::SetNextWindowPos({ 0,0 });
@@ -350,36 +351,80 @@ void UIShop()
     ImGui::NewLine();
     ImGui::NewLine();
 
-    ImGui::SeparatorText("Upgrades");
-    ImVec2 upgradeButton = { 400, 50 };
-    ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 5 - upgradeButton.x / 2);
-    if (ImGui::Button("Add Ship: 500", upgradeButton) && Game::Instance().player->getMoney() >= 500)
+    // RANDOM UPGRADE SELECTION
+    // ------------------------
+    static bool choiceMade = false;
+    static int randUpgIdx[3];
+    std::srand(std::time(nullptr));
+    if (!choiceMade)
     {
-        for (int i = 0; i < ships.size(); i++)
+        for (int i = 0; i < 3; i++) randUpgIdx[i] = std::rand() % TOT_UPGRADES;
+        choiceMade = true;
+    }
+
+    ImGui::SeparatorText("Upgrades");
+    ImVec2 upgradeButton = { 500, 50 };
+
+    float upgOffset = 1;
+    for (int i = 0; i < 3; i++)
+    {
+        ImGui::PushID(i);
+        UpgradeIndex upgradeIdx = static_cast<UpgradeIndex>(randUpgIdx[i]);
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth() * (upgOffset/6) - upgradeButton.x / 2);
+        const char * upgradeName = UpgradeManager::Instance().getUpgradeName(upgradeIdx);
+        int upgradeCost = UpgradeManager::Instance().getUpgradeCost(upgradeIdx);
+        bool hasReachedMax = UpgradeManager::Instance().hasReachedMax(upgradeIdx);
+        std::string buttonText = std::string(upgradeName) + ": " + std::to_string(upgradeCost);
+        if (hasReachedMax)
         {
-            if (!ships[i]->isActive)
+            ImGui::BeginDisabled();
+            buttonText += " MAX";
+        }
+        if (ImGui::Button(buttonText.c_str(), upgradeButton))
+        {
+            if (Game::Instance().player->getMoney() >= upgradeCost)
             {
                 playsound(upgrade);
-                Game::Instance().player->addMoney(-500);
-                ships[i]->isActive = true;
-                break;
+                Game::Instance().player->addMoney(-upgradeCost);
+                UpgradeManager::Instance().makeUpgrade(upgradeIdx);
+            }
+            else 
+            {
+                playsound(cancel);
             }
         }
+        if (hasReachedMax)
+            ImGui::EndDisabled();
+        ImGui::PopID();
+        ImGui::SameLine();
+		upgOffset += 2;
     }
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - upgradeButton.x / 2);
-    if (ImGui::Button("Placeholder: 200", upgradeButton) && Game::Instance().player->getMoney() >= 0)
-    {
-        playsound(upgrade);
 
-    }
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(4 * ImGui::GetWindowWidth() / 5 - upgradeButton.x / 2);
-    if (ImGui::Button("Placeholder: 1500", upgradeButton) && Game::Instance().player->getMoney() >= 0)
-    {
-        playsound(upgrade);
+    ImGui::NewLine();
+    ImGui::PopFont();
 
+    ImGui::PushFont(Game::Instance().font_SA_small);
+
+    ImGui::SeparatorText("Current stats");
+    ImGui::NewLine();
+    ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - 500);
+    for (int i = 0; i < TOT_UPGRADES; i++)
+    {
+        UpgradeIndex upgIdx = static_cast<UpgradeIndex>(i);
+        const char* upgradeName = UpgradeManager::Instance().getUpgradeName(upgIdx);
+        float upgradeValue = UpgradeManager::Instance().getGenericCurrentValue(upgIdx);
+		std::string upgradeValueStr = std::to_string(upgradeValue);
+		upgradeValueStr = upgradeValueStr.substr(0, upgradeValueStr.find(".") + 3);
+        std::string buttonText = std::string(upgradeName) + " : " + upgradeValueStr + " |";
+        ImGui::Text(buttonText.c_str());
+        ImGui::SameLine();
+        if (i % 2 == 1)
+        {
+            ImGui::NewLine();
+            ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - 500);
+        }
     }
+
     ImGui::PopFont();
     
     // HEAL PLANET
@@ -415,6 +460,7 @@ void UIShop()
     if (ImGui::Button("Continue", { ImGui::CalcTextSize(" Continue ").x , progressBarDim.y }))
     {
         playsound(ok);
+        choiceMade = false;
         Game::Instance().ChangeGameState(GameState::Play);
     }
 
