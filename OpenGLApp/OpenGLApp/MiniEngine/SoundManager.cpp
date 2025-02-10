@@ -15,6 +15,18 @@ void SoundManager::playSound(const char* path, bool loop) {
 	this->SoundEngine->play2D(path, loop);
 }
 
+irrklang::ISound* SoundManager::playSoundWithRetP(const char* path, bool loop)
+{
+	return this->SoundEngine->play2D(path, loop, false, true, irrklang::ESM_AUTO_DETECT, false);
+}
+
+void SoundManager::stopSound(irrklang::ISound* sound)
+{
+	if (sound) {
+		sound->drop();
+	}
+}
+
 void SoundManager::stopAllSounds()
 {
 	this->SoundEngine->stopAllSounds();

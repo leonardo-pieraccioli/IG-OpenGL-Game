@@ -2,34 +2,30 @@
 #include <utility>
 #include "MiniEngine/Game.h"
 
-std::pair<float, float> generateValidCoordinates(float x_min, float x_max, float y_min, float y_max);
 
-
-Coin::Coin(int initialAmount, unsigned int texture)
+Coin::Coin(int initialAmount, float despawnTime, unsigned int texture) : Collectables(despawnTime, texture)
 {
 	moneyAmount = initialAmount;
-	// TEMP: colliders are doubled to account for bad mouse click tracking
-	colliderCorners[0] = glm::vec3(this->transform.getPosition().x - (this->transform.getScale().x), this->transform.getPosition().y + (this->transform.getScale().y), 0.0f);
-	colliderCorners[1] = glm::vec3(this->transform.getPosition().x + (this->transform.getScale().x), this->transform.getPosition().y - (this->transform.getScale().y), 0.0f);
-	// -------------------------------------------------------------------
+	this->despawnTime = despawnTime;
+	tag = "Coin";
+	initDestroyTimer();
 
 	objectModel = Model("Assets/Models/Coin.obj");
 }
 
-Coin::Coin(int initialAmount, float x, float y)
+Coin::Coin(int initialAmount, float despawnTime, float x, float y) : Collectables(despawnTime, x, y)
 {
 	moneyAmount = initialAmount;
-	// TEMP: colliders are doubled to account for bad mouse click tracking
-	colliderCorners[0] = glm::vec3(x - (coinScale.x), y + (coinScale.y), 0.0f);//glm::vec3(5.0f, 5.0f, 0.0f);//glm::vec3(this->transform.getPosition().x - (this->transform.getScale().x / 2), this->transform.getPosition().y + (this->transform.getScale().y / 2), 0.0f);
-	colliderCorners[1] = glm::vec3(x + (coinScale.x), y - (coinScale.y), 0.0f);//glm::vec3(this->transform.getPosition().x + (this->transform.getScale().x / 2), this->transform.getPosition().y - (this->transform.getScale().y / 2), 0.0f);
-	// -------------------------------------------------------------------
+	this->despawnTime = despawnTime;
+	tag = "Coin";
+	initDestroyTimer();
 
 	objectModel = Model("Assets/Models/Coin.obj");
 }
 
 void Coin::Update(float deltaTime)
 {
-	transform.rotation.z += deltaTime * 50.f;
+	Collectables::Update(deltaTime);
 }
 
 void Coin::setMoney(int money)
@@ -45,29 +41,4 @@ int Coin::getMoney()
 bool Coin::doesCoinOverlap(glm::vec3 mouseWorldCoord)
 {
 	return (mouseWorldCoord.x >= colliderCorners[0].x && mouseWorldCoord.x <= colliderCorners[1].x && mouseWorldCoord.y <= colliderCorners[0].y && mouseWorldCoord.y >= colliderCorners[1].y) ? true : false;
-}
-
-float currentTime = 0.0f;
-float timerActivation = 2.0f;
-void Coin::generateCoins(float deltaTime)
-{
-	//timer per gestire istanziazione monete nel tempo
-	currentTime += deltaTime;
-	if (currentTime >= timerActivation) {
-		currentTime = 0;
-		std::pair<float, float> coordinates = generateValidCoordinates(MIN_WIDTH, MAX_WIDTH, MIN_HEIGHT, MAX_HEIGHT);
-		float x = coordinates.first;
-		float y = coordinates.second;
-		Game::Instance().InstantiateGameObject(new Coin(5, x, y), new Transform(glm::vec3(x, y, -4.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
-	}
-}
-
-//Genera delle coordinate tali per cui la moneta non compaia sul pianeta
-std::pair<float, float> generateValidCoordinates(float x_min, float x_max, float y_min, float y_max) {
-	float x, y;
-	do {
-		x = utilsF::randomNumberInInterval(x_min, x_max);
-		y = utilsF::randomNumberInInterval(y_min, y_max);
-	} while (x >= -3 && x <= 3 && y >= -3 && y <= 3); // Scarta solo se sia x che y sono nell'intervallo proibito
-	return std::make_pair(x, y);
 }

@@ -9,6 +9,7 @@ Player::Player()
 	money = 0;
 	this->tag = "Player";
 	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "PlayerShootingTimer", true, this);
+	srand((unsigned)time(NULL));
 }
 
 void Player::ShipSetup()
@@ -116,6 +117,7 @@ void Player::shootWithShips()
 	if(canShoot) {
 		canShoot = false;
 		shootingTimer->resetTimer(true);
+		playShootSound();
 		for (auto ship : shipArray) 
 		{
 			if (ship->isActive) ship->Shoot();
@@ -136,6 +138,13 @@ void Player::resetPlayer()
 void Player::setPitchRotationValue(int pitchRotationValue)
 {
 	this->pitchRotationValue = pitchRotationValue;
+}
+
+void Player::playShootSound()
+{
+	int random = rand() % 3 + 1;
+	std::string path = "Assets/Sounds/blast/blast" + to_string(random) + ".mp3";
+	SoundManager::Instance().playSound(path.c_str(), false);
 }
 
 void Player::getNotified(std::string timerName, bool isCallbackEnabled)
