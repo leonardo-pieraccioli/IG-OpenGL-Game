@@ -419,15 +419,13 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
         Collectables* collectable = dynamic_cast<Collectables*>(*obj);
-        if (collectable) {
+        if (collectable && collectable->doesCollectableOverlap(collectablePosition)) {
             if (collectable->CompareTag("Coin")) {
                 Coin* coin = dynamic_cast<Coin*>(collectable);
-                if (coin && coin->doesCoinOverlap(collectablePosition)) {
-                    player->addMoney(coin->getMoney());
-                    SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
-                    DestroyGameObject(coin);
-                    break;
-                }
+                player->addMoney(coin->getMoney());
+                SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
+                DestroyGameObject(coin);
+                break;
             }
             else if (collectable->CompareTag("PowerUp")) {
                 //modifica attributi tutti nemici
@@ -437,7 +435,8 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
                 break;
             }
             else if (collectable->CompareTag("Nerf")) {
-                //modifica attributi player
+				auto nerf = dynamic_cast<PowerUpNerf*>(collectable);
+				player->nerfShipRotationSpeed(true, nerf->getModifiedMovementRate());
                 malusTimer->resetTimer(true);
                 SoundManager::Instance().playSound("Assets/Sounds/malus.mp3", false);
                 DestroyGameObject(collectable);
@@ -493,7 +492,7 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
         cout << "Bonus timer ended" << endl;
     }
     if (timerName == "Malus Timer") {
-        //reimpostare i parametri del giocatore
+		this->player->nerfShipRotationSpeed(false);
         cout << "Malus timer ended" << endl;
     }
 }

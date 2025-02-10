@@ -15,7 +15,7 @@ public:
 	PowerUpNerf(string type, float despawnTime, float x, float y);
 
 	bool doesPwUpNOverlap(glm::vec3 mouseWorldCoord);
-	float getModifiedShootingRate(float shootingRate);
-	float getModifiedMovementRate(float movementRate);
+	float getModifiedShootingRate();
+	float getModifiedMovementRate();
 };
 

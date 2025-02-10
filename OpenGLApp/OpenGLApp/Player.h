@@ -26,6 +26,7 @@ public:
 	void Update(float deltaTime) override;
 	void Draw(Shader shader) override;
 	void moveHip(int direction, float deltaTime);
+	void nerfShipRotationSpeed(bool nerf, float speedModification=1);
 	int getMoney();
 	void setMoney(int money);
 	void addMoney(int moneyAmount);

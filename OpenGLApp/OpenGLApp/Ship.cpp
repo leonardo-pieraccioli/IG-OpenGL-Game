@@ -2,9 +2,11 @@
 #include "MiniEngine/Game.h"
 
 #define SHIP_INITIAL_HEALTH 100
+static float actualMovementRate;
 
 Ship::Ship(int nProjectiles)
 {
+    actualMovementRate = movementRate;
 	this->nProjectiles = nProjectiles;
     this->tag = "Ship";
     this->health.UpgradeMax(SHIP_INITIAL_HEALTH);
@@ -35,11 +37,26 @@ void Ship::Die()
     this->isActive = false;
 }
 
+float Ship::getActualMovementRate()
+{
+    return actualMovementRate;
+}
+
+void Ship::setActualMovementRate(float movementRate)
+{
+	actualMovementRate = movementRate;
+}
+
 
 
 float Ship::getShipMovementRate()
 {
     return movementRate;
+}
+
+void Ship::setShipMovementRate(float movementRate)
+{
+	this->movementRate = movementRate;
 }
 
 void Ship::updateTLerp(float deltaTime, int pitchRotVal)

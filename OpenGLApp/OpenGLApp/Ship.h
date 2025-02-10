@@ -23,7 +23,11 @@ public:
 	void Damage(int damage);
 	void Die() override;
 
+	static float getActualMovementRate();
+	static void setActualMovementRate(float movementRate);
+
 	float getShipMovementRate();
+	void setShipMovementRate(float movementRate);
 	void updateTLerp(float deltaTime, int pitchRotVal);
 };
 

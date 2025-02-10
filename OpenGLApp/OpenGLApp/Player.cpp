@@ -71,6 +71,24 @@ void Player::moveHip(int direction, float deltaTime)
 	}
 }
 
+void Player::nerfShipRotationSpeed(bool nerf, float speedModification)
+{
+	if (nerf && shipArray[0]->getShipMovementRate() == Ship::getActualMovementRate())
+	{
+		for (int i = 0; i < shipArray.size(); i++) 
+		{
+			shipArray[i]->setShipMovementRate(shipArray[i]->getShipMovementRate() * speedModification);
+		}
+	}
+	else if (shipArray[0]->getShipMovementRate() < Ship::getActualMovementRate())
+	{
+		for (int i = 0; i < shipArray.size(); i++) 
+		{
+			shipArray[i]->setShipMovementRate(shipArray[i]->getShipMovementRate() * speedModification);
+		}
+	}
+}
+
 int Player::getMoney()
 {
 	return money;

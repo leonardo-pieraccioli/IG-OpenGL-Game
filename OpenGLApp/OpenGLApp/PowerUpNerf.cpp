@@ -37,12 +37,12 @@ bool PowerUpNerf::doesPwUpNOverlap(glm::vec3 mouseWorldCoord)
 	return (mouseWorldCoord.x >= colliderCorners[0].x && mouseWorldCoord.x <= colliderCorners[1].x && mouseWorldCoord.y <= colliderCorners[0].y && mouseWorldCoord.y >= colliderCorners[1].y) ? true : false;
 }
 
-float PowerUpNerf::getModifiedShootingRate(float shootingRate)
+float PowerUpNerf::getModifiedShootingRate()
 {
-	return shootingRate * modifiedShootingRate;
+	return modifiedShootingRate;
 }
 
-float PowerUpNerf::getModifiedMovementRate(float movementRate)
+float PowerUpNerf::getModifiedMovementRate()
 {
-	return movementRate * modifiedMovementRate;
+	return modifiedMovementRate;
 }
