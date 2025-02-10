@@ -428,15 +428,18 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
                 break;
             }
             else if (collectable->CompareTag("PowerUp")) {
-                //modifica attributi tutti nemici
+				std::cout << "PowerUp" << std::endl;
+				auto powerUp = dynamic_cast<PowerUpNerf*>(collectable);
                 bonusTimer->resetTimer(true);
+				Enemy::Nerf(true, powerUp->getModifiedShootingRate(), powerUp->getModifiedMovementRate());
                 SoundManager::Instance().playSound("Assets/Sounds/bonus.mp3", false);
                 DestroyGameObject(collectable);
                 break;
             }
             else if (collectable->CompareTag("Nerf")) {
+				std::cout << "Nerf" << std::endl;
 				auto nerf = dynamic_cast<PowerUpNerf*>(collectable);
-				player->nerfShipRotationSpeed(true, nerf->getModifiedMovementRate());
+				player->Nerf(true, nerf->getModifiedMovementRate(), nerf->getModifiedShootingRate());
                 malusTimer->resetTimer(true);
                 SoundManager::Instance().playSound("Assets/Sounds/malus.mp3", false);
                 DestroyGameObject(collectable);
@@ -488,11 +491,11 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
         roundTimer->resetTimer(true);
     }
     if (timerName == "Bonus Timer") {
-        //reimpostare i parametri di tutti i nemici
+        Enemy::Nerf(false);
         cout << "Bonus timer ended" << endl;
     }
     if (timerName == "Malus Timer") {
-		this->player->nerfShipRotationSpeed(false);
+		this->player->Nerf(false);
         cout << "Malus timer ended" << endl;
     }
 }

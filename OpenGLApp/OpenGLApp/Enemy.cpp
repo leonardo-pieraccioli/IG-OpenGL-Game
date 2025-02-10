@@ -7,17 +7,22 @@ std::pair<float, float> generateEnemyCoordinates(float radius);
 static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
 static Model enemyModel;
-
+static float enemySpeed;
+static float actualSpeed;
+static float enemyShootingRate; 
+static float actualEnemyShootingRate;
 
 Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistance, float shootingRate, float decelerationDistance)
 {
 	this->rewardMoney = rewardMoney;
 	this->rewardScore = rewardScore;
-	this->speed = speed;
+	enemySpeed = speed;
 	this->shootingDistance = shootingDistance;
 	this->decelerationDistance = decelerationDistance;
-	this->shootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
+	enemyShootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
 	this->tag = "Enemy";
+	actualSpeed = speed;
+	actualEnemyShootingRate = shootingRate;
 	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + std::to_string(this->GetID()), true, this);
 	srand((unsigned)time(NULL));
 }
@@ -38,7 +43,7 @@ void Enemy::Update(float deltaTime)
 		tDeceleration = utilsF::interpolateOnRadiuses(a_x, a_y, this->transform.rotation.z, shootingDistance, decelerationDistance);//a_x, a_y, ship_z, minR, maxR
 	}
 	if (!shouldStop && distanceFromCenter > shootingDistance) {
-		Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, speed*tDeceleration));
+		Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, enemySpeed*tDeceleration));
 	}
 	else {
 		if (!shootingTimer->getIsTicking()) {
@@ -51,7 +56,7 @@ void Enemy::Update(float deltaTime)
 		}
 		switch (frameCounter) {
 			case 0:
-				tVibration = 1 - (shootingTimer->getRemainingTime() * shootingRate);
+				tVibration = 1 - (shootingTimer->getRemainingTime() * enemyShootingRate);
 				currentVibrationCoords = utilsF::generateVibrationCoords(tVibration * maxVibrationRadius);
 				Move(std::pair<float, float>(currentVibrationCoords.first + a_x, currentVibrationCoords.second + a_y));
 				break;
@@ -95,7 +100,7 @@ void Enemy::Shoot()
 	ShootingEntity::Shoot();
 	std::pair<float, float> pCoords = utilsF::calculateForwardXY(this->transform.rotation.z, 1.0f, this->transform.position.x, this->transform.position.y, 0.8f);
 	Game::Instance().InstantiateGameObject(new Projectile(), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
-	shootingTimer->resetTimer(true);
+	shootingTimer->resetTimer(1/enemyShootingRate, true, true);
 }
 
 void Enemy::Die()
@@ -116,6 +121,30 @@ void Enemy::Die()
 		Game::Instance().InstantiateGameObject(new PowerUpNerf("Nerf", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(270.f, 0.f, 0.f), pwupnScale));
 	}
 	Game::Instance().DestroyGameObject(this);
+}
+
+float Enemy::getActualSpeed()
+{
+	return actualSpeed;
+}
+
+void Enemy::setActualSpeed(float newSpeed)
+{
+	actualSpeed = newSpeed;
+}
+
+void Enemy::Nerf(bool nerf, float srNerfAmount, float mrNerfAmount)
+{
+	if (nerf && enemySpeed == actualSpeed)
+	{
+		enemySpeed *= mrNerfAmount;
+		enemyShootingRate *= srNerfAmount;
+	}
+	else if (enemySpeed < actualSpeed)
+	{
+		enemySpeed = actualSpeed;
+		enemyShootingRate = actualEnemyShootingRate;
+	}
 }
 
 void Enemy::getNotified(std::string timerName, bool isCallbackEnabled)

@@ -13,6 +13,7 @@ private:
 	int score;
 	int pitchRotationValue = 0;
 	float shootingRate = 1.0f;
+	float actualShootingRate;
 	bool canShoot = true;
 	float shipDistance = 2.25f;
 	Timer* shootingTimer;
@@ -26,7 +27,7 @@ public:
 	void Update(float deltaTime) override;
 	void Draw(Shader shader) override;
 	void moveHip(int direction, float deltaTime);
-	void nerfShipRotationSpeed(bool nerf, float speedModification=1);
+	void Nerf(bool nerf, float speedModification=1.f, float shootingRateModification=1.f);
 	int getMoney();
 	void setMoney(int money);
 	void addMoney(int moneyAmount);

@@ -7,8 +7,8 @@ const static float modifierTimeAmount = 5.f;
 class PowerUpNerf : public Collectables
 {
 private:
-	const float modifiedShootingRate = 0.75f;
-	const float modifiedMovementRate = 0.75f;
+	const float modifiedShootingRate = 0.66f;
+	const float modifiedMovementRate = 0.66f;
 	
 public:
 	PowerUpNerf(string type, float despawnTime, unsigned int texture);

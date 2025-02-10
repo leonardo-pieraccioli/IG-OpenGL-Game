@@ -10,10 +10,8 @@ class Enemy : public ShootingEntity, IObserver
 private:
 	int rewardMoney;
 	int rewardScore;
-	float speed;
 	float shootingDistance;
 	float decelerationDistance;
-	float shootingRate;
 	bool canShoot = false;
 	Timer* shootingTimer;
 	float tDeceleration = 1.0f;
@@ -35,6 +33,10 @@ public:
 	void Move(std::pair<float, float> newCoords);
 	void Shoot();
 	void Die() override;
+
+	static float getActualSpeed();
+	static void setActualSpeed(float newSpeed);
+	static void Nerf(bool nerf, float srNerfAmount=1, float mrNerfAmount=1);
 
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;
 	static void generateEnemies(float deltaTime);

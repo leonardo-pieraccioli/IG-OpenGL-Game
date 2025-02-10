@@ -8,6 +8,7 @@ Player::Player()
 	ShipSetup();
 	money = 0;
 	this->tag = "Player";
+	actualShootingRate = shootingRate;
 	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "PlayerShootingTimer", true, this);
 	srand((unsigned)time(NULL));
 }
@@ -71,7 +72,7 @@ void Player::moveHip(int direction, float deltaTime)
 	}
 }
 
-void Player::nerfShipRotationSpeed(bool nerf, float speedModification)
+void Player::Nerf(bool nerf, float speedModification, float shootingRateModification)
 {
 	if (nerf && shipArray[0]->getShipMovementRate() == Ship::getActualMovementRate())
 	{
@@ -79,13 +80,17 @@ void Player::nerfShipRotationSpeed(bool nerf, float speedModification)
 		{
 			shipArray[i]->setShipMovementRate(shipArray[i]->getShipMovementRate() * speedModification);
 		}
+		shootingRate *= shootingRateModification;
+		shootingTimer->resetTimer(1 / shootingRate, true, true);
 	}
 	else if (shipArray[0]->getShipMovementRate() < Ship::getActualMovementRate())
 	{
 		for (int i = 0; i < shipArray.size(); i++) 
 		{
-			shipArray[i]->setShipMovementRate(shipArray[i]->getShipMovementRate() * speedModification);
+			shipArray[i]->setShipMovementRate(shipArray[i]->getActualMovementRate());
 		}
+		shootingRate = actualShootingRate;
+		shootingTimer->resetTimer(1 / shootingRate, true, true);
 	}
 }
 
@@ -123,6 +128,7 @@ void Player::addScore(int scoreAmount)
 void Player::setShootingRate(float shootingRate)
 {
 	this->shootingRate = shootingRate;
+	actualShootingRate = shootingRate;
 }
 
 float Player::getShootingRate()

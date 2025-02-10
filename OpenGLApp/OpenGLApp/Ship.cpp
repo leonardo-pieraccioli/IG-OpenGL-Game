@@ -29,7 +29,6 @@ void Ship::Damage(int damage)
     {
         Die();
     }
-	std::cout << "Ship " << GetID() << " health: " << health.healthStatus() << std::endl;
 }
 
 void Ship::Die()

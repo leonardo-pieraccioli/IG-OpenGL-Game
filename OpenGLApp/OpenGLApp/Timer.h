@@ -19,6 +19,7 @@ public:
     bool getIsTicking();
 
     void resetTimer(bool isTicking);
+	void resetTimer(float timeAmount, bool isTicking, bool restart);
 
     std::string getHH_MM_SS_MS();
 private:
