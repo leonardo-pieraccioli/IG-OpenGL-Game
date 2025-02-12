@@ -8,6 +8,15 @@
 class Enemy : public ShootingEntity, IObserver
 {
 private:
+	// constants
+	const float maxVibrationRadius = 0.05f;
+	const float baseDamage = 10.0f;
+	const float baseHealth = 5.0f;
+	const float baseMinSpawnRate = 1.5f;
+	const float baseMaxSpawnRate = 2.5f;
+	const float baseMinSpeed = 2.5f;
+	const float baseMaxSpeed = 7.5f;
+
 	int rewardMoney;
 	int rewardScore;
 	float shootingDistance;
@@ -17,7 +26,7 @@ private:
 	float tDeceleration = 1.0f;
 	float tVibration = 0.0f;
 	int frameCounter = 0;
-	const float maxVibrationRadius = 0.05f;
+	
 	std::pair<float, float> currentVibrationCoords;
 	bool shouldStop = false;
 	irrklang::ISound* chargeSound;
@@ -25,7 +34,7 @@ private:
 	void playChargeSound();
 
 public:
-	Enemy(int rewardMoney = 100, int rewardScore = 100, float speed = 5.f, float shootingDistance = 5.0f, float shootingRate = 0.2f, float decelerationDistance = 7.0f);
+	Enemy(int rewardMoney = 100, int rewardScore = 100, float shootingDistance = 5.0f, float shootingRate = 0.2f, float decelerationDistance = 7.0f);
 
 	static void Init(Model model);
 	void Update(float deltaTime) override;

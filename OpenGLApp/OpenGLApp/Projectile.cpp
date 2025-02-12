@@ -5,11 +5,11 @@
 static Model projectileModel;
 static bool loaded;
 
-Projectile::Projectile(float speed, float destroyDistance)
+Projectile::Projectile(float damage, float speed, float destroyDistance)
 {
 	this->speed = speed;
 	this->destroyDistance = destroyDistance;
-	this->damage = 10;
+	this->damage = damage;
 	this->tag = "Projectile";
 	if(!loaded)
 	{ 

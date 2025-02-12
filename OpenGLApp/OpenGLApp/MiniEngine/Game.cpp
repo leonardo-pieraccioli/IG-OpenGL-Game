@@ -489,6 +489,7 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
     if(timerName == "Round Timer") {
         gameState = GameState::Shop;
         roundTimer->resetTimer(true);
+        round++;
     }
     if (timerName == "Bonus Timer") {
         Enemy::Nerf(false);
@@ -506,6 +507,7 @@ void Game::resetGame()
     roundTimer->resetTimer(true);
     player->resetPlayer();
     planet->resetPlanet();
+    round = 1;
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
     {
         if (dynamic_cast<Enemy*>(*obj) || dynamic_cast<Coin*>(*obj) || dynamic_cast<Projectile*>(*obj))
@@ -540,4 +542,9 @@ void Game::drawMenuModel(Shader shader)
     model_mat = glm::scale(model_mat, glm::vec3(2.f, 2.f, 2.f));
     shader.SetMatrix4("model", model_mat);
     player->objectModel.Draw(lightingShader);
+}
+
+int Game::getRound()
+{
+    return round;
 }

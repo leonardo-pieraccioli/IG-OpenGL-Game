@@ -1,7 +1,7 @@
 #include "Ship.h"
 #include "MiniEngine/Game.h"
 
-#define SHIP_INITIAL_HEALTH 100
+#define SHIP_INITIAL_HEALTH 50
 static float actualMovementRate;
 
 Ship::Ship(int nProjectiles)
@@ -33,6 +33,9 @@ void Ship::Damage(int damage)
 
 void Ship::Die()
 {
+    int random = rand() % 7 + 1;
+    std::string path = "Assets/Sounds/explosion/explosion" + to_string(random) + ".mp3";
+    SoundManager::Instance().playSound(path.c_str(), false);
     this->isActive = false;
 }
 

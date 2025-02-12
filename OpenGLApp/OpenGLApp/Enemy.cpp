@@ -3,6 +3,8 @@
 #include "Coin.h"
 #include "PowerUpNerf.h"
 
+float currentsTime = 0.0f;
+float timersActivation = 2.0f;
 std::pair<float, float> generateEnemyCoordinates(float radius);
 static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
@@ -12,18 +14,19 @@ static float actualSpeed;
 static float enemyShootingRate; 
 static float actualEnemyShootingRate;
 
-Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistance, float shootingRate, float decelerationDistance)
+Enemy::Enemy(int rewardMoney, int rewardScore, float shootingDistance, float shootingRate, float decelerationDistance)
 {
 	this->rewardMoney = rewardMoney;
 	this->rewardScore = rewardScore;
-	enemySpeed = speed;
 	this->shootingDistance = shootingDistance;
 	this->decelerationDistance = decelerationDistance;
 	enemyShootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
 	this->tag = "Enemy";
-	actualSpeed = speed;
+	actualSpeed = enemySpeed = utilsF::randomNumberInInterval(baseMinSpeed * (Game::Instance().getRound() / 10) + 2.25, baseMaxSpeed * (Game::Instance().getRound() / 10) + 6.75);
 	actualEnemyShootingRate = shootingRate;
-	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + std::to_string(this->GetID()), true, this);
+	shootingTimer = TimerManager::CreateTimer(1 / (shootingRate * Game::Instance().getRound()), false, "Enemy" + std::to_string(this->GetID()), true, this);
+	health.UpgradeMax(Game::Instance().getRound() * baseHealth);
+	timersActivation = utilsF::randomNumberInInterval(baseMinSpawnRate / std::log2(Game::Instance().getRound() + 1), baseMaxSpawnRate / std::log2(Game::Instance().getRound() + 1));
 	srand((unsigned)time(NULL));
 }
 
@@ -97,10 +100,11 @@ void Enemy::Move(std::pair<float, float> newCoords)
 
 void Enemy::Shoot()
 {
+	float damage = baseDamage * Game::Instance().getRound();
 	ShootingEntity::Shoot();
 	std::pair<float, float> pCoords = utilsF::calculateForwardXY(this->transform.rotation.z, 1.0f, this->transform.position.x, this->transform.position.y, 0.8f);
-	Game::Instance().InstantiateGameObject(new Projectile(), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
-	shootingTimer->resetTimer(1/enemyShootingRate, true, true);
+	Game::Instance().InstantiateGameObject(new Projectile(damage), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
+	shootingTimer->resetTimer(1/ (enemyShootingRate * Game::Instance().getRound()), true, true);
 }
 
 void Enemy::Die()
@@ -158,12 +162,9 @@ void Enemy::playChargeSound()
 	chargeSound = SoundManager::Instance().playSoundWithRetP(path.c_str(), true);
 }
 
-float currentsTime = 0.0f;
-float timersActivation = 2.0f;
-
 void Enemy::generateEnemies(float deltaTime)
 {
-	// Timer per gestire l'istanza delle monete nel tempo
+	// Timer per gestire l'istanza dei nemici nel tempo
 	currentsTime += deltaTime;
 	if (currentsTime >= timersActivation) {
 		currentsTime = 0;

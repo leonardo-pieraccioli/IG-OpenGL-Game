@@ -89,6 +89,10 @@ public:
 	ImFont* font_SA_medium;
 	ImFont* font_SA_small;
 
+	// ----------------
+	// ROUND MANAGEMENT
+	int getRound();
+
 private:
 	Game()
 	{
@@ -135,5 +139,8 @@ private:
 	bool pHeldDown = false;
 	bool aHeldDown = false;
 	bool dHeldDown = false;
+
+	// Round stats
+	int round = 1;
 };
 
