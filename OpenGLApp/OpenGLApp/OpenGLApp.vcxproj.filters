@@ -221,6 +221,9 @@
     <ClInclude Include="PowerUpNerf.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="IUpgradable.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.vs">

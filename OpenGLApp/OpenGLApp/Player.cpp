@@ -151,7 +151,11 @@ void Player::shootWithShips()
 
 void Player::resetPlayer()
 {
+	for (int i = 0; i < NUM_OF_SHIPS; i++) {
+		Game::Instance().DestroyGameObject(shipArray[i]);
+	}
 	ShipSetup();
+	resetUpgrades();
 	money = 0;
 	score = 0;
 	shootingRate = 1.0f;
@@ -174,6 +178,31 @@ void Player::playShootSound()
 void Player::getNotified(std::string timerName, bool isCallbackEnabled)
 {
 	canShoot = true;
+}
+
+void Player::upgrade(UpgradeIndex upgradeIndex)
+{
+	int intUpgradeIndex = static_cast<int>(upgradeIndex);
+
+	switch (intUpgradeIndex) {
+		case 0:
+			if (nextShipToActivate < 4) {
+				shipArray[nextShipToActivate++]->isActive = true;
+			}
+			break;
+		case 1:
+			actualShootingRate = shootingRate = UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex);
+			break;
+		default:
+			cout << "Errore, upgradeIndex fuori dal range accettabile per la classe Player" << endl;
+			break;
+	}
+}
+
+void Player::resetUpgrades()
+{
+	nextShipToActivate = 1;
+	actualShootingRate = shootingRate = UpgradeManager::Instance().getInitialValue(UpgradeIndex::ShootingRate);
 }
 
 GameObject* Player::CheckShipCollision(glm::vec3 position, float radius)

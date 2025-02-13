@@ -2,12 +2,12 @@
 #include "array"
 #define TOT_UPGRADES 6
 enum UpgradeIndex: int{
-	ShipsNumber		= 0, 
-	ShootingRate	= 1,
-	BulletsNumber	= 2,
-	MaxShipsHealth	= 3,
-	Damage			= 4,
-	PlanetHealth	= 5
+	ShipsNumber		= 0,	// Player
+	ShootingRate	= 1,	// Player
+	BulletsNumber	= 2,	// Ship
+	MaxShipsHealth	= 3,	// Ship
+	Damage			= 4,	// Ship
+	PlanetHealth	= 5		// Planet
 };
 
 class UpgradeManager
@@ -39,15 +39,16 @@ public:
 	static UpgradeManager& Instance();
 
 	int getNumShips();
-	int getShootingRateIncrement();
+	float getShootingRateIncrement();
 	int getNumBullets();
-	int getShipsHealthIncrement();
-	int getDamageIncrement();
-	int getPlanetHealth();
-	int getGenericCurrentValue(UpgradeIndex upgradeIndex);
+	float getShipsHealthIncrement();
+	float getDamageIncrement();
+	float getPlanetHealth();
+	float getGenericCurrentValue(UpgradeIndex upgradeIndex);
 	const char * getUpgradeName(UpgradeIndex upgradeIndex);
 	bool hasReachedMax(UpgradeIndex upgradeIndex);
 	int getUpgradeCost(UpgradeIndex upgradeIndex);
 	void makeUpgrade(UpgradeIndex upgradeIndex);
+	float getInitialValue(UpgradeIndex upgradeIndex);
 };
 

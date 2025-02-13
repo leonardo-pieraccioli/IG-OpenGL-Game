@@ -93,6 +93,10 @@ public:
 	// ROUND MANAGEMENT
 	int getRound();
 
+	// --------
+	// Upgrades
+	void upgrade(UpgradeIndex upgradeIndex);
+
 private:
 	Game()
 	{

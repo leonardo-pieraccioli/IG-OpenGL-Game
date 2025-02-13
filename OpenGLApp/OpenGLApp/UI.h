@@ -387,6 +387,7 @@ void UIShop()
                 playsound(upgrade);
                 Game::Instance().player->addMoney(-upgradeCost);
                 UpgradeManager::Instance().makeUpgrade(upgradeIdx);
+                Game::Instance().upgrade(upgradeIdx);
             }
             else 
             {

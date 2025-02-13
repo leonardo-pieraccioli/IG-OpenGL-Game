@@ -5,10 +5,11 @@
 #include "IObserver.h"
 #include "TimerManager.h"
 
-class Player : public GameObject, IObserver
+class Player : public GameObject, IObserver, IUpgradable
 {
 private:
 	static const int NUM_OF_SHIPS = 4;
+	int nextShipToActivate = 1;
 	int money;
 	int score;
 	int pitchRotationValue = 0;
@@ -46,5 +47,10 @@ public:
 	// ----------------------------------
 	// IObserver functions implementation
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;
+
+	// ------------------------------------
+	// IUpgradable functions implementation
+	void upgrade(UpgradeIndex upgradeIndex) override;
+	void resetUpgrades() override;
 };
 

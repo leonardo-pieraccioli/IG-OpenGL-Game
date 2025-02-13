@@ -11,7 +11,7 @@ int UpgradeManager::getNumShips()
     return currentUpgrades[0].currentValue;
 }
 
-int UpgradeManager::getShootingRateIncrement()
+float UpgradeManager::getShootingRateIncrement()
 {
     return currentUpgrades[1].currentValue;
 }
@@ -21,22 +21,22 @@ int UpgradeManager::getNumBullets()
     return currentUpgrades[2].currentValue;
 }
 
-int UpgradeManager::getShipsHealthIncrement()
+float UpgradeManager::getShipsHealthIncrement()
 {
     return currentUpgrades[3].currentValue;
 }
 
-int UpgradeManager::getDamageIncrement()
+float UpgradeManager::getDamageIncrement()
 {
     return currentUpgrades[4].currentValue;
 }
 
-int UpgradeManager::getPlanetHealth()
+float UpgradeManager::getPlanetHealth()
 {
     return currentUpgrades[5].currentValue;
 }
 
-int UpgradeManager::getGenericCurrentValue(UpgradeIndex upgradeIndex)
+float UpgradeManager::getGenericCurrentValue(UpgradeIndex upgradeIndex)
 {
     int intUpgradeIndex = static_cast<int>(upgradeIndex);
     return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[intUpgradeIndex].currentValue;
@@ -67,5 +67,11 @@ void UpgradeManager::makeUpgrade(UpgradeIndex upgradeIndex)
     if (currentUpgrades[upgradeIndex].currentValue >= currentUpgrades[upgradeIndex].maxValue) return;
     currentUpgrades[upgradeIndex].currentValue += currentUpgrades[upgradeIndex].valueIncrement;
     currentUpgrades[upgradeIndex].cost = currentUpgrades[upgradeIndex].cost * currentUpgrades[upgradeIndex].costIncrementRate;
+}
+
+float UpgradeManager::getInitialValue(UpgradeIndex upgradeIndex)
+{
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[intUpgradeIndex].initialValue;
 }
  

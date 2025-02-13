@@ -548,3 +548,28 @@ int Game::getRound()
 {
     return round;
 }
+
+void Game::upgrade(UpgradeIndex upgradeIndex)
+{
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    auto& ships = player->shipArray;
+
+    switch (intUpgradeIndex) {
+        case 0:
+        case 1:
+            player->upgrade(upgradeIndex);
+            break;
+        case 2:
+        case 3:
+        case 4:
+            for (int i = 0; i < player->shipArray.size() && ships[i]->isActive; i++) {
+                ships[i]->upgrade(upgradeIndex);
+            }
+            break;
+        case 5:
+            planet->upgrade(upgradeIndex);
+            break;
+        default:
+            cout << "Errore, upgradeIndex fuori dal range di potenziamenti disponibili" << endl;
+    }
+}

@@ -2,9 +2,10 @@
 #include "ShootingEntity.h"
 #include "Projectile.h"
 #include "MiniEngine/UtilsF.h"
+#include "IUpgradable.h"
 
 
-class Ship : public ShootingEntity
+class Ship : public ShootingEntity, public IUpgradable
 {
 private:
 	int nProjectiles;
@@ -29,5 +30,8 @@ public:
 	float getShipMovementRate();
 	void setShipMovementRate(float movementRate);
 	void updateTLerp(float deltaTime, int pitchRotVal);
+
+	void upgrade(UpgradeIndex upgradeIndex) override;
+	void resetUpgrades() override;
 };
 

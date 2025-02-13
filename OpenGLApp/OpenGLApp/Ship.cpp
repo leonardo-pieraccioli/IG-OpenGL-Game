@@ -77,6 +77,32 @@ void Ship::updateTLerp(float deltaTime, int pitchRotVal)
     }
 }
 
+void Ship::upgrade(UpgradeIndex upgradeIndex)
+{
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+
+    switch (intUpgradeIndex) {
+        case 2:
+            nProjectiles = static_cast<int>(UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex));
+            break;
+        case 3:
+            health.UpgradeMax(static_cast<int>(UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex)));
+            break;
+        case 4:
+            damage = UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex);
+            break;
+        default:
+            cout << "Errore, upgradeIndex fuori dal range accettabile dalla classe Ship" << endl;
+    }
+}
+
+void Ship::resetUpgrades()
+{
+    nProjectiles = UpgradeManager::Instance().getInitialValue(UpgradeIndex::BulletsNumber);
+    health.UpgradeMax(UpgradeManager::Instance().getInitialValue(UpgradeIndex::MaxShipsHealth));
+    damage = UpgradeManager::Instance().getInitialValue(UpgradeIndex::Damage);
+}
+
 void Ship::Update(float deltaTime)
 {
     

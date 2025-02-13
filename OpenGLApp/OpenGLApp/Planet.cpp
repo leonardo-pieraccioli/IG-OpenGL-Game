@@ -33,6 +33,25 @@ void Planet::Damage(int damage)
 
 void Planet::resetPlanet()
 {
+	resetUpgrades();
 	health.resetHealth();
+}
+
+void Planet::upgrade(UpgradeIndex upgradeIndex)
+{
+	int intUpgradeIndex = static_cast<int>(upgradeIndex);
+
+	switch (intUpgradeIndex) {
+		case 5:
+			health.UpgradeMax(UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex));
+			break;
+		default:
+			cout << "Errore, upgradeIndex fuori dal range accettabile dalla classe Planet" << endl;
+	}
+}
+
+void Planet::resetUpgrades()
+{
+	health.UpgradeMax(INITIAL_HEALTH);
 }
 
