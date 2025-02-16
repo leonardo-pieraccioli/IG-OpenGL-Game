@@ -1,7 +1,7 @@
 #pragma once
 #include "Collectables.h"
 
-const static glm::vec3 pwupnScale = glm::vec3(0.25f, 0.25f, 0.25f);
+const static glm::vec3 pwupnScale = glm::vec3(0.1f, 0.1f, 0.1f);
 const static float modifierTimeAmount = 5.f;
 
 class PowerUpNerf : public Collectables

@@ -428,7 +428,6 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
                 break;
             }
             else if (collectable->CompareTag("PowerUp")) {
-				std::cout << "PowerUp" << std::endl;
 				auto powerUp = dynamic_cast<PowerUpNerf*>(collectable);
                 bonusTimer->resetTimer(true);
 				Enemy::Nerf(true, powerUp->getModifiedShootingRate(), powerUp->getModifiedMovementRate());
@@ -493,11 +492,9 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
     }
     if (timerName == "Bonus Timer") {
         Enemy::Nerf(false);
-        cout << "Bonus timer ended" << endl;
     }
     if (timerName == "Malus Timer") {
 		this->player->Nerf(false);
-        cout << "Malus timer ended" << endl;
     }
 }
 

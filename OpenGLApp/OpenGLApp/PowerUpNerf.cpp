@@ -24,10 +24,10 @@ PowerUpNerf::PowerUpNerf(string type, float despawnTime, float x, float y) : Col
 		initDestroyTimer();
 
 		if (type == "PowerUp") {
-			objectModel = Model("Assets/Models/RocketGreen.obj");
+			objectModel = Model("Assets/Models/powerup.obj");
 		}
 		else {
-			objectModel = Model("Assets/Models/Rocket.obj");
+			objectModel = Model("Assets/Models/nerf.obj");
 		}
 	}
 }

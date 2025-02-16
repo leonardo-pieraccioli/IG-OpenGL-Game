@@ -119,10 +119,10 @@ void Enemy::Die()
 		Game::Instance().InstantiateGameObject(new Coin(rewardMoney, 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
 	}
 	else if (random == 6) {
-		Game::Instance().InstantiateGameObject(new PowerUpNerf("PowerUp", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), pwupnScale));
+		Game::Instance().InstantiateGameObject(new PowerUpNerf("PowerUp", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(-90.f, 0.f, 0.f), pwupnScale));
 	}
 	else if (random == 7) {
-		Game::Instance().InstantiateGameObject(new PowerUpNerf("Nerf", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(270.f, 0.f, 0.f), pwupnScale));
+		Game::Instance().InstantiateGameObject(new PowerUpNerf("Nerf", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(-90.f, 0.f, 0.f), pwupnScale));
 	}
 	Game::Instance().DestroyGameObject(this);
 }
