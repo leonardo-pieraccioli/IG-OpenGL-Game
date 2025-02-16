@@ -112,9 +112,6 @@ void Enemy::Shoot()
 
 void Enemy::Die()
 {
-	int random = rand() % 7 + 1;
-	std::string path = "Assets/Sounds/explosion/explosion" + to_string(random) + ".mp3";
-	SoundManager::Instance().playSound(path.c_str(), false);
 	Game::Instance().player->addScore(rewardScore);
 	auto x = transform.position.x;
 	auto y = transform.position.y;

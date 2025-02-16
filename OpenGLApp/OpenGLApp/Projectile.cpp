@@ -45,6 +45,9 @@ void Projectile::Update(float deltaTime)
 
 		else if (hit->CompareTag("Enemy"))
 		{
+			int random = rand() % 7 + 1;
+			std::string path = "Assets/Sounds/explosion/explosion" + to_string(random) + ".mp3";
+			SoundManager::Instance().playSound(path.c_str(), false);
 			ShootingEntity* shootingEntityHit = dynamic_cast<ShootingEntity*>(hit);
 			if (shootingEntityHit->health.Damage(damage) <= 0)
 			{

@@ -8,6 +8,7 @@ SoundManager& SoundManager::Instance() {
 void SoundManager::setup() {
 	using namespace irrklang;
 	this->SoundEngine = createIrrKlangDevice();
+	this->SoundEngine->setSoundVolume(0.1f);
 	return;
 }
 
