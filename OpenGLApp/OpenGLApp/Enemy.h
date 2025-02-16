@@ -14,9 +14,10 @@ private:
 	const float baseHealth = 5.0f;
 	const float baseMinSpawnRate = 1.5f;
 	const float baseMaxSpawnRate = 2.5f;
-	const float baseMinSpeed = 2.5f;
-	const float baseMaxSpeed = 7.5f;
+	const float baseMinSpeed = 5.5f;
+	const float baseMaxSpeed = 5.5f;
 
+	float enemySpeed;
 	int rewardMoney;
 	int rewardScore;
 	float shootingDistance;
@@ -45,7 +46,7 @@ public:
 
 	static float getActualSpeed();
 	static void setActualSpeed(float newSpeed);
-	static void Nerf(bool nerf, float srNerfAmount=1, float mrNerfAmount=1);
+	// static void Nerf(bool nerf, float srNerfAmount=1, float mrNerfAmount=1);
 
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;
 	static void generateEnemies(float deltaTime);

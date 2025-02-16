@@ -429,8 +429,9 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
             }
             else if (collectable->CompareTag("PowerUp")) {
 				auto powerUp = dynamic_cast<PowerUpNerf*>(collectable);
-                bonusTimer->resetTimer(true);
-				Enemy::Nerf(true, powerUp->getModifiedShootingRate(), powerUp->getModifiedMovementRate());
+                // bonusTimer->resetTimer(true);
+				planet->health.Heal(5);
+				// Enemy::Nerf(true, powerUp->getModifiedShootingRate(), powerUp->getModifiedMovementRate());
                 SoundManager::Instance().playSound("Assets/Sounds/bonus.mp3", false);
                 DestroyGameObject(collectable);
                 break;
@@ -491,7 +492,7 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
         round++;
     }
     if (timerName == "Bonus Timer") {
-        Enemy::Nerf(false);
+        //Enemy::Nerf(false);
     }
     if (timerName == "Malus Timer") {
 		this->player->Nerf(false);

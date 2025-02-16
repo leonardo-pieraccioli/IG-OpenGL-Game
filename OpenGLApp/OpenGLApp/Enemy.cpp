@@ -9,7 +9,6 @@ std::pair<float, float> generateEnemyCoordinates(float radius);
 static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
 static Model enemyModel;
-static float enemySpeed;
 static float actualSpeed;
 static float enemyShootingRate; 
 static float actualEnemyShootingRate;
@@ -137,6 +136,8 @@ void Enemy::setActualSpeed(float newSpeed)
 	actualSpeed = newSpeed;
 }
 
+// TO USE THIS FUNCTION enemySpeed MUST BE static
+/*
 void Enemy::Nerf(bool nerf, float srNerfAmount, float mrNerfAmount)
 {
 	if (nerf && enemySpeed == actualSpeed)
@@ -150,6 +151,7 @@ void Enemy::Nerf(bool nerf, float srNerfAmount, float mrNerfAmount)
 		enemyShootingRate = actualEnemyShootingRate;
 	}
 }
+*/
 
 void Enemy::getNotified(std::string timerName, bool isCallbackEnabled)
 {
