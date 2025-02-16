@@ -2,13 +2,13 @@
 #include "Collectables.h"
 
 const static glm::vec3 pwupnScale = glm::vec3(0.1f, 0.1f, 0.1f);
-const static float modifierTimeAmount = 5.f;
+const static float modifierTimeAmount = 2.5f;
 
 class PowerUpNerf : public Collectables
 {
 private:
-	const float modifiedShootingRate = 0.66f;
-	const float modifiedMovementRate = 0.66f;
+	const float modifiedShootingRate = 0.5f;
+	const float modifiedMovementRate = 0.5f;
 	
 public:
 	PowerUpNerf(string type, float despawnTime, unsigned int texture);

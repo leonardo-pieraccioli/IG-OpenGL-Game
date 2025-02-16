@@ -10,12 +10,12 @@ class Enemy : public ShootingEntity, IObserver
 private:
 	// constants
 	const float maxVibrationRadius = 0.05f;
-	const float baseDamage = 10.0f;
-	const float baseHealth = 5.0f;
-	const float baseMinSpawnRate = 1.5f;
-	const float baseMaxSpawnRate = 2.5f;
-	const float baseMinSpeed = 5.5f;
-	const float baseMaxSpeed = 5.5f;
+	const float baseDamage = 1.0f;
+	const float baseHealth = 2.0f;
+	const float baseMinSpawnRate = .5f;
+	const float baseMaxSpawnRate = 1.f;
+	const float baseMinSpeed = 1.7f;
+	const float baseMaxSpeed = 2.7f;
 
 	float enemySpeed;
 	int rewardMoney;
@@ -35,7 +35,7 @@ private:
 	void playChargeSound();
 
 public:
-	Enemy(int rewardMoney = 100, int rewardScore = 100, float shootingDistance = 5.0f, float shootingRate = 0.2f, float decelerationDistance = 7.0f);
+	Enemy(int rewardMoney = 100, int rewardScore = 100, float shootingDistance = 5.0f, float shootingRate = 1.5f, float decelerationDistance = 7.0f);
 
 	static void Init(Model model);
 	void Update(float deltaTime) override;

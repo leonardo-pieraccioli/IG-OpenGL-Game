@@ -4,7 +4,7 @@
 #include "PowerUpNerf.h"
 
 float currentsTime = 0.0f;
-float timersActivation = 2.0f;
+float timersActivation = 2.5f;
 std::pair<float, float> generateEnemyCoordinates(float radius);
 static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
@@ -13,25 +13,29 @@ static float actualSpeed;
 static float enemyShootingRate; 
 static float actualEnemyShootingRate;
 
+static int current_enemy_count = 0;
+static int initial_max_enemy_count = 4;
+
 Enemy::Enemy(int rewardMoney, int rewardScore, float shootingDistance, float shootingRate, float decelerationDistance)
 {
 	this->rewardMoney = rewardMoney;
 	this->rewardScore = rewardScore;
 	this->shootingDistance = shootingDistance;
 	this->decelerationDistance = decelerationDistance;
-	enemyShootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
+	this->shootingRate == 0.f ? 0.000001f : enemyShootingRate;
 	this->tag = "Enemy";
-	actualSpeed = enemySpeed = utilsF::randomNumberInInterval(baseMinSpeed * (Game::Instance().getRound() / 10) + 2.25, baseMaxSpeed * (Game::Instance().getRound() / 10) + 6.75);
+	actualSpeed = enemySpeed = utilsF::randomNumberInInterval(baseMinSpeed + (Game::Instance().getRound() * .3f), baseMaxSpeed + (Game::Instance().getRound() * .3f));
 	actualEnemyShootingRate = shootingRate;
-	shootingTimer = TimerManager::CreateTimer(1 / (shootingRate * Game::Instance().getRound()), false, "Enemy" + std::to_string(this->GetID()), true, this);
+	shootingTimer = TimerManager::CreateTimer(enemyShootingRate * std::powf(Game::Instance().getRound(),-.33), false, "Enemy" + std::to_string(this->GetID()), true, this);
 	health.UpgradeMax(Game::Instance().getRound() * baseHealth);
-	timersActivation = utilsF::randomNumberInInterval(baseMinSpawnRate / std::log2(Game::Instance().getRound() + 1), baseMaxSpawnRate / std::log2(Game::Instance().getRound() + 1));
+	timersActivation = utilsF::randomNumberInInterval(baseMinSpawnRate + std::powf(Game::Instance().getRound(), -1.5f), baseMaxSpawnRate + std::powf(Game::Instance().getRound(), -1.5f));
 	srand((unsigned)time(NULL));
 }
 
 void Enemy::Init(Model model)
 {
 	enemyModel = Model("Assets/Models/enemy1.obj");
+	enemyShootingRate = actualEnemyShootingRate = 1.5f;
 }
 
 void Enemy::Update(float deltaTime)
@@ -99,11 +103,11 @@ void Enemy::Move(std::pair<float, float> newCoords)
 
 void Enemy::Shoot()
 {
-	float damage = baseDamage * Game::Instance().getRound();
-	ShootingEntity::Shoot();
+	SoundManager::Instance().playSound("Assets/Sounds/blast/blast1.mp3", false);
 	std::pair<float, float> pCoords = utilsF::calculateForwardXY(this->transform.rotation.z, 1.0f, this->transform.position.x, this->transform.position.y, 0.8f);
+	float damage = baseDamage + std::floorf(Game::Instance().getRound() * 0.5f);
 	Game::Instance().InstantiateGameObject(new Projectile(damage), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
-	shootingTimer->resetTimer(1/ (enemyShootingRate * Game::Instance().getRound()), true, true);
+	shootingTimer->resetTimer(enemyShootingRate * std::powf(Game::Instance().getRound(), -1/3) + 0.5f, true, true);
 }
 
 void Enemy::Die()
@@ -123,6 +127,7 @@ void Enemy::Die()
 	else if (random == 7) {
 		Game::Instance().InstantiateGameObject(new PowerUpNerf("Nerf", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(-90.f, 0.f, 0.f), pwupnScale));
 	}
+	current_enemy_count--;
 	Game::Instance().DestroyGameObject(this);
 }
 
@@ -166,8 +171,12 @@ void Enemy::playChargeSound()
 
 void Enemy::generateEnemies(float deltaTime)
 {
+	if (current_enemy_count >= initial_max_enemy_count + Game::Instance().getRound()) {
+		return;
+	}
 	// Timer per gestire l'istanza dei nemici nel tempo
 	currentsTime += deltaTime;
+
 	if (currentsTime >= timersActivation) {
 		currentsTime = 0;
 
@@ -192,6 +201,7 @@ void Enemy::generateEnemies(float deltaTime)
 		// Instanzia l'oggetto con la rotazione calcolata
 		Transform *newTransform = new Transform(glm::vec3(x, y, 0), eulerAngles, enemyScale);
 		newTransform->collisionRadius = .5f;
+		current_enemy_count++;
 		Game::Instance().InstantiateGameObject(new Enemy(), newTransform);
 	}
 }

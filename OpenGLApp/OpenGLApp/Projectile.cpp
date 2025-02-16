@@ -29,26 +29,21 @@ void Projectile::Update(float deltaTime)
 	Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, speed));
 
 	GameObject* hit = Game::Instance().CheckCollision(*this, this->transform.position, this->transform.scale);
-	if(hit != nullptr)
-	{	
+	if(hit != nullptr && !hit->CompareTag("Projectile"))
+	{
 		if (hit->CompareTag("Ship"))
 		{
 			Ship* shipHit = dynamic_cast<Ship*>(hit);
 			shipHit->Damage(damage);
 		}
 
-		if (hit->CompareTag("Planet"))
+		else if (hit->CompareTag("Planet"))
 		{
 			Planet* p = dynamic_cast<Planet*>(hit);
 			p->Damage(damage);
 		}
 
-		if (hit->CompareTag("Projectile"))
-		{
-			Game::Instance().DestroyGameObject(hit);
-		}
-
-		if (hit->CompareTag("Enemy"))
+		else if (hit->CompareTag("Enemy"))
 		{
 			ShootingEntity* shootingEntityHit = dynamic_cast<ShootingEntity*>(hit);
 			if (shootingEntityHit->health.Damage(damage) <= 0)
@@ -57,9 +52,9 @@ void Projectile::Update(float deltaTime)
 			}
 		}
 
-		if (hit->CompareTag("Ship"))
+		else
 		{
-			
+			return;
 		}
 
 		Game::Instance().DestroyGameObject(this);

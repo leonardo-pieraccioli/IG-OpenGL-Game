@@ -170,9 +170,7 @@ void Player::setPitchRotationValue(int pitchRotationValue)
 
 void Player::playShootSound()
 {
-	int random = rand() % 3 + 1;
-	std::string path = "Assets/Sounds/blast/blast" + to_string(random) + ".mp3";
-	SoundManager::Instance().playSound(path.c_str(), false);
+	SoundManager::Instance().playSound("Assets/Sounds/blast/blast2.mp3", false);
 }
 
 void Player::getNotified(std::string timerName, bool isCallbackEnabled)
