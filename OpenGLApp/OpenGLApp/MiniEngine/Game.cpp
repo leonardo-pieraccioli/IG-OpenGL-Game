@@ -505,6 +505,7 @@ void Game::resetGame()
     roundTimer->resetTimer(true);
     player->resetPlayer();
     planet->resetPlanet();
+    UpgradeManager::Instance().reset();
     round = 1;
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
     {

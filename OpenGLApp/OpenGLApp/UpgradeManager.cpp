@@ -75,3 +75,11 @@ float UpgradeManager::getInitialValue(UpgradeIndex upgradeIndex)
     return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[intUpgradeIndex].initialValue;
 }
  
+void UpgradeManager::reset()
+{
+	for (auto&& upgrade : currentUpgrades)
+	{
+		upgrade.currentValue = upgrade.initialValue;
+		upgrade.cost = upgrade.initialCost;
+	}
+}
