@@ -124,6 +124,7 @@ private:
 	const float zNear = -20.0f;
 	const float zFar = 20.0f;
 	const float orthScale = 50.0f; // Parametro per zoomare e dezoomare gli oggetti con la camera ortografica
+	float time = 0.0f;
 
 	// ENUM GameState
 	GameState gameState;

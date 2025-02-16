@@ -174,6 +174,7 @@ void Game::Init()
 
 void Game::Update(float deltaTime)
 {
+    time += deltaTime;
     switch (gameState) {
         case GameState::Play:
         {
@@ -246,6 +247,8 @@ void Game::Update(float deltaTime)
 void Game::Draw(Shader shader)
 {
     shader.Use();
+
+    shader.SetFloat("time", time);
 
     // Mi trovo la matrice ortografica per la camera
     projection = glm::ortho(-((float)SCR_WIDTH / 2), (float)SCR_WIDTH / 2, -((float)SCR_HEIGHT / 2), (float)SCR_HEIGHT / 2, zNear, zFar);
