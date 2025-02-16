@@ -26,6 +26,8 @@ void AlignForWidth(float width, float alignment = 0.5f)
 }
 
 enum UISound
+
+
 {
     ok,
     cancel,
@@ -355,10 +357,15 @@ void UIShop()
     // ------------------------
     static bool choiceMade = false;
     static int randUpgIdx[3];
+	static bool clicked[3] = { false, false, false };
     std::srand(std::time(nullptr));
     if (!choiceMade)
     {
-        for (int i = 0; i < 3; i++) randUpgIdx[i] = std::rand() % TOT_UPGRADES;
+        for (int i = 0; i < 3; i++)
+        {
+			clicked[i] = false;
+            randUpgIdx[i] = std::rand() % TOT_UPGRADES;
+        }
         choiceMade = true;
     }
 
@@ -375,27 +382,37 @@ void UIShop()
         int upgradeCost = UpgradeManager::Instance().getUpgradeCost(upgradeIdx);
         bool hasReachedMax = UpgradeManager::Instance().hasReachedMax(upgradeIdx);
         std::string buttonText = std::string(upgradeName) + ": " + std::to_string(upgradeCost);
-        if (hasReachedMax)
+
+		bool isClicked = clicked[i];
+
+        if ( hasReachedMax )
         {
-            ImGui::BeginDisabled();
             buttonText += " MAX";
+            ImGui::BeginDisabled();
         }
+		else if (isClicked)
+		{
+			ImGui::BeginDisabled();
+		}
+
         if (ImGui::Button(buttonText.c_str(), upgradeButton))
         {
             if (Game::Instance().player->getMoney() >= upgradeCost)
             {
+				clicked[i] = true;
                 playsound(upgrade);
                 Game::Instance().player->addMoney(-upgradeCost);
                 UpgradeManager::Instance().makeUpgrade(upgradeIdx);
                 Game::Instance().upgrade(upgradeIdx);
             }
-            else 
+            else
             {
                 playsound(cancel);
             }
         }
-        if (hasReachedMax)
+        if (hasReachedMax || isClicked)
             ImGui::EndDisabled();
+
         ImGui::PopID();
         ImGui::SameLine();
 		upgOffset += 2;
