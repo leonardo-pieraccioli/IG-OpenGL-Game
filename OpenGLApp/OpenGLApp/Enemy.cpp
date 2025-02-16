@@ -112,6 +112,7 @@ void Enemy::Shoot()
 
 void Enemy::Die()
 {
+	int random = rand() % 7 + 1;
 	Game::Instance().player->addScore(rewardScore);
 	auto x = transform.position.x;
 	auto y = transform.position.y;
