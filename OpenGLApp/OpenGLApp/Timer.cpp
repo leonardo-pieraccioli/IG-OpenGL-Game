@@ -49,6 +49,13 @@ void Timer::resetTimer(bool isTicking)
 	this->isTicking = isTicking;
 }
 
+void Timer::resetTimer(float timeAmount, bool isTicking, bool restart)
+{
+	if (restart) currentTimeAmount = timeAmount;
+	initialTimeAmount = timeAmount;
+	this->isTicking = isTicking;
+}
+
 std::string Timer::getHH_MM_SS_MS()
 {
 	int hours, minutes, seconds, milliseconds;

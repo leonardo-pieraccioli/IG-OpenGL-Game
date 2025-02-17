@@ -11,7 +11,7 @@ int UpgradeManager::getNumShips()
     return currentUpgrades[0].currentValue;
 }
 
-int UpgradeManager::getShootingRateIncrement()
+float UpgradeManager::getShootingRateIncrement()
 {
     return currentUpgrades[1].currentValue;
 }
@@ -21,20 +21,31 @@ int UpgradeManager::getNumBullets()
     return currentUpgrades[2].currentValue;
 }
 
-int UpgradeManager::getShipsHealthIncrement()
+float UpgradeManager::getShipsHealthIncrement()
 {
     return currentUpgrades[3].currentValue;
 }
 
-int UpgradeManager::getDamageIncrement()
+float UpgradeManager::getDamageIncrement()
 {
     return currentUpgrades[4].currentValue;
 }
 
-int UpgradeManager::getGenericCurrentValue(UpgradeIndex upgradeIndex)
+float UpgradeManager::getPlanetHealth()
+{
+    return currentUpgrades[5].currentValue;
+}
+
+float UpgradeManager::getGenericCurrentValue(UpgradeIndex upgradeIndex)
 {
     int intUpgradeIndex = static_cast<int>(upgradeIndex);
     return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[intUpgradeIndex].currentValue;
+}
+
+const char * UpgradeManager::getUpgradeName(UpgradeIndex upgradeIndex)
+{
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? "" : currentUpgrades[intUpgradeIndex].upgradeName;
 }
 
 bool UpgradeManager::hasReachedMax(UpgradeIndex upgradeIndex)
@@ -51,8 +62,24 @@ int UpgradeManager::getUpgradeCost(UpgradeIndex upgradeIndex)
 
 void UpgradeManager::makeUpgrade(UpgradeIndex upgradeIndex)
 {
-    int intUpgradeIndex = static_cast<int>(upgradeIndex);
-    if (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size())
+    if (upgradeIndex < 0 || upgradeIndex >= currentUpgrades.size())
         return;
-    currentUpgrades[intUpgradeIndex].cost = currentUpgrades[intUpgradeIndex].cost * currentUpgrades[intUpgradeIndex].costIncrementRate;
+    if (currentUpgrades[upgradeIndex].currentValue >= currentUpgrades[upgradeIndex].maxValue) return;
+    currentUpgrades[upgradeIndex].currentValue += currentUpgrades[upgradeIndex].valueIncrement;
+    currentUpgrades[upgradeIndex].cost = currentUpgrades[upgradeIndex].cost * currentUpgrades[upgradeIndex].costIncrementRate;
+}
+
+float UpgradeManager::getInitialValue(UpgradeIndex upgradeIndex)
+{
+    int intUpgradeIndex = static_cast<int>(upgradeIndex);
+    return (intUpgradeIndex < 0 || intUpgradeIndex >= currentUpgrades.size()) ? -1 : currentUpgrades[intUpgradeIndex].initialValue;
+}
+ 
+void UpgradeManager::reset()
+{
+	for (auto&& upgrade : currentUpgrades)
+	{
+		upgrade.currentValue = upgrade.initialValue;
+		upgrade.cost = upgrade.initialCost;
+	}
 }

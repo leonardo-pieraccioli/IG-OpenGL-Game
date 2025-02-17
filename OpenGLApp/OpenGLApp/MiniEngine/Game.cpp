@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 #include "../Coin.h"
+#include "../PowerUpNerf.h"
 #include "../Planet.h"
 #include "../Enemy.h"
 #include "../UI.h"
@@ -162,6 +163,8 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
 void Game::Init()
 {
     roundTimer = TimerManager::CreateTimer(TIMER_DURATION, true, "Round Timer", true, this);
+    bonusTimer = TimerManager::CreateTimer(modifierTimeAmount, false, "Bonus Timer", true, this);
+    malusTimer = TimerManager::CreateTimer(modifierTimeAmount, false, "Malus Timer", true, this);
 
     player = new Player();
     planet = new Planet();
@@ -342,7 +345,7 @@ void Game::ProcessInput(float deltaTime)
 
             auto worldCoordinates = glm::vec3(worldPos); // x, y, z in world coordinates
 
-            CheckCoins(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
+            CheckCollectables(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
         }
     }
     else if (gameState == GameState::Pause) {
@@ -425,17 +428,35 @@ void Game::ChangeGameState(GameState newGameState)
     gameState = newGameState;
 }
 
-void Game::CheckCoins(glm::vec3 coinPosition)
+void Game::CheckCollectables(glm::vec3 collectablePosition)
 {
-    
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
     {
-        Coin* coin = dynamic_cast<Coin*>(*obj);
-        if (coin) {
-            if (coin->doesCoinOverlap(coinPosition)) {
+        Collectables* collectable = dynamic_cast<Collectables*>(*obj);
+        if (collectable && collectable->doesCollectableOverlap(collectablePosition)) {
+            if (collectable->CompareTag("Coin")) {
+                Coin* coin = dynamic_cast<Coin*>(collectable);
                 player->addMoney(coin->getMoney());
                 SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
                 DestroyGameObject(coin);
+                break;
+            }
+            else if (collectable->CompareTag("PowerUp")) {
+				auto powerUp = dynamic_cast<PowerUpNerf*>(collectable);
+                // bonusTimer->resetTimer(true);
+				planet->health.Heal(5);
+				// Enemy::Nerf(true, powerUp->getModifiedShootingRate(), powerUp->getModifiedMovementRate());
+                SoundManager::Instance().playSound("Assets/Sounds/bonus.mp3", false);
+                DestroyGameObject(collectable);
+                break;
+            }
+            else if (collectable->CompareTag("Nerf")) {
+				std::cout << "Nerf" << std::endl;
+				auto nerf = dynamic_cast<PowerUpNerf*>(collectable);
+				player->Nerf(true, nerf->getModifiedMovementRate(), nerf->getModifiedShootingRate());
+                malusTimer->resetTimer(true);
+                SoundManager::Instance().playSound("Assets/Sounds/malus.mp3", false);
+                DestroyGameObject(collectable);
                 break;
             }
         }
@@ -482,18 +503,34 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
     if(timerName == "Round Timer") {
         gameState = GameState::Shop;
         roundTimer->resetTimer(true);
+        round++;
+    }
+    if (timerName == "Bonus Timer") {
+        //Enemy::Nerf(false);
+    }
+    if (timerName == "Malus Timer") {
+		this->player->Nerf(false);
     }
 }
 
 void Game::resetGame()
 {
     SoundManager::Instance().stopAllSounds();
-    roundTimer->resetTimer(true);
+    UpgradeManager::Instance().reset();
+    TimerManager::DestroyTimers();
+
+    roundTimer = TimerManager::CreateTimer(TIMER_DURATION, true, "Round Timer", true, this);
+    bonusTimer = TimerManager::CreateTimer(modifierTimeAmount, false, "Bonus Timer", true, this);
+    malusTimer = TimerManager::CreateTimer(modifierTimeAmount, false, "Malus Timer", true, this);
+
     player->resetPlayer();
     planet->resetPlanet();
+	Enemy::setCurrentEnemyCount(0);
+
+    round = 1;
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
     {
-        if (dynamic_cast<Enemy*>(*obj) || dynamic_cast<Coin*>(*obj) || dynamic_cast<Projectile*>(*obj))
+        if (dynamic_cast<Enemy*>(*obj) || dynamic_cast<Collectables*>(*obj) || dynamic_cast<Projectile*>(*obj))
         {
             obj = activeObjects.erase(obj);
         }
@@ -525,4 +562,36 @@ void Game::drawMenuModel(Shader shader)
     model_mat = glm::scale(model_mat, glm::vec3(2.f, 2.f, 2.f));
     shader.SetMatrix4("model", model_mat);
     player->objectModel.Draw(lightingShader);
+}
+
+int Game::getRound()
+{
+    return round;
+}
+
+void Game::upgrade(UpgradeIndex upgradeIndex)
+{
+    auto& ships = player->shipArray;
+
+    switch (upgradeIndex) {
+        case ShipsNumber:
+        case ShootingRate:
+            player->upgrade(upgradeIndex);
+            break;
+        case BulletsNumber:
+        case MaxShipsHealth:
+        case Damage:
+            for (int i = 0; i < player->shipArray.size(); i++) {
+                ships[i]->upgrade(upgradeIndex);
+            }
+            break;
+        case PlanetHealth:
+            planet->upgrade(upgradeIndex);
+            break;
+		case ShipsSpeed:
+			player->upgrade(upgradeIndex);
+			break;
+        default:
+            cout << "Errore, upgradeIndex fuori dal range di potenziamenti disponibili" << endl;
+    }
 }

@@ -1,7 +1,11 @@
 #pragma once
 
+#include <algorithm>
+
 #include "imgui.h"
 #include "MiniEngine/Game.h"
+#include "MiniEngine/SoundManager.h"
+#include "UpgradeManager.h"
 
 // UTILS
 // -----
@@ -21,6 +25,48 @@ void AlignForWidth(float width, float alignment = 0.5f)
     float off = (avail - width) * alignment;
     if (off > 0.0f)
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+}
+
+enum UISound
+
+
+{
+    ok,
+    cancel,
+    upgrade,
+    heal
+};
+
+void playsound(UISound soundID)
+{
+    switch (soundID)
+    {
+    case ok:        SoundManager::Instance().playSound("Assets/Sounds/UI/ok.mp3", false); break;
+    case cancel:    SoundManager::Instance().playSound("Assets/Sounds/UI/cancel.wav", false); break;
+    case upgrade:   SoundManager::Instance().playSound("Assets/Sounds/powerup.wav", false); break;
+    case heal:      SoundManager::Instance().playSound("Assets/Sounds/heal.wav", false); break;
+    }
+}
+
+vector<int> gen3Nums()
+{
+    vector<int> result;
+    random_device rd; // obtain a random number from hardware
+    mt19937 eng(rd()); // seed the generator
+    uniform_int_distribution<> distr(0, TOT_UPGRADES - 1); // define the range 
+
+    int i = 0;
+    while (i < 3) { // loop until you have collected the sufficient number of results
+        int randVal = distr(eng);
+        if (std::find(std::begin(result), std::end(result), randVal) == std::end(result)) {
+            // ^^^^^^^^^^^^ The above part is essential, only add random numbers to the result 
+            // which aren't yet contained.
+            result.push_back(randVal);
+            cout << result[i];
+            ++i;
+        }
+    }
+    return result;
 }
 
 #pragma region Play
@@ -73,6 +119,17 @@ void UIPlay()
     ImGui::Text(roundTimeText.c_str());
     ImGui::PopFont();
 
+    // ROUND
+    // -----
+    {
+		ImGui::PushFont(Game::Instance().font_SA_medium);
+		ImGui::SetCursorPosX(10);
+		ImGui::SetCursorPosY(10);
+		std::string roundText = "Round: " + std::to_string(Game::Instance().getRound());
+		ImGui::Text(roundText.c_str());
+		ImGui::PopFont();
+    }
+
     // SCORE
     // -----
     ImGui::PushFont(Game::Instance().font_SA_medium);
@@ -107,12 +164,14 @@ void UIPause()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Resume", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Play);
     }
 
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Restart", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().resetGame();
         Game::Instance().ChangeGameState(GameState::Play);
     }
@@ -120,6 +179,7 @@ void UIPause()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Main menu", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().resetGame();
         Game::Instance().ChangeGameState(GameState::Menu);
     }
@@ -127,6 +187,7 @@ void UIPause()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Quit", { buttonWidth, 0.f }))
     {
+        playsound(cancel);
         Game::Instance().ChangeGameState(GameState::Quit);
     }
 
@@ -156,18 +217,21 @@ void UIMenu()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Play", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Play);
     }
 
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Controls", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Controls);
     }
 
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Quit", { buttonWidth, 0.f }))
     {
+        playsound(cancel);
         Game::Instance().ChangeGameState(GameState::Quit);
     }
 
@@ -201,10 +265,10 @@ void UIControls()
     TextCentered("Press spacebar to shoot enemies.", ImGui::GetCursorPosY());
     ImGui::NewLine();
     TextCentered("When enemies die, they spawn coins.", ImGui::GetCursorPosY());
-    TextCentered("Collect the coins to buy upgrades in the shop.", ImGui::GetCursorPosY());
+    TextCentered("Collect the coins by clicking on them to buy upgrades in the shop.", ImGui::GetCursorPosY());
     ImGui::NewLine();
-    TextCentered("Be careful! Sometimes coins are dangerous (red) or useful (green).", ImGui::GetCursorPosY());
-    TextCentered("Don't click everywhere like a monkey!", ImGui::GetCursorPosY());
+    TextCentered("Be careful! Enemies can drop maluses (red) and bonuses (green).", ImGui::GetCursorPosY());
+    TextCentered("Don't click everywhere like a space monkey!", ImGui::GetCursorPosY());
     ImGui::PopFont();
 
     buttonWidth = ImGui::CalcTextSize(" Back to Menu ").x;
@@ -212,6 +276,7 @@ void UIControls()
     ImGui::SetCursorPosY(4 * ImGui::GetWindowHeight() / 5);
     if (ImGui::Button("Back to Menu", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().ChangeGameState(GameState::Menu);
     }
 
@@ -232,7 +297,7 @@ void UIGameOver()
     ImGui::Begin("Game Over", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
     ImGui::PushFont(Game::Instance().font_SA_large);
-
+     
     TextCentered("Game Over!", ImGui::GetWindowHeight() / 3);
 
     float buttonWidth = ImGui::CalcTextSize("game over").x;
@@ -241,6 +306,7 @@ void UIGameOver()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Retry", { buttonWidth, 0.f }))
     {
+        playsound(ok);
         Game::Instance().resetGame();
         Game::Instance().ChangeGameState(GameState::Play);
     }
@@ -248,6 +314,7 @@ void UIGameOver()
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
     if (ImGui::Button("Quit", { buttonWidth, 0.f }))
     {
+        playsound(cancel);
         Game::Instance().ChangeGameState(GameState::Quit);
     }
 
@@ -261,7 +328,7 @@ void UIGameOver()
 
 void UIShop()
 {
-    auto &ships = Game::Instance().player->shipArray;
+    auto& ships = Game::Instance().player->shipArray;
 
     ImGui::SetNextWindowSize({ (float)Game::Instance().SCREEN_WIDTH, (float)Game::Instance().SCREEN_HEIGHT });
     ImGui::SetNextWindowPos({ 0,0 });
@@ -278,7 +345,7 @@ void UIShop()
     // ------------
     // Ship healing
 
-    int healingCostFactor = 5;
+    int healingCostFactor = 5 + Game::Instance().getRound() * 0.5 - 0.5;
 
     ImVec2 buttonDim = { ((ImGui::GetWindowWidth() - 400) / 4), 50 };
     ImGui::SeparatorText("Ship Health");
@@ -306,6 +373,7 @@ void UIShop()
             ImGui::PushID(i);
             if (ImGui::Button(buttonText.c_str(), buttonDim) && Game::Instance().player->getMoney() >= healCost)
             {
+                playsound(heal);
                 Game::Instance().player->addMoney(-healCost);
                 ships[i]->health.Heal(100);
             }
@@ -319,45 +387,100 @@ void UIShop()
     ImGui::NewLine();
     ImGui::NewLine();
 
+    // RANDOM UPGRADE SELECTION
+    // ------------------------
+    static bool choiceMade = false;
+    static std::vector<int> randUpgIdx = gen3Nums();
+	static bool clicked[3] = { false, false, false };
+    
+
     ImGui::SeparatorText("Upgrades");
-    ImVec2 upgradeButton = { 400, 50 };
-    ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 5 - upgradeButton.x / 2);
-    if (ImGui::Button("Add Ship: 500", upgradeButton) && Game::Instance().player->getMoney() >= 500)
+    ImVec2 upgradeButton = { 500, 50 };
+
+    float upgOffset = 1;
+    for (int i = 0; i < 3; i++)
     {
-        for (int i = 0; i < ships.size(); i++)
+        ImGui::PushID(i);
+        UpgradeIndex upgradeIdx = static_cast<UpgradeIndex>(randUpgIdx[i]);
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth() * (upgOffset/6) - upgradeButton.x / 2);
+        const char * upgradeName = UpgradeManager::Instance().getUpgradeName(upgradeIdx);
+        int upgradeCost = UpgradeManager::Instance().getUpgradeCost(upgradeIdx);
+        bool hasReachedMax = UpgradeManager::Instance().hasReachedMax(upgradeIdx);
+        std::string buttonText = std::string(upgradeName) + ": " + std::to_string(upgradeCost);
+
+		bool isClicked = clicked[i];
+
+        if ( hasReachedMax )
         {
-            if (!ships[i]->isActive)
+            buttonText += " MAX";
+            ImGui::BeginDisabled();
+        }
+		else if (isClicked)
+		{
+			ImGui::BeginDisabled();
+		}
+
+        if (ImGui::Button(buttonText.c_str(), upgradeButton))
+        {
+            if (Game::Instance().player->getMoney() >= upgradeCost)
             {
-                Game::Instance().player->addMoney(-500);
-                ships[i]->isActive = true;
-                break;
+				// clicked[i] = true;
+                playsound(upgrade);
+                Game::Instance().player->addMoney(-upgradeCost);
+                UpgradeManager::Instance().makeUpgrade(upgradeIdx);
+                Game::Instance().upgrade(upgradeIdx);
+            }
+            else
+            {
+                playsound(cancel);
             }
         }
-    }
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - upgradeButton.x / 2);
-    if (ImGui::Button("Placeholder: 200", upgradeButton) && Game::Instance().player->getMoney() >= 0)
-    {
+        if (hasReachedMax || isClicked)
+            ImGui::EndDisabled();
 
+        ImGui::PopID();
+        ImGui::SameLine();
+		upgOffset += 2;
     }
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(4 * ImGui::GetWindowWidth() / 5 - upgradeButton.x / 2);
-    if (ImGui::Button("Placeholder: 1500", upgradeButton) && Game::Instance().player->getMoney() >= 0)
-    {
 
+    ImGui::NewLine();
+    ImGui::PopFont();
+
+    ImGui::PushFont(Game::Instance().font_SA_small);
+
+    ImGui::SeparatorText("Current stats");
+    ImGui::NewLine();
+    ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - 500);
+    for (int i = 0; i < TOT_UPGRADES; i++)
+    {
+        UpgradeIndex upgIdx = static_cast<UpgradeIndex>(i);
+        const char* upgradeName = UpgradeManager::Instance().getUpgradeName(upgIdx);
+        float upgradeValue = UpgradeManager::Instance().getGenericCurrentValue(upgIdx);
+		std::string upgradeValueStr = std::to_string(upgradeValue);
+		upgradeValueStr = upgradeValueStr.substr(0, upgradeValueStr.find(".") + 3);
+        std::string buttonText = std::string(upgradeName) + " : " + upgradeValueStr + "\t";
+        ImGui::Text(buttonText.c_str());
+        ImGui::SameLine();
+        if (i % 2 == 1)
+        {
+            ImGui::NewLine();
+            ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - 500);
+        }
     }
+
     ImGui::PopFont();
     
     // HEAL PLANET
     // -----------
     ImGui::PushFont(Game::Instance().font_SA_small);
     ImVec2 progressBarDim = { 500, 40 };
-    int healPlanetCost = 200;
+    int healPlanetCost = 200 + Game::Instance().getRound() - 1;
     ImGui::SetCursorPos({ ImGui::GetWindowWidth() / 2 - progressBarDim.x / 2, ImGui::GetWindowHeight() - 75 - progressBarDim.y});
-    if (ImGui::Button(std::string("Heal Planet by 10: " + std::to_string(healPlanetCost)).c_str(), progressBarDim) && Game::Instance().player->getMoney() >= 200 && Game::Instance().planet->health.healthStatus() != Game::Instance().planet->health.getMax())
+    if (ImGui::Button(std::string("Heal Planet by 15: " + std::to_string(healPlanetCost)).c_str(), progressBarDim) && Game::Instance().player->getMoney() >= 200 && Game::Instance().planet->health.healthStatus() != Game::Instance().planet->health.getMax())
     {
-        Game::Instance().player->addMoney(-200);
-        Game::Instance().planet->health.Heal(10);
+        playsound(heal);
+        Game::Instance().player->addMoney(-healPlanetCost);
+        Game::Instance().planet->health.Heal(15);
     }
     ImGui::PopFont();
 
@@ -379,6 +502,8 @@ void UIShop()
     ImGui::SetCursorPosX(ImGui::GetWindowWidth()*3/4);
     if (ImGui::Button("Continue", { ImGui::CalcTextSize(" Continue ").x , progressBarDim.y }))
     {
+        playsound(ok);
+        choiceMade = false;
         Game::Instance().ChangeGameState(GameState::Play);
     }
 

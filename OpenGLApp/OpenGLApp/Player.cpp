@@ -4,35 +4,33 @@
 
 Player::Player()
 {
-	objectModel = Model("Assets/Models/spaceship.obj");
 	ShipSetup();
+	Ship::setShipModel();
 	money = 0;
 	this->tag = "Player";
+	actualShootingRate = shootingRate;
 	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "PlayerShootingTimer", true, this);
+	srand((unsigned)time(NULL));
 }
 
 void Player::ShipSetup()
 {
-	glm::vec3 shipScale = glm::vec3(.35, .35, .35);
+	glm::vec3 shipScale = glm::vec3(.30, .30, .30);
 
 	shipArray[0] = new Ship();
 	shipArray[0]->transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
-	shipArray[0]->objectModel = objectModel;
 	shipArray[0]->isActive = true;
 
 	shipArray[1] = new Ship();
 	shipArray[1]->transform = Transform(glm::vec3(-shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 180.f), shipScale);
-	shipArray[1]->objectModel = objectModel;
 	shipArray[1]->isActive = false;
 
 	shipArray[2] = new Ship();
 	shipArray[2]->transform = Transform(glm::vec3(0.0f, shipDistance, 0.0f), glm::vec3(0.f, 0.f, 90.f), shipScale);
-	shipArray[2]->objectModel = objectModel;
 	shipArray[2]->isActive = false;
 
 	shipArray[3] = new Ship();
 	shipArray[3]->transform = Transform(glm::vec3(0.f, -shipDistance, 0.0f), glm::vec3(0.f, 0.f, -90.f), shipScale);
-	shipArray[3]->objectModel = objectModel;
 	shipArray[3]->isActive = false;
 }
 
@@ -70,6 +68,28 @@ void Player::moveHip(int direction, float deltaTime)
 	}
 }
 
+void Player::Nerf(bool nerf, float speedModification, float shootingRateModification)
+{
+	if (nerf && shipArray[0]->getShipMovementRate() == Ship::getActualMovementRate())
+	{
+		for (int i = 0; i < shipArray.size(); i++) 
+		{
+			shipArray[i]->setShipMovementRate(shipArray[i]->getShipMovementRate() * speedModification);
+		}
+		shootingRate *= shootingRateModification;
+		shootingTimer->resetTimer(1 / shootingRate, true, true);
+	}
+	else if (shipArray[0]->getShipMovementRate() < Ship::getActualMovementRate())
+	{
+		for (int i = 0; i < shipArray.size(); i++) 
+		{
+			shipArray[i]->setShipMovementRate(shipArray[i]->getActualMovementRate());
+		}
+		shootingRate = actualShootingRate;
+		shootingTimer->resetTimer(1 / shootingRate, true, true);
+	}
+}
+
 int Player::getMoney()
 {
 	return money;
@@ -82,10 +102,6 @@ void Player::setMoney(int money)
 
 void Player::addMoney(int moneyAmount)
 {
-	if (moneyAmount < 0)
-	{
-		SoundManager::Instance().playSound("Assets/Sounds/purchase.mp3", false);
-	}
 	money += moneyAmount;
 }
 
@@ -108,6 +124,7 @@ void Player::addScore(int scoreAmount)
 void Player::setShootingRate(float shootingRate)
 {
 	this->shootingRate = shootingRate;
+	actualShootingRate = shootingRate;
 }
 
 float Player::getShootingRate()
@@ -119,7 +136,8 @@ void Player::shootWithShips()
 {
 	if(canShoot) {
 		canShoot = false;
-		shootingTimer->resetTimer(true);
+		shootingTimer->resetTimer(1 / shootingRate, true, true);
+		playShootSound();
 		for (auto ship : shipArray) 
 		{
 			if (ship->isActive) ship->Shoot();
@@ -129,12 +147,16 @@ void Player::shootWithShips()
 
 void Player::resetPlayer()
 {
+	for (int i = 0; i < NUM_OF_SHIPS; i++) {
+		Game::Instance().DestroyGameObject(shipArray[i]);
+	}
 	ShipSetup();
+	resetUpgrades();
 	money = 0;
 	score = 0;
 	shootingRate = 1.0f;
+	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "PlayerShootingTimer", true, this);
 	canShoot = true;
-	shootingTimer->resetTimer(false);
 }
 
 void Player::setPitchRotationValue(int pitchRotationValue)
@@ -142,9 +164,45 @@ void Player::setPitchRotationValue(int pitchRotationValue)
 	this->pitchRotationValue = pitchRotationValue;
 }
 
+void Player::playShootSound()
+{
+	SoundManager::Instance().playSound("Assets/Sounds/blast/blast2.mp3", false);
+}
+
 void Player::getNotified(std::string timerName, bool isCallbackEnabled)
 {
 	canShoot = true;
+}
+
+void Player::upgrade(UpgradeIndex upgradeIndex)
+{
+	int intUpgradeIndex = static_cast<int>(upgradeIndex);
+
+	switch (intUpgradeIndex) {
+		case 0:
+			if (nextShipToActivate < 4) {
+				shipArray[nextShipToActivate++]->isActive = true;
+			}
+			break;
+		case 1:
+			actualShootingRate = shootingRate = UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex);
+			break;
+		case 6:
+			for (int i = 0; i < shipArray.size(); i++) {
+				shipArray[i]->setShipMovementRate(UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex));
+				shipArray[i]->setActualMovementRate(UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex));
+			}
+			break;
+		default:
+			cout << "Errore, upgradeIndex fuori dal range accettabile per la classe Player" << endl;
+			break;
+	}
+}
+
+void Player::resetUpgrades()
+{
+	nextShipToActivate = 1;
+	actualShootingRate = shootingRate = UpgradeManager::Instance().getInitialValue(UpgradeIndex::ShootingRate);
 }
 
 GameObject* Player::CheckShipCollision(glm::vec3 position, float radius)

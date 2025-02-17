@@ -5,11 +5,11 @@
 static Model projectileModel;
 static bool loaded;
 
-Projectile::Projectile(float speed, float destroyDistance)
+Projectile::Projectile(float damage, float speed, float destroyDistance)
 {
 	this->speed = speed;
 	this->destroyDistance = destroyDistance;
-	this->damage = 10;
+	this->damage = damage;
 	this->tag = "Projectile";
 	if(!loaded)
 	{ 
@@ -30,36 +30,35 @@ void Projectile::Update(float deltaTime)
 
 	GameObject* hit = Game::Instance().CheckCollision(*this, this->transform.position, this->transform.scale);
 	if(hit != nullptr)
-	{	
+	{
 		if (hit->CompareTag("Ship"))
 		{
 			Ship* shipHit = dynamic_cast<Ship*>(hit);
 			shipHit->Damage(damage);
 		}
-
-		if (hit->CompareTag("Planet"))
+		else if (hit->CompareTag("Planet"))
 		{
 			Planet* p = dynamic_cast<Planet*>(hit);
 			p->Damage(damage);
 		}
-
-		if (hit->CompareTag("Projectile"))
+		else if (hit->CompareTag("Enemy"))
 		{
-			Game::Instance().DestroyGameObject(hit);
-		}
-
-		if (hit->CompareTag("Enemy"))
-		{
+			int random = rand() % 7 + 1;
+			std::string path = "Assets/Sounds/explosion/explosion" + to_string(random) + ".mp3";
+			SoundManager::Instance().playSound(path.c_str(), false);
 			ShootingEntity* shootingEntityHit = dynamic_cast<ShootingEntity*>(hit);
 			if (shootingEntityHit->health.Damage(damage) <= 0)
 			{
 				shootingEntityHit->Die();
 			}
 		}
-
-		if (hit->CompareTag("Ship"))
+		else if (hit->CompareTag("Projectile")) 
 		{
-			
+
+		}
+		else
+		{
+			return;
 		}
 
 		Game::Instance().DestroyGameObject(this);

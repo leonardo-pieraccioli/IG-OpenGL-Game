@@ -1,28 +1,42 @@
 #include "Enemy.h"
 #include "TimerManager.h"
 #include "Coin.h"
+#include "PowerUpNerf.h"
 
+float currentsTime = 0.0f;
+float timersActivation = 2.5f;
 std::pair<float, float> generateEnemyCoordinates(float radius);
 static glm::vec3 enemyScale = glm::vec3(0.25f, 0.25f, 0.25f);
 glm::vec3 planetPosition(0.0f, 0.0f, 0.0f); // Planet position
 static Model enemyModel;
+static float actualSpeed;
+static float enemyShootingRate; 
+static float actualEnemyShootingRate;
 
-Enemy::Enemy(int rewardMoney, int rewardScore, float speed, float shootingDistance, float shootingRate, float decelerationDistance)
+static int current_enemy_count = 0;
+static int initial_max_enemy_count = 4;
+
+Enemy::Enemy(int rewardMoney, int rewardScore, float shootingDistance, float shootingRate, float decelerationDistance)
 {
 	this->rewardMoney = rewardMoney;
 	this->rewardScore = rewardScore;
-	this->speed = speed;
 	this->shootingDistance = shootingDistance;
 	this->decelerationDistance = decelerationDistance;
-	this->shootingRate = shootingRate == 0.f ? 0.000001f : shootingRate;
+	this->shootingRate == 0.f ? 0.000001f : enemyShootingRate;
 	this->tag = "Enemy";
-	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "Enemy" + std::to_string(this->GetID()), true, this);
+	actualSpeed = enemySpeed = utilsF::randomNumberInInterval(baseMinSpeed + (Game::Instance().getRound() * .3f), baseMaxSpeed + (Game::Instance().getRound() * .3f));
+	actualEnemyShootingRate = shootingRate;
+	shootingTimer = TimerManager::CreateTimer(enemyShootingRate * std::powf(Game::Instance().getRound(),-.33), false, "Enemy" + std::to_string(this->GetID()), true, this);
+	health.UpgradeMax(Game::Instance().getRound() * baseHealth);
+	timersActivation = utilsF::randomNumberInInterval(baseMinSpawnRate + std::powf(Game::Instance().getRound(), -1.5f), baseMaxSpawnRate + std::powf(Game::Instance().getRound(), -1.5f));
 	srand((unsigned)time(NULL));
 }
 
 void Enemy::Init(Model model)
 {
 	enemyModel = Model("Assets/Models/enemy1.obj");
+	enemyShootingRate = actualEnemyShootingRate = 1.5f;
+	current_enemy_count = 0;
 }
 
 void Enemy::Update(float deltaTime)
@@ -36,7 +50,7 @@ void Enemy::Update(float deltaTime)
 		tDeceleration = utilsF::interpolateOnRadiuses(a_x, a_y, this->transform.rotation.z, shootingDistance, decelerationDistance);//a_x, a_y, ship_z, minR, maxR
 	}
 	if (!shouldStop && distanceFromCenter > shootingDistance) {
-		Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, speed*tDeceleration));
+		Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, enemySpeed*tDeceleration));
 	}
 	else {
 		if (!shootingTimer->getIsTicking()) {
@@ -49,7 +63,7 @@ void Enemy::Update(float deltaTime)
 		}
 		switch (frameCounter) {
 			case 0:
-				tVibration = 1 - (shootingTimer->getRemainingTime() * shootingRate);
+				tVibration = 1 - (shootingTimer->getRemainingTime() * enemyShootingRate);
 				currentVibrationCoords = utilsF::generateVibrationCoords(tVibration * maxVibrationRadius);
 				Move(std::pair<float, float>(currentVibrationCoords.first + a_x, currentVibrationCoords.second + a_y));
 				break;
@@ -90,36 +104,88 @@ void Enemy::Move(std::pair<float, float> newCoords)
 
 void Enemy::Shoot()
 {
-	ShootingEntity::Shoot();
+	SoundManager::Instance().playSound("Assets/Sounds/blast/blast1.mp3", false);
 	std::pair<float, float> pCoords = utilsF::calculateForwardXY(this->transform.rotation.z, 1.0f, this->transform.position.x, this->transform.position.y, 0.8f);
-	Game::Instance().InstantiateGameObject(new Projectile(), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
-	shootingTimer->resetTimer(true);
+	float damage = baseDamage + std::floorf(Game::Instance().getRound() * 0.5f);
+	Game::Instance().InstantiateGameObject(new Projectile(damage), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
+	shootingTimer->resetTimer(enemyShootingRate * std::powf(Game::Instance().getRound(), -1/3) + 0.5f, true, true);
 }
 
 void Enemy::Die()
 {
 	int random = rand() % 7 + 1;
-	std::string path = "Assets/Sounds/explosion/explosion" + to_string(random) + ".mp3";
-	SoundManager::Instance().playSound(path.c_str(), false);
 	Game::Instance().player->addScore(rewardScore);
 	auto x = transform.position.x;
 	auto y = transform.position.y;
-	Game::Instance().InstantiateGameObject(new Coin(rewardMoney, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
+	if (random > 0 && random < 6) {
+		Game::Instance().InstantiateGameObject(new Coin(rewardMoney, 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(90.f, 0.f, 0.f), coinScale));
+	}
+	else if (random == 6) {
+		Game::Instance().InstantiateGameObject(new PowerUpNerf("PowerUp", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(-90.f, 0.f, 0.f), pwupnScale));
+	}
+	else if (random == 7) {
+		Game::Instance().InstantiateGameObject(new PowerUpNerf("Nerf", 5.0f, x, y), new Transform(glm::vec3(x, y, -2.0f), glm::vec3(-90.f, 0.f, 0.f), pwupnScale));
+	}
+	current_enemy_count--;
 	Game::Instance().DestroyGameObject(this);
 }
+
+float Enemy::getActualSpeed()
+{
+	return actualSpeed;
+}
+
+void Enemy::setActualSpeed(float newSpeed)
+{
+	actualSpeed = newSpeed;
+}
+
+int Enemy::getCurrentEnemyCount()
+{
+	return current_enemy_count;
+}
+
+void Enemy::setCurrentEnemyCount(int newCount)
+{
+	current_enemy_count = newCount;
+}
+
+// TO USE THIS FUNCTION enemySpeed MUST BE static
+/*
+void Enemy::Nerf(bool nerf, float srNerfAmount, float mrNerfAmount)
+{
+	if (nerf && enemySpeed == actualSpeed)
+	{
+		enemySpeed *= mrNerfAmount;
+		enemyShootingRate *= srNerfAmount;
+	}
+	else if (enemySpeed < actualSpeed)
+	{
+		enemySpeed = actualSpeed;
+		enemyShootingRate = actualEnemyShootingRate;
+	}
+}
+*/
 
 void Enemy::getNotified(std::string timerName, bool isCallbackEnabled)
 {
 	canShoot = true;
 }
 
-float currentsTime = 0.0f;
-float timersActivation = 2.0f;
+void Enemy::playChargeSound()
+{
+	std::string path = "Assets/Sounds/chargingShot.mp3";
+	chargeSound = SoundManager::Instance().playSoundWithRetP(path.c_str(), true);
+}
 
 void Enemy::generateEnemies(float deltaTime)
 {
-	// Timer per gestire l'istanza delle monete nel tempo
+	if (current_enemy_count >= initial_max_enemy_count + Game::Instance().getRound()) {
+		return;
+	}
+	// Timer per gestire l'istanza dei nemici nel tempo
 	currentsTime += deltaTime;
+
 	if (currentsTime >= timersActivation) {
 		currentsTime = 0;
 
@@ -144,6 +210,7 @@ void Enemy::generateEnemies(float deltaTime)
 		// Instanzia l'oggetto con la rotazione calcolata
 		Transform *newTransform = new Transform(glm::vec3(x, y, 0), eulerAngles, enemyScale);
 		newTransform->collisionRadius = .5f;
+		current_enemy_count++;
 		Game::Instance().InstantiateGameObject(new Enemy(), newTransform);
 	}
 }

@@ -38,6 +38,10 @@ int Health::UpgradeMax(int newMax)
 	{
 		current = newMax;
 	}
+	else if (current < max)
+	{
+		current = (int) ((float) newMax * ((float) current/ (float) max));
+	}
 	else if (newMax < current)
 	{
 		current = newMax;
