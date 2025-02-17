@@ -142,6 +142,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     lightingShader.SetVector3f("material.diffuse", 1.0f, 1.0f, 1.0f);
     lightingShader.SetVector3f("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
     lightingShader.SetFloat("material.shininess", 10.0f);
+    lightingShader.SetInteger("shouldActivateHalftoning", 0);
 
     // --------------------------------------------------------------------------------------------------------------------------------------------------- //
   
@@ -154,6 +155,10 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     TextManager::Instance().InitManager(SCR_WIDTH, SCR_HEIGHT);
     TextManager::Instance().LoadFont("resources/fonts/Space Age/space age.ttf", "Space Age");
     //TextManager::Instance().LoadFont("resources/fonts/Antonio/static/Antonio-Bold.ttf", "Antonio-Bold");
+
+    // Music
+    SoundManager::Instance().setup();
+    ost = SoundManager::Instance().playSoundWithRetP("Assets/Sounds/star_striker.mp3", true);
 
     gameState = GameState::Menu;
 
@@ -456,6 +461,8 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
 				player->Nerf(true, nerf->getModifiedMovementRate(), nerf->getModifiedShootingRate());
                 malusTimer->resetTimer(true);
                 SoundManager::Instance().playSound("Assets/Sounds/malus.mp3", false);
+                lightingShader.SetInteger("shouldActivateHalftoning", 1);
+                SoundManager::Instance().changePitch(ost, 0.85f);
                 DestroyGameObject(collectable);
                 break;
             }
@@ -510,6 +517,8 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
     }
     if (timerName == "Malus Timer") {
 		this->player->Nerf(false);
+        lightingShader.SetInteger("shouldActivateHalftoning", 0);
+        SoundManager::Instance().changePitch(ost, 1.0f);
     }
 }
 
@@ -539,7 +548,8 @@ void Game::resetGame()
             obj++;
         }
     }
-    SoundManager::Instance().playSound("Assets/Sounds/star_striker.mp3", true);
+    ost = SoundManager::Instance().playSoundWithRetP("Assets/Sounds/star_striker.mp3", true);
+    lightingShader.SetInteger("shouldActivateHalftoning", 0);
 }
 
 void Game::drawMenuModel(Shader shader)

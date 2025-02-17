@@ -33,6 +33,11 @@ float Timer::getRemainingTime()
 	return currentTimeAmount;
 }
 
+float Timer::getStartingTime()
+{
+	return initialTimeAmount;
+}
+
 void Timer::setIsTicking(bool isTicking)
 {
 	this->isTicking = isTicking;

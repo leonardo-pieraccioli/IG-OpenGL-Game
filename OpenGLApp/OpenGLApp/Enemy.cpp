@@ -63,7 +63,7 @@ void Enemy::Update(float deltaTime)
 		}
 		switch (frameCounter) {
 			case 0:
-				tVibration = 1 - (shootingTimer->getRemainingTime() * enemyShootingRate);
+				tVibration = 1 - (shootingTimer->getRemainingTime() / shootingTimer->getStartingTime());
 				currentVibrationCoords = utilsF::generateVibrationCoords(tVibration * maxVibrationRadius);
 				Move(std::pair<float, float>(currentVibrationCoords.first + a_x, currentVibrationCoords.second + a_y));
 				break;
@@ -170,12 +170,6 @@ void Enemy::Nerf(bool nerf, float srNerfAmount, float mrNerfAmount)
 void Enemy::getNotified(std::string timerName, bool isCallbackEnabled)
 {
 	canShoot = true;
-}
-
-void Enemy::playChargeSound()
-{
-	std::string path = "Assets/Sounds/chargingShot.mp3";
-	chargeSound = SoundManager::Instance().playSoundWithRetP(path.c_str(), true);
 }
 
 void Enemy::generateEnemies(float deltaTime)

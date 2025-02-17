@@ -32,3 +32,10 @@ void SoundManager::stopAllSounds()
 {
 	this->SoundEngine->stopAllSounds();
 }
+
+void SoundManager::changePitch(irrklang::ISound* sound, float pitch)
+{
+	if (sound) {
+		sound->setPlaybackSpeed(pitch);
+	}
+}

@@ -30,9 +30,7 @@ private:
 	
 	std::pair<float, float> currentVibrationCoords;
 	bool shouldStop = false;
-	irrklang::ISound* chargeSound;
 
-	void playChargeSound();
 
 public:
 	Enemy(int rewardMoney = 100, int rewardScore = 100, float shootingDistance = 5.0f, float shootingRate = 1.5f, float decelerationDistance = 7.0f);

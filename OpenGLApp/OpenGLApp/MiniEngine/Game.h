@@ -144,6 +144,9 @@ private:
 	bool aHeldDown = false;
 	bool dHeldDown = false;
 
+	// ISound variables
+	irrklang::ISound* ost;
+
 	// Round stats
 	int round = 1;
 };

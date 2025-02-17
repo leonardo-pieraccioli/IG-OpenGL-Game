@@ -14,6 +14,7 @@ public:
 
     void setNewTime(float currentTimeAmount, bool isTicking = false);
     float getRemainingTime();
+    float getStartingTime();
 
     void setIsTicking(bool isTicking);
     bool getIsTicking();

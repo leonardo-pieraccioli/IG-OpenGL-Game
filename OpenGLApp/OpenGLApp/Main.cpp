@@ -59,10 +59,6 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
     //-------------------------------------
-    
-    // Background music
-    SoundManager::Instance().setup();
-    SoundManager::Instance().playSound("Assets/Sounds/star_striker.mp3", true);
 
     // render loop
     // -----------

@@ -14,6 +14,7 @@ public:
 	irrklang::ISound* playSoundWithRetP(const char* path, bool loop);
 	void stopSound(irrklang::ISound* sound);
 	void stopAllSounds();
+	void changePitch(irrklang::ISound* sound, float pitch);
 private:
 
 };
