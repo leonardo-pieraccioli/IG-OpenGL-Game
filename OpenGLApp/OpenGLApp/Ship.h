@@ -33,5 +33,7 @@ public:
 
 	void upgrade(UpgradeIndex upgradeIndex) override;
 	void resetUpgrades() override;
+
+	static void setShipModel();
 };
 

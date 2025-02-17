@@ -13,6 +13,7 @@ public:
 	Coin(int initialAmount, float despawnTime, float x, float y);
 
 	void Update(float deltaTime) override;
+	void Draw(Shader shader) override;
 
 	void setMoney(int money);
 	int getMoney();

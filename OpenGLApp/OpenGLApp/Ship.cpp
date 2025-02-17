@@ -3,10 +3,11 @@
 
 #define SHIP_INITIAL_HEALTH 50
 static float actualMovementRate;
+static Model shipModel;
 
 Ship::Ship(int nProjectiles)
 {
-    actualMovementRate = movementRate;
+	actualMovementRate = movementRate;
 	this->nProjectiles = nProjectiles;
     this->tag = "Ship";
     this->health.UpgradeMax(SHIP_INITIAL_HEALTH);
@@ -104,6 +105,16 @@ void Ship::resetUpgrades()
     damage = UpgradeManager::Instance().getInitialValue(UpgradeIndex::Damage);
 }
 
+static bool loaded = false;
+void Ship::setShipModel()
+{
+	if (!loaded)
+	{
+		loaded = true;
+		shipModel = Model("Assets/Models/spaceship.obj");
+	}
+}
+
 void Ship::Update(float deltaTime)
 {
     
@@ -121,5 +132,5 @@ void Ship::Draw(Shader shader)
     model_mat = glm::rotate(model_mat, glm::radians(utilsF::lerp(0.0f, 45.0f, tLerp)), glm::vec3(1.0f, 0.0f, 0.0f));
     model_mat = glm::scale(model_mat, transform.getScale());
     shader.SetMatrix4("model", model_mat);
-    objectModel.Draw(shader);
+    shipModel.Draw(shader);
 }

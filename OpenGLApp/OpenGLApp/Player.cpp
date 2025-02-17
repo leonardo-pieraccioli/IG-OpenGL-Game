@@ -4,8 +4,8 @@
 
 Player::Player()
 {
-	objectModel = Model("Assets/Models/spaceship.obj");
 	ShipSetup();
+	Ship::setShipModel();
 	money = 0;
 	this->tag = "Player";
 	actualShootingRate = shootingRate;
@@ -19,22 +19,18 @@ void Player::ShipSetup()
 
 	shipArray[0] = new Ship();
 	shipArray[0]->transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
-	shipArray[0]->objectModel = objectModel;
 	shipArray[0]->isActive = true;
 
 	shipArray[1] = new Ship();
 	shipArray[1]->transform = Transform(glm::vec3(-shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 180.f), shipScale);
-	shipArray[1]->objectModel = objectModel;
 	shipArray[1]->isActive = false;
 
 	shipArray[2] = new Ship();
 	shipArray[2]->transform = Transform(glm::vec3(0.0f, shipDistance, 0.0f), glm::vec3(0.f, 0.f, 90.f), shipScale);
-	shipArray[2]->objectModel = objectModel;
 	shipArray[2]->isActive = false;
 
 	shipArray[3] = new Ship();
 	shipArray[3]->transform = Transform(glm::vec3(0.f, -shipDistance, 0.0f), glm::vec3(0.f, 0.f, -90.f), shipScale);
-	shipArray[3]->objectModel = objectModel;
 	shipArray[3]->isActive = false;
 }
 
@@ -140,8 +136,7 @@ void Player::shootWithShips()
 {
 	if(canShoot) {
 		canShoot = false;
-		shootingTimer->resetTimer(1 / 
-		shootingRate, true, true);
+		shootingTimer->resetTimer(1 / shootingRate, true, true);
 		playShootSound();
 		for (auto ship : shipArray) 
 		{
