@@ -74,6 +74,20 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+    // FULLSCREEN
+    // La risoluzione va settata come quella del monitor, altrimenti fa i resize sbagliati
+    // Questo probabilmente si può fare prendendosi la variabile monitor tramite glfwGetPrimaryMonitor
+    // In fullscreen si nota una cornice leggera bianca, probabilmente dovuta alle window di ImGui
+    // Probabilmente si risolve inserendo qualche flag
+    // La cosa migliore sarebbe fare in modo che il fullscreen potesse essere messo e tolto
+    // Se si prova a fare alt+tab mentre si è in fullscreen non riesce più a tornare dentro la finestra.
+    // Probabilmente c'è un cambio di contesto che non riusciamo a gestire
+    //
+    // TLDR: è decisamente più bello in fullscreen, ma probabilmente richiede più lavoro di quanto 
+    //       riusciamo a metterci. Sarebbe bello sbloccarlo in futuro.
+    //gameWindow = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME, glfwGetPrimaryMonitor(), nullptr);
+    //--------------------------------------------------------------------------------------------------------
+
     // glfw window creation
     // --------------------
     gameWindow = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME, NULL, NULL);
