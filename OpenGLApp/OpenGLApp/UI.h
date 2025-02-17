@@ -48,6 +48,27 @@ void playsound(UISound soundID)
     }
 }
 
+vector<int> gen3Nums()
+{
+    vector<int> result;
+    random_device rd; // obtain a random number from hardware
+    mt19937 eng(rd()); // seed the generator
+    uniform_int_distribution<> distr(0, TOT_UPGRADES - 1); // define the range 
+
+    int i = 0;
+    while (i < 3) { // loop until you have collected the sufficient number of results
+        int randVal = distr(eng);
+        if (std::find(std::begin(result), std::end(result), randVal) == std::end(result)) {
+            // ^^^^^^^^^^^^ The above part is essential, only add random numbers to the result 
+            // which aren't yet contained.
+            result.push_back(randVal);
+            cout << result[i];
+            ++i;
+        }
+    }
+    return result;
+}
+
 #pragma region Play
 
 void UIPlay()
@@ -369,22 +390,9 @@ void UIShop()
     // RANDOM UPGRADE SELECTION
     // ------------------------
     static bool choiceMade = false;
-    static std::array<int,3> randUpgIdx = { -1, -1, -1 };
+    static std::vector<int> randUpgIdx = gen3Nums();
 	static bool clicked[3] = { false, false, false };
-    std::srand(std::time(nullptr));
-    if (!choiceMade)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-			clicked[i] = false;
-            do
-            {
-                randUpgIdx[i] = std::rand() % TOT_UPGRADES;
-	        } while (i != 0 && randUpgIdx[i] == randUpgIdx[i-1]);
-
-        }
-        choiceMade = true;
-    }
+    
 
     ImGui::SeparatorText("Upgrades");
     ImVec2 upgradeButton = { 500, 50 };
