@@ -1,6 +1,6 @@
 #pragma once
 #include "array"
-#define TOT_UPGRADES 6
+#define TOT_UPGRADES 7
 
 enum UpgradeIndex: int{
 	ShipsNumber		= 0,	// Player
@@ -8,7 +8,8 @@ enum UpgradeIndex: int{
 	BulletsNumber	= 2,	// Ship
 	MaxShipsHealth	= 3,	// Ship
 	Damage			= 4,	// Ship
-	PlanetHealth	= 5		// Planet
+	PlanetHealth	= 5,	// Planet
+	ShipsSpeed		= 6		// Ship
 };
 
 class UpgradeManager
@@ -29,12 +30,13 @@ private:
 
 	//	upgrade_name			init_val	curr_val	val_incr	max_val		init_cost	cost	cost_increment_rate
 	std::array<upgradeType,	TOT_UPGRADES> currentUpgrades = {{
-		{"Number of ships",		1.0f,		1.0f,		1.f,		4.0f,		500,		500,	1.5f},
-		{"Shooting rate",		1.0f,		1.0f,		0.5f,		5.0f,		500,		500,	1.5f},
-		{"Bullets number",		1.0f,		1.0f,		2.f,		5.0f,		600,		600,	2.f},
-		{"Ship max health",		100.f,		100.f,		50.f,		1000.f,		100,		100,	1.5f},
-		{"Laser damage",		10.f,		10.f,		5.f,		50.f,		250,		250,	1.2f},
-		{"Planet max health",	100.f,		100.f,		20.f,		200.f,		300,		300,	1.7f},
+		{"Number of ships",		1.0f,		1.0f,		1.f,		4.0f,		1500,		1500,	2.0f},
+		{"Shooting rate",		1.0f,		1.0f,		0.50f,		7.0f,		550,		550,	1.5f},
+		{"Bullets number",		1.0f,		1.0f,		2.f,		5.0f,		1200,		1200,	2.5f},
+		{"Ship max health",		80.f,		80.f,		20.f,		200.f,		200,		200,	1.5f},
+		{"Laser damage",		10.f,		10.f,		7.5f,		100.f,		250,		250,	1.3f},
+		{"Planet max health",	100.f,		100.f,		25.f,		300.f,		500,		500,	1.8f},
+		{"Ship rotation speed",	90.f,		90.f,		5.f,		120.f,		300,		300,	1.5f}
 	}};
 
 public:

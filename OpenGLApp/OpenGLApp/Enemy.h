@@ -11,7 +11,7 @@ private:
 	// constants
 	const float maxVibrationRadius = 0.05f;
 	const float baseDamage = 1.0f;
-	const float baseHealth = 2.0f;
+	const float baseHealth = 2.5f;
 	const float baseMinSpawnRate = .5f;
 	const float baseMaxSpawnRate = 1.f;
 	const float baseMinSpeed = 1.7f;
@@ -46,6 +46,8 @@ public:
 
 	static float getActualSpeed();
 	static void setActualSpeed(float newSpeed);
+	static int getCurrentEnemyCount();
+	static void setCurrentEnemyCount(int newCount);
 	// static void Nerf(bool nerf, float srNerfAmount=1, float mrNerfAmount=1);
 
 	void getNotified(std::string timerName, bool isCallbackEnabled) override;

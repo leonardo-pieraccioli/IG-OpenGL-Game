@@ -502,14 +502,21 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
 void Game::resetGame()
 {
     SoundManager::Instance().stopAllSounds();
-    roundTimer->resetTimer(true);
+    UpgradeManager::Instance().reset();
+    TimerManager::DestroyTimers();
+
+    roundTimer = TimerManager::CreateTimer(TIMER_DURATION, true, "Round Timer", true, this);
+    bonusTimer = TimerManager::CreateTimer(modifierTimeAmount, false, "Bonus Timer", true, this);
+    malusTimer = TimerManager::CreateTimer(modifierTimeAmount, false, "Malus Timer", true, this);
+
     player->resetPlayer();
     planet->resetPlanet();
-    UpgradeManager::Instance().reset();
+	Enemy::setCurrentEnemyCount(0);
+
     round = 1;
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); )
     {
-        if (dynamic_cast<Enemy*>(*obj) || dynamic_cast<Coin*>(*obj) || dynamic_cast<Projectile*>(*obj))
+        if (dynamic_cast<Enemy*>(*obj) || dynamic_cast<Collectables*>(*obj) || dynamic_cast<Projectile*>(*obj))
         {
             obj = activeObjects.erase(obj);
         }
@@ -550,24 +557,26 @@ int Game::getRound()
 
 void Game::upgrade(UpgradeIndex upgradeIndex)
 {
-    int intUpgradeIndex = static_cast<int>(upgradeIndex);
     auto& ships = player->shipArray;
 
-    switch (intUpgradeIndex) {
-        case 0:
-        case 1:
+    switch (upgradeIndex) {
+        case ShipsNumber:
+        case ShootingRate:
             player->upgrade(upgradeIndex);
             break;
-        case 2:
-        case 3:
-        case 4:
-            for (int i = 0; i < player->shipArray.size() && ships[i]->isActive; i++) {
+        case BulletsNumber:
+        case MaxShipsHealth:
+        case Damage:
+            for (int i = 0; i < player->shipArray.size(); i++) {
                 ships[i]->upgrade(upgradeIndex);
             }
             break;
-        case 5:
+        case PlanetHealth:
             planet->upgrade(upgradeIndex);
             break;
+		case ShipsSpeed:
+			player->upgrade(upgradeIndex);
+			break;
         default:
             cout << "Errore, upgradeIndex fuori dal range di potenziamenti disponibili" << endl;
     }

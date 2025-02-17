@@ -15,7 +15,7 @@ Player::Player()
 
 void Player::ShipSetup()
 {
-	glm::vec3 shipScale = glm::vec3(.35, .35, .35);
+	glm::vec3 shipScale = glm::vec3(.30, .30, .30);
 
 	shipArray[0] = new Ship();
 	shipArray[0]->transform = Transform(glm::vec3(shipDistance, 0.f, 0.0f), glm::vec3(0.f, 0.f, 0.f), shipScale);
@@ -140,7 +140,8 @@ void Player::shootWithShips()
 {
 	if(canShoot) {
 		canShoot = false;
-		shootingTimer->resetTimer(true);
+		shootingTimer->resetTimer(1 / 
+		shootingRate, true, true);
 		playShootSound();
 		for (auto ship : shipArray) 
 		{
@@ -159,8 +160,8 @@ void Player::resetPlayer()
 	money = 0;
 	score = 0;
 	shootingRate = 1.0f;
+	shootingTimer = TimerManager::CreateTimer(1 / shootingRate, false, "PlayerShootingTimer", true, this);
 	canShoot = true;
-	shootingTimer->resetTimer(false);
 }
 
 void Player::setPitchRotationValue(int pitchRotationValue)
@@ -190,6 +191,12 @@ void Player::upgrade(UpgradeIndex upgradeIndex)
 			break;
 		case 1:
 			actualShootingRate = shootingRate = UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex);
+			break;
+		case 6:
+			for (int i = 0; i < shipArray.size(); i++) {
+				shipArray[i]->setShipMovementRate(UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex));
+				shipArray[i]->setActualMovementRate(UpgradeManager::Instance().getGenericCurrentValue(upgradeIndex));
+			}
 			break;
 		default:
 			cout << "Errore, upgradeIndex fuori dal range accettabile per la classe Player" << endl;

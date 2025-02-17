@@ -36,6 +36,7 @@ void Enemy::Init(Model model)
 {
 	enemyModel = Model("Assets/Models/enemy1.obj");
 	enemyShootingRate = actualEnemyShootingRate = 1.5f;
+	current_enemy_count = 0;
 }
 
 void Enemy::Update(float deltaTime)
@@ -137,6 +138,16 @@ float Enemy::getActualSpeed()
 void Enemy::setActualSpeed(float newSpeed)
 {
 	actualSpeed = newSpeed;
+}
+
+int Enemy::getCurrentEnemyCount()
+{
+	return current_enemy_count;
+}
+
+void Enemy::setCurrentEnemyCount(int newCount)
+{
+	current_enemy_count = newCount;
 }
 
 // TO USE THIS FUNCTION enemySpeed MUST BE static

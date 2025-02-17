@@ -29,20 +29,18 @@ void Projectile::Update(float deltaTime)
 	Move(utilsF::calculateForwardXY(this->transform.rotation.z, deltaTime, this->transform.position.x, this->transform.position.y, speed));
 
 	GameObject* hit = Game::Instance().CheckCollision(*this, this->transform.position, this->transform.scale);
-	if(hit != nullptr && !hit->CompareTag("Projectile"))
+	if(hit != nullptr)
 	{
 		if (hit->CompareTag("Ship"))
 		{
 			Ship* shipHit = dynamic_cast<Ship*>(hit);
 			shipHit->Damage(damage);
 		}
-
 		else if (hit->CompareTag("Planet"))
 		{
 			Planet* p = dynamic_cast<Planet*>(hit);
 			p->Damage(damage);
 		}
-
 		else if (hit->CompareTag("Enemy"))
 		{
 			int random = rand() % 7 + 1;
@@ -54,7 +52,10 @@ void Projectile::Update(float deltaTime)
 				shootingEntityHit->Die();
 			}
 		}
+		else if (hit->CompareTag("Projectile")) 
+		{
 
+		}
 		else
 		{
 			return;

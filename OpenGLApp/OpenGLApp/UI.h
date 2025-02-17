@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "imgui.h"
 #include "MiniEngine/Game.h"
 #include "MiniEngine/SoundManager.h"
@@ -95,6 +97,17 @@ void UIPlay()
     ImGui::SetCursorPosY(10);
     ImGui::Text(roundTimeText.c_str());
     ImGui::PopFont();
+
+    // ROUND
+    // -----
+    {
+		ImGui::PushFont(Game::Instance().font_SA_medium);
+		ImGui::SetCursorPosX(10);
+		ImGui::SetCursorPosY(10);
+		std::string roundText = "Round: " + std::to_string(Game::Instance().getRound());
+		ImGui::Text(roundText.c_str());
+		ImGui::PopFont();
+    }
 
     // SCORE
     // -----
@@ -311,7 +324,7 @@ void UIShop()
     // ------------
     // Ship healing
 
-    int healingCostFactor = 5;
+    int healingCostFactor = 5 + Game::Instance().getRound() * 0.5 - 0.5;
 
     ImVec2 buttonDim = { ((ImGui::GetWindowWidth() - 400) / 4), 50 };
     ImGui::SeparatorText("Ship Health");
@@ -356,7 +369,7 @@ void UIShop()
     // RANDOM UPGRADE SELECTION
     // ------------------------
     static bool choiceMade = false;
-    static int randUpgIdx[3];
+    static std::array<int,3> randUpgIdx = { -1, -1, -1 };
 	static bool clicked[3] = { false, false, false };
     std::srand(std::time(nullptr));
     if (!choiceMade)
@@ -364,7 +377,11 @@ void UIShop()
         for (int i = 0; i < 3; i++)
         {
 			clicked[i] = false;
-            randUpgIdx[i] = std::rand() % TOT_UPGRADES;
+            do
+            {
+                randUpgIdx[i] = std::rand() % TOT_UPGRADES;
+	        } while (i != 0 && randUpgIdx[i] == randUpgIdx[i-1]);
+
         }
         choiceMade = true;
     }
@@ -433,7 +450,7 @@ void UIShop()
         float upgradeValue = UpgradeManager::Instance().getGenericCurrentValue(upgIdx);
 		std::string upgradeValueStr = std::to_string(upgradeValue);
 		upgradeValueStr = upgradeValueStr.substr(0, upgradeValueStr.find(".") + 3);
-        std::string buttonText = std::string(upgradeName) + " : " + upgradeValueStr + " |";
+        std::string buttonText = std::string(upgradeName) + " : " + upgradeValueStr + "\t";
         ImGui::Text(buttonText.c_str());
         ImGui::SameLine();
         if (i % 2 == 1)
@@ -449,13 +466,13 @@ void UIShop()
     // -----------
     ImGui::PushFont(Game::Instance().font_SA_small);
     ImVec2 progressBarDim = { 500, 40 };
-    int healPlanetCost = 200;
+    int healPlanetCost = 200 + Game::Instance().getRound() - 1;
     ImGui::SetCursorPos({ ImGui::GetWindowWidth() / 2 - progressBarDim.x / 2, ImGui::GetWindowHeight() - 75 - progressBarDim.y});
-    if (ImGui::Button(std::string("Heal Planet by 10: " + std::to_string(healPlanetCost)).c_str(), progressBarDim) && Game::Instance().player->getMoney() >= 200 && Game::Instance().planet->health.healthStatus() != Game::Instance().planet->health.getMax())
+    if (ImGui::Button(std::string("Heal Planet by 15: " + std::to_string(healPlanetCost)).c_str(), progressBarDim) && Game::Instance().player->getMoney() >= 200 && Game::Instance().planet->health.healthStatus() != Game::Instance().planet->health.getMax())
     {
         playsound(heal);
-        Game::Instance().player->addMoney(-200);
-        Game::Instance().planet->health.Heal(10);
+        Game::Instance().player->addMoney(-healPlanetCost);
+        Game::Instance().planet->health.Heal(15);
     }
     ImGui::PopFont();
 
