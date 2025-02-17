@@ -265,10 +265,10 @@ void UIControls()
     TextCentered("Press spacebar to shoot enemies.", ImGui::GetCursorPosY());
     ImGui::NewLine();
     TextCentered("When enemies die, they spawn coins.", ImGui::GetCursorPosY());
-    TextCentered("Collect the coins to buy upgrades in the shop.", ImGui::GetCursorPosY());
+    TextCentered("Collect the coins by clicking on them to buy upgrades in the shop.", ImGui::GetCursorPosY());
     ImGui::NewLine();
-    TextCentered("Be careful! Sometimes coins are dangerous (red) or useful (green).", ImGui::GetCursorPosY());
-    TextCentered("Don't click everywhere like a monkey!", ImGui::GetCursorPosY());
+    TextCentered("Be careful! Enemies can drop maluses (red) and bonuses (green).", ImGui::GetCursorPosY());
+    TextCentered("Don't click everywhere like a space monkey!", ImGui::GetCursorPosY());
     ImGui::PopFont();
 
     buttonWidth = ImGui::CalcTextSize(" Back to Menu ").x;
