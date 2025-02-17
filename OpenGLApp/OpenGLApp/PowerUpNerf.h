@@ -17,5 +17,7 @@ public:
 	bool doesPwUpNOverlap(glm::vec3 mouseWorldCoord);
 	float getModifiedShootingRate();
 	float getModifiedMovementRate();
+
+	void Draw(Shader shader) override;
 };
 
