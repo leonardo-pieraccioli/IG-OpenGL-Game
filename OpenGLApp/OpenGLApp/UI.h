@@ -416,7 +416,7 @@ void UIShop()
         {
             if (Game::Instance().player->getMoney() >= upgradeCost)
             {
-				clicked[i] = true;
+				// clicked[i] = true;
                 playsound(upgrade);
                 Game::Instance().player->addMoney(-upgradeCost);
                 UpgradeManager::Instance().makeUpgrade(upgradeIdx);
