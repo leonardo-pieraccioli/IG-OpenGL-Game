@@ -390,8 +390,18 @@ void UIShop()
     // RANDOM UPGRADE SELECTION
     // ------------------------
     static bool choiceMade = false;
-    static std::vector<int> randUpgIdx = gen3Nums();
+    static std::vector<int> randUpgIdx;
 	static bool clicked[3] = { false, false, false };
+
+	if (!choiceMade)
+	{
+		randUpgIdx = gen3Nums();
+		choiceMade = true;
+		for (int i = 0; i < 3; i++)
+		{
+			clicked[i] = false;
+		}
+	}
     
 
     ImGui::SeparatorText("Upgrades");
