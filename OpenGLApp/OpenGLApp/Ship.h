@@ -9,7 +9,7 @@ class Ship : public ShootingEntity, public IUpgradable
 {
 private:
 	int nProjectiles;
-	float movementRate = 90.0f;
+	float movementRate = 95.0f;
 
 	const float maxPitchRotation = 45.0f;
 	const float pitchRotationTime = 0.25f;

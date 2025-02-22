@@ -14,7 +14,7 @@ static float enemyShootingRate;
 static float actualEnemyShootingRate;
 
 static int current_enemy_count = 0;
-static int initial_max_enemy_count = 4;
+static int initial_max_enemy_count = 2;
 
 Enemy::Enemy(int rewardMoney, int rewardScore, float shootingDistance, float shootingRate, float decelerationDistance)
 {
@@ -35,7 +35,7 @@ Enemy::Enemy(int rewardMoney, int rewardScore, float shootingDistance, float sho
 void Enemy::Init(Model model)
 {
 	enemyModel = Model("Assets/Models/enemy1.obj");
-	enemyShootingRate = actualEnemyShootingRate = 1.5f;
+	enemyShootingRate = actualEnemyShootingRate = 2.f;
 	current_enemy_count = 0;
 }
 
@@ -106,7 +106,7 @@ void Enemy::Shoot()
 {
 	SoundManager::Instance().playSound("Assets/Sounds/blast/blast1.mp3", false);
 	std::pair<float, float> pCoords = utilsF::calculateForwardXY(this->transform.rotation.z, 1.0f, this->transform.position.x, this->transform.position.y, 0.8f);
-	float damage = baseDamage + std::floorf(Game::Instance().getRound() * 0.5f);
+	float damage = baseDamage + std::floorf(Game::Instance().getRound() / 3);
 	Game::Instance().InstantiateGameObject(new Projectile(damage), new Transform(glm::vec3(pCoords.first, pCoords.second, 0.0f), glm::vec3(this->transform.rotation.x, this->transform.rotation.y, this->transform.rotation.z), glm::vec3(0.10f, 0.25f, 0.25f)));
 	shootingTimer->resetTimer(enemyShootingRate * std::powf(Game::Instance().getRound(), -1/3) + 0.5f, true, true);
 }
@@ -174,7 +174,7 @@ void Enemy::getNotified(std::string timerName, bool isCallbackEnabled)
 
 void Enemy::generateEnemies(float deltaTime)
 {
-	if (current_enemy_count >= initial_max_enemy_count + Game::Instance().getRound()) {
+	if (current_enemy_count >= initial_max_enemy_count + std::floorf(Game::Instance().getRound() / 2)) {
 		return;
 	}
 	// Timer per gestire l'istanza dei nemici nel tempo

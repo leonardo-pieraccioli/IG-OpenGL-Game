@@ -12,10 +12,10 @@ private:
 	const float maxVibrationRadius = 0.05f;
 	const float baseDamage = 1.0f;
 	const float baseHealth = 2.5f;
-	const float baseMinSpawnRate = .5f;
-	const float baseMaxSpawnRate = 1.f;
-	const float baseMinSpeed = 1.7f;
-	const float baseMaxSpeed = 2.7f;
+	const float baseMinSpawnRate = 1.f;
+	const float baseMaxSpawnRate = 1.2f;
+	const float baseMinSpeed = 2.2f;
+	const float baseMaxSpeed = 3.0f;
 
 	float enemySpeed;
 	int rewardMoney;
@@ -33,7 +33,7 @@ private:
 
 
 public:
-	Enemy(int rewardMoney = 100, int rewardScore = 100, float shootingDistance = 5.0f, float shootingRate = 1.5f, float decelerationDistance = 7.0f);
+	Enemy(int rewardMoney = 100, int rewardScore = 100, float shootingDistance = 4.5f, float shootingRate = 2.f, float decelerationDistance = 7.0f);
 
 	static void Init(Model model);
 	void Update(float deltaTime) override;

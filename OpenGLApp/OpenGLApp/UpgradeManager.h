@@ -30,13 +30,13 @@ private:
 
 	//	upgrade_name			init_val	curr_val	val_incr	max_val		init_cost	cost	cost_increment_rate
 	std::array<upgradeType,	TOT_UPGRADES> currentUpgrades = {{
-		{"Number of ships",		1.0f,		1.0f,		1.f,		4.0f,		1500,		1500,	2.0f},
-		{"Shooting rate",		1.0f,		1.0f,		0.50f,		7.0f,		550,		550,	1.5f},
-		{"Bullets number",		1.0f,		1.0f,		2.f,		5.0f,		1200,		1200,	2.5f},
-		{"Ship max health",		80.f,		80.f,		20.f,		200.f,		200,		200,	1.5f},
-		{"Laser damage",		10.f,		10.f,		7.5f,		100.f,		250,		250,	1.3f},
-		{"Planet max health",	100.f,		100.f,		25.f,		300.f,		500,		500,	1.8f},
-		{"Ship rotation speed",	90.f,		90.f,		5.f,		120.f,		300,		300,	1.5f}
+		{"Number of ships",		1.0f,		1.0f,		1.f,		4.0f,		1200,		1200,	2.0f},
+		{"Shooting rate",		1.0f,		1.0f,		0.50f,		7.0f,		400,		400,	1.5f},
+		{"Bullets number",		1.0f,		1.0f,		2.f,		5.0f,		1000,		1000,	2.5f},
+		{"Ship max health",		80.f,		80.f,		20.f,		200.f,		150,		150,	1.5f},
+		{"Laser damage",		10.f,		10.f,		7.5f,		85.f,		200,		200,	1.3f},
+		{"Planet max health",	100.f,		100.f,		50.f,		400.f,		400,		400,	1.8f},
+		{"Ship rotation speed",	95.f,		95.f,		5.f,		130.f,		220,		220,	1.5f}
 	}};
 
 public:
