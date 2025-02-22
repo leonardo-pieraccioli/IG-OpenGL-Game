@@ -571,7 +571,7 @@ void Game::drawMenuModel(Shader shader)
     model_mat = glm::rotate(model_mat, 15.f, glm::vec3(0.0f, 0.0f, 1.0f));  // Roll
     model_mat = glm::scale(model_mat, glm::vec3(2.f, 2.f, 2.f));
     shader.SetMatrix4("model", model_mat);
-    player->objectModel.Draw(lightingShader);
+	player->objectModel.Draw(shader);
 }
 
 int Game::getRound()

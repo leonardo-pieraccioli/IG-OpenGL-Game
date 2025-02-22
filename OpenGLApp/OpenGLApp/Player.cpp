@@ -6,6 +6,7 @@ Player::Player()
 {
 	ShipSetup();
 	Ship::setShipModel();
+	objectModel = Model("Assets/Models/spaceship.obj");
 	money = 0;
 	this->tag = "Player";
 	actualShootingRate = shootingRate;
