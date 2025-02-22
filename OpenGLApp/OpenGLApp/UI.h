@@ -6,6 +6,7 @@
 #include "MiniEngine/Game.h"
 #include "MiniEngine/SoundManager.h"
 #include "UpgradeManager.h"
+#include "Leaderboard.h"
 
 // UTILS
 // -----
@@ -68,6 +69,8 @@ vector<int> gen3Nums()
     }
     return result;
 }
+
+Leaderboard leaderboard;
 
 #pragma region Play
 
@@ -291,6 +294,9 @@ void UIControls()
 
 void UIGameOver()
 {
+	static bool nameEntered = false;
+    static char insertedName[100];
+
     ImGui::SetNextWindowSize({ (float)Game::Instance().SCREEN_WIDTH, (float)Game::Instance().SCREEN_HEIGHT });
     ImGui::SetNextWindowPos({ 0,0 });
     ImGui::SetNextWindowBgAlpha(.5f);
@@ -298,27 +304,82 @@ void UIGameOver()
 
     ImGui::PushFont(Game::Instance().font_SA_large);
      
-    TextCentered("Game Over!", ImGui::GetWindowHeight() / 3);
-
-    float buttonWidth = ImGui::CalcTextSize("game over").x;
-    ImGui::PopFont();
-    ImGui::PushFont(Game::Instance().font_SA_medium);
-    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-    if (ImGui::Button("Retry", { buttonWidth, 0.f }))
-    {
-        playsound(ok);
-        Game::Instance().resetGame();
-        Game::Instance().ChangeGameState(GameState::Play);
-    }
-
-    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
-    if (ImGui::Button("Quit", { buttonWidth, 0.f }))
-    {
-        playsound(cancel);
-        Game::Instance().ChangeGameState(GameState::Quit);
-    }
+    TextCentered("Game Over!", ImGui::GetWindowHeight() / 5);
 
     ImGui::PopFont();
+
+    if (nameEntered)
+    {
+		ImGui::PushFont(Game::Instance().font_SA_small);
+        float buttonWidth = ImGui::CalcTextSize(" game over ").x;
+
+        // print leaderboard
+		ImGui::SetCursorPosX((ImGui::GetWindowWidth() / 2) - 450.f);
+		ImGui::BeginTable("Leaderboard", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit, { 900.f, 200.f });
+		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 500.f);
+		ImGui::TableSetupColumn("Score", ImGuiTableColumnFlags_WidthFixed, 200.f);
+		ImGui::TableSetupColumn("Round", ImGuiTableColumnFlags_WidthFixed, 200.f);
+        ImGui::TableHeadersRow();
+		for (auto entry : leaderboard.GetLeaderboard())
+		{
+			ImGui::TableNextRow();
+
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(entry.name.c_str());
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text(std::to_string(entry.score).c_str());
+            ImGui::TableSetColumnIndex(2);
+			ImGui::Text(std::to_string(entry.round).c_str());
+			
+        }
+
+		ImGui::PopFont();
+        ImGui::EndTable();
+
+        // buttons
+        ImGui::PushFont(Game::Instance().font_SA_medium);
+        ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+        if (ImGui::Button("Retry", { buttonWidth, 0.f }))
+        {
+			nameEntered = false;
+            playsound(ok);
+			leaderboard.SaveLeaderboard();
+            Game::Instance().resetGame();
+            Game::Instance().ChangeGameState(GameState::Play);
+        }
+
+        ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) / 2);
+        if (ImGui::Button("Quit", { buttonWidth, 0.f }))
+        {
+            playsound(cancel);
+            leaderboard.SaveLeaderboard();
+            Game::Instance().ChangeGameState(GameState::Quit);
+        }
+		ImGui::PopFont();
+    }
+    else
+    {   
+		ImGui::PushFont(Game::Instance().font_SA_medium);
+        
+		TextCentered("Insert your name", ImGui::GetCursorPosY());
+		int score = Game::Instance().player->getScore();
+		int round = Game::Instance().getRound();
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - 250);
+        ImGui::PushID(0);
+        ImGui::PushItemWidth(300);
+        ImGui::InputText("", insertedName, 100 * sizeof(char));
+		ImGui::PopItemWidth();
+		ImGui::PopID();
+		ImGui::SameLine();
+        if (ImGui::Button("Submit", { 200, 0 }))
+        {
+            playsound(ok);
+            leaderboard.AddScore(std::string(insertedName), score, round);
+            nameEntered = true;
+        }
+		ImGui::PopFont();
+    }
+
     ImGui::End();
 }
 
