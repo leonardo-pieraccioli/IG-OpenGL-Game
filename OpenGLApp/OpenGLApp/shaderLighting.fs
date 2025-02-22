@@ -26,7 +26,7 @@ uniform Light light;
 uniform sampler2D texture_diffuse1;
 uniform bool shouldActivateHalftoning;
 
-const vec3 palette[8] = {vec3(0.0, 0.0, 1.0), vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.15), vec3(0.0, 0.0, 0.3), vec3(0.0, 0.0, 0.45), vec3(0.0, 0.0, 0.6), vec3(0.0, 0.0, 0.75), vec3(0.0, 0.0, 0.9)};
+vec3 palette[8]; // = {vec3(0.0, 0.0, 1.0), vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.15), vec3(0.0, 0.0, 0.3), vec3(0.0, 0.0, 0.45), vec3(0.0, 0.0, 0.6), vec3(0.0, 0.0, 0.75), vec3(0.0, 0.0, 0.9)};
 const int paletteSize = 8;
 const float Epsilon = 1e-10;
 const float lightnessSteps = 4.0;
@@ -128,7 +128,7 @@ void main()
 {
     // ambient
     vec3 ambient = light.ambient * material.ambient;
-  	
+
     // diffuse 
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(light.position - FragPos);
