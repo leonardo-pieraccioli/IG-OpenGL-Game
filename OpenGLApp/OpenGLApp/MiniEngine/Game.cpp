@@ -442,6 +442,7 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
             if (collectable->CompareTag("Coin")) {
                 Coin* coin = dynamic_cast<Coin*>(collectable);
                 player->addMoney(coin->getMoney());
+				player->addScore(50);
                 SoundManager::Instance().playSound("Assets/Sounds/coin_pickup.mp3", false);
                 DestroyGameObject(coin);
                 break;
@@ -449,7 +450,8 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
             else if (collectable->CompareTag("PowerUp")) {
 				auto powerUp = dynamic_cast<PowerUpNerf*>(collectable);
                 // bonusTimer->resetTimer(true);
-				planet->health.Heal(5);
+				planet->health.Heal(2+round);
+                player->addScore(20);
 				// Enemy::Nerf(true, powerUp->getModifiedShootingRate(), powerUp->getModifiedMovementRate());
                 SoundManager::Instance().playSound("Assets/Sounds/bonus.mp3", false);
                 DestroyGameObject(collectable);
@@ -585,20 +587,33 @@ void Game::upgrade(UpgradeIndex upgradeIndex)
 
     switch (upgradeIndex) {
         case ShipsNumber:
+            player->addScore(500);
+            player->upgrade(upgradeIndex);
+            break;
         case ShootingRate:
+            player->addScore(75);
             player->upgrade(upgradeIndex);
             break;
         case BulletsNumber:
+			player->addScore(500);
+			player->upgrade(upgradeIndex);
+			break;
         case MaxShipsHealth:
+			player->addScore(100);
+			player->upgrade(upgradeIndex);
+			break;
         case Damage:
+			player->addScore(100);
             for (int i = 0; i < player->shipArray.size(); i++) {
                 ships[i]->upgrade(upgradeIndex);
             }
             break;
         case PlanetHealth:
+			player->addScore(75);
             planet->upgrade(upgradeIndex);
             break;
 		case ShipsSpeed:
+			player->addScore(100);
 			player->upgrade(upgradeIndex);
 			break;
         default:
