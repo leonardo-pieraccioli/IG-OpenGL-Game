@@ -521,6 +521,7 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
     }
     if (timerName == "Malus Timer") {
 		this->player->Nerf(false);
+		lightingShader.Use();
         lightingShader.SetInteger("shouldActivateHalftoning", 0);
         SoundManager::Instance().changePitch(ost, 1.0f);
     }
