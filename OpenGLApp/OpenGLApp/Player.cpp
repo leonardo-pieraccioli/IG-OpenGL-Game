@@ -181,8 +181,11 @@ void Player::upgrade(UpgradeIndex upgradeIndex)
 
 	switch (intUpgradeIndex) {
 		case 0:
-			if (nextShipToActivate < 4) {
-				shipArray[nextShipToActivate++]->isActive = true;
+			for (int i = 0; i < shipArray.size(); i++) {
+				if (!shipArray[i]->isActive) {
+					shipArray[i]->isActive = true;
+					break;
+				}
 			}
 			break;
 		case 1:
@@ -202,7 +205,9 @@ void Player::upgrade(UpgradeIndex upgradeIndex)
 
 void Player::resetUpgrades()
 {
-	nextShipToActivate = 1;
+	for (int i = 1; i < shipArray.size(); i++) {
+		shipArray[i]->isActive = false;
+	}
 	actualShootingRate = shootingRate = UpgradeManager::Instance().getInitialValue(UpgradeIndex::ShootingRate);
 }
 

@@ -605,11 +605,15 @@ void Game::upgrade(UpgradeIndex upgradeIndex)
             break;
         case BulletsNumber:
 			player->addScore(500);
-			player->upgrade(upgradeIndex);
+            for (int i = 0; i < player->shipArray.size(); i++) {
+                ships[i]->upgrade(upgradeIndex);
+            }
 			break;
         case MaxShipsHealth:
 			player->addScore(100);
-			player->upgrade(upgradeIndex);
+            for (int i = 0; i < player->shipArray.size(); i++) {
+                ships[i]->upgrade(upgradeIndex);
+            }
 			break;
         case Damage:
 			player->addScore(100);
