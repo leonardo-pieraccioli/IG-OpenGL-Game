@@ -1,8 +1,8 @@
 Leonardo 7200 4
-Leo 3600 2
-Leo 1400 1
-Leo 900 1
-Leo 600 1
+Jim 3600 2
+Jim 1400 1
+Jim 900 1
+Jim 600 1
 SpaceSlayer 500 1
 pirate 500 1
 pirate 400 1

@@ -233,7 +233,13 @@ void Game::Update(float deltaTime)
         }
         case GameState::Controls:
         {
-            activeObjects.begin()._Ptr->_Myval->Draw(lightingShader);
+            // draw sky
+            simpleShader.use();
+            simpleShader.setMat4("projection", projection);
+            simpleShader.setMat4("view", view);
+            simpleShader.setMat4("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -4)), glm::vec3(28.f, 16.5f, 0.0f)));
+            sky->Draw();
+
             UIControls();
             break;
         }
@@ -345,7 +351,6 @@ void Game::ProcessInput(float deltaTime)
             }
 
             auto worldCoordinates = glm::vec3(worldPos); // x, y, z in world coordinates
-			std::cout << "Mouse click at: " << worldCoordinates.x << ", " << worldCoordinates.y << std::endl;
             CheckCollectables(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
         }
     }
@@ -459,6 +464,7 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
 				player->Nerf(true, nerf->getModifiedMovementRate(), nerf->getModifiedShootingRate());
                 malusTimer->resetTimer(true);
                 SoundManager::Instance().playSound("Assets/Sounds/malus.mp3", false);
+                lightingShader.Use();
                 lightingShader.SetInteger("shouldActivateHalftoning", 1);
                 SoundManager::Instance().changePitch(ost, 0.85f);
                 DestroyGameObject(collectable);
