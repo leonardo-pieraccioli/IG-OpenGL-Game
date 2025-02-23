@@ -120,8 +120,10 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     //lightShader = ResourceManager::LoadShader("shader_light.vs", "shader_light.fs", nullptr, "LightShader");
     lightingShader = ResourceManager::LoadShader("shaderLighting.vs", "shaderLighting.fs", nullptr, "LightingShader");
 	simpleShader = SimpleShader("simple_shader.vs", "simple_shader.fs");
+    simpleShader.use();
+    simpleShader.setBool("shouldActivateHalftoning", false);
 
-    // TEMPORANEO, UNA SCHIFEZZA ASSOLUTA MA PER IL MOMENTO SEMBRA ANDARE ------------------------------------------------------------------------------ //
+    // --------------------------------------------------------------------------------------------------------------------------------------------------- //
 
     lightingShader.Use();
     lightingShader.SetVector3f("light.position", lightPos);
@@ -464,6 +466,8 @@ void Game::CheckCollectables(glm::vec3 collectablePosition)
 				player->Nerf(true, nerf->getModifiedMovementRate(), nerf->getModifiedShootingRate());
                 malusTimer->resetTimer(true);
                 SoundManager::Instance().playSound("Assets/Sounds/malus.mp3", false);
+                simpleShader.use();
+                simpleShader.setBool("shouldActivateHalftoning", true);
                 lightingShader.Use();
                 lightingShader.SetInteger("shouldActivateHalftoning", 1);
                 SoundManager::Instance().changePitch(ost, 0.85f);
@@ -521,6 +525,8 @@ void Game::getNotified(std::string timerName, bool isCallbackEnabled)
     }
     if (timerName == "Malus Timer") {
 		this->player->Nerf(false);
+        simpleShader.use();
+        simpleShader.setBool("shouldActivateHalftoning", false);
 		lightingShader.Use();
         lightingShader.SetInteger("shouldActivateHalftoning", 0);
         SoundManager::Instance().changePitch(ost, 1.0f);
