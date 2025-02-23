@@ -17,7 +17,10 @@
 
 #include "../Planet.h"
 #include "../Player.h"
+#include "../Sky.h"
 #include "../IObserver.h"
+
+#include "../simple_shader.h"
 
 enum class GameState { 
 	Play, 
@@ -81,6 +84,7 @@ public:
 	// Permanent Objects
 	Player* player;
 	Planet* planet;
+	Sky* sky;
 
 	// -----
 	// FONTS
@@ -111,6 +115,7 @@ private:
 	// VAOs and VBOs
 	unsigned int VAOtext, VBOtext;
 	unsigned int VBO, VAO;
+	unsigned int VAOsky, VBOsky;
 
 	// matrices
 	glm::mat4 textProjection;
@@ -132,7 +137,8 @@ private:
 	Shader shader;
 	Shader lightShader;
 	Shader lightingShader;
-	
+	SimpleShader simpleShader;
+
 	unsigned int text_coin;
 
 	// Text and Timers

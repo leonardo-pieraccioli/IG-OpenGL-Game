@@ -6,12 +6,13 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "assimp_API/stb_image.h"
+
 #include "../Coin.h"
 #include "../PowerUpNerf.h"
 #include "../Planet.h"
 #include "../Enemy.h"
 #include "../UI.h"
-
 
 constexpr auto TIMER_DURATION = 30.f;
 
@@ -44,8 +45,6 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
-
-
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
@@ -120,6 +119,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     shader = ResourceManager::LoadShader("shader.vs", "shader.fs", nullptr, "DefaultShader");
     //lightShader = ResourceManager::LoadShader("shader_light.vs", "shader_light.fs", nullptr, "LightShader");
     lightingShader = ResourceManager::LoadShader("shaderLighting.vs", "shaderLighting.fs", nullptr, "LightingShader");
+	simpleShader = SimpleShader("simple_shader.vs", "simple_shader.fs");
 
     // TEMPORANEO, UNA SCHIFEZZA ASSOLUTA MA PER IL MOMENTO SEMBRA ANDARE ------------------------------------------------------------------------------ //
 
@@ -145,7 +145,7 @@ GLFWwindow* Game::Setup(int screenWidth, int screenHeight, std::string gameName)
     lightingShader.SetInteger("shouldActivateHalftoning", 0);
 
     // --------------------------------------------------------------------------------------------------------------------------------------------------- //
-  
+
     // CAMERA SETUP
     // ------------
     view = glm::lookAt(glm::vec3(0.0f, 0.0f, 15.0f),
@@ -175,10 +175,7 @@ void Game::Init()
     planet = new Planet();
     Enemy::Init(Model("Assets/Models/enemy1.obj"));
 
-    GameObject* sky = new GameObject("Sky");
-    sky->objectModel = Model("Assets/Models/sky.obj");
-
-    InstantiateGameObject(sky, new Transform(glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(8.5f, 8.5f, 6.0f)));
+    sky = new Sky();
     InstantiateGameObject(planet, new Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.5f, 1.5f, 1.5f)));
     InstantiateGameObject(player, new Transform());
     
@@ -264,24 +261,23 @@ void Game::Update(float deltaTime)
 
 void Game::Draw(Shader shader)
 {
-    shader.Use();
-
-    // Mi trovo la matrice ortografica per la camera
     projection = glm::ortho(-((float)SCR_WIDTH / 2), (float)SCR_WIDTH / 2, -((float)SCR_HEIGHT / 2), (float)SCR_HEIGHT / 2, zNear, zFar);
     projection = glm::scale(projection, glm::vec3(orthScale, orthScale, 1.0f));
+
+    // all other objects
+    shader.Use();
     shader.SetMatrix4("projection", projection);
-
-    // camera/view transformation
-    //glm::mat4 view = camera.GetViewMatrix();
     shader.SetMatrix4("view", view);
-
-    // render boxes
     glBindVertexArray(VAO);
-
     for (auto obj = activeObjects.begin(); obj != activeObjects.end(); obj++)
-    {
         (*obj)->Draw(shader);
-    }
+
+    // draw sky
+    simpleShader.use();
+    simpleShader.setMat4("projection", projection);
+    simpleShader.setMat4("view", view);
+    simpleShader.setMat4("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -4)), glm::vec3(28.f, 16.5f, 0.0f)));
+    sky->Draw();
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -349,7 +345,7 @@ void Game::ProcessInput(float deltaTime)
             }
 
             auto worldCoordinates = glm::vec3(worldPos); // x, y, z in world coordinates
-
+			std::cout << "Mouse click at: " << worldCoordinates.x << ", " << worldCoordinates.y << std::endl;
             CheckCollectables(glm::vec3(worldCoordinates.x, worldCoordinates.y, 0.0));
         }
     }

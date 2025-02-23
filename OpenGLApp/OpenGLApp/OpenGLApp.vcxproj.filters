@@ -111,6 +111,9 @@
     <ClCompile Include="PowerUpNerf.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="Sky.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -224,12 +227,21 @@
     <ClInclude Include="IUpgradable.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="Leaderboard.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Sky.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="simple_shader.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.vs">
+    <None Include="simple_shader.vs">
       <Filter>File di origine</Filter>
     </None>
-    <None Include="shader.fs">
+    <None Include="simple_shader.fs">
       <Filter>File di origine</Filter>
     </None>
     <None Include="shader_light.fs">

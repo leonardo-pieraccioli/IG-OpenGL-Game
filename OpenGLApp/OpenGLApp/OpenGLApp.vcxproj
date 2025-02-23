@@ -168,6 +168,7 @@
     <ClCompile Include="ShootingEntity.cpp" />
     <ClCompile Include="MiniEngine\SoundManager.cpp" />
     <ClCompile Include="MiniEngine\Transform.cpp" />
+    <ClCompile Include="Sky.cpp" />
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerManager.cpp" />
@@ -207,6 +208,8 @@
     <ClInclude Include="MiniEngine\SoundManager.h" />
     <ClInclude Include="MiniEngine\assimp_API\stb_image.h" />
     <ClInclude Include="MiniEngine\Transform.h" />
+    <ClInclude Include="simple_shader.h" />
+    <ClInclude Include="Sky.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerManager.h" />
@@ -217,8 +220,8 @@
     <None Include="..\..\imgui\.editorconfig" />
     <None Include="..\..\imgui\.gitattributes" />
     <None Include="..\..\imgui\.gitignore" />
-    <None Include="shader.fs" />
-    <None Include="shader.vs" />
+    <None Include="simple_shader.fs" />
+    <None Include="simple_shader.vs" />
     <None Include="shaderLighting.fs" />
     <None Include="shaderLighting.vs" />
     <None Include="shader_light.fs" />
