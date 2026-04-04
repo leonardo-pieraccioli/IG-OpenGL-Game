@@ -13,6 +13,7 @@ public:
 	vec3 position;
 	vec3 rotation;
 	vec3 scale;
+	float collisionRadius;
 
 	Transform(vec3 position = vec3(0.f, 0.f, 0.f), vec3 rotation = vec3(0.f, 0.f, 0.f), vec3 scale = vec3(1.f, 1.f, 1.f));
 

@@ -1,21 +1,28 @@
 #pragma once
 #include "MiniEngine/GameObject.h"
+#include "MiniEngine/Health.h"
+#include "IUpgradable.h"
 
-class Planet : public GameObject
+#define INITIAL_HEALTH 100
+
+class Planet : public GameObject, public IUpgradable
 {
 private:
-	int maxHealth;
-	int currentHealth;
 	float rotationRate;
-
+	
 	void rotatePlanet(float deltaTime);
 	void explode();
 public:
-	Planet(int maxHealth = 100, float rotationRate = 45.f);
+	Health health = Health(INITIAL_HEALTH);
 
-	int getCurrentHealth();
-	float getCurrentHealthRatio();
+	Planet(float rotationRate = 20.f);
+
 	void Update(float deltaTime) override;
-	void damageActor(int damage);
-};
+	void Damage(int damage);
+	void resetPlanet();
 
+	// ------------------------------------
+	// IUpgradable functions implementation
+	void upgrade(UpgradeIndex upgradeIndex) override;
+	void resetUpgrades() override;
+};

@@ -1,0 +1,13 @@
+Leonardo 7200 4
+Jim 3600 2
+Jim 1400 1
+Jim 900 1
+Jim 600 1
+SpaceSlayer 500 1
+pirate 500 1
+pirate 400 1
+SpaceSlayer 200 1
+pirate 200 1
+iuyuyu 100 2
+ 0 2
+pirate01 0 1

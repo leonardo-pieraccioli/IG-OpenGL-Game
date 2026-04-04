@@ -1,28 +1,22 @@
 #pragma once
-#include "MiniEngine/GameObject.h"
-#include "MiniEngine/Game.h"
-#include <random>
+#include "Collectables.h"
 
-// Range di "coordinate" (ad occhio) per l'istanziazione di Coins.
-const float MIN_WIDTH = -12.0f;
-const float MAX_WIDTH = 12.0f;
-const float MIN_HEIGHT = -6.5f;
-const float MAX_HEIGHT = 6.5f;
+const static glm::vec3 coinScale = glm::vec3(0.25f, 0.25f, 0.25f);
 
-
-class Coin : public GameObject
+class Coin : public Collectables
 {
 private:
 	int moneyAmount;
-	glm::vec3 colliderCorners[2];
 
 public:
-	Coin(int initialAmount);
-	Coin(int initialAmount, Game& SpaceDefender, float x, float y);
+	Coin(int initialAmount, float despawnTime, unsigned int texture);
+	Coin(int initialAmount, float despawnTime, float x, float y);
+
+	void Update(float deltaTime) override;
+	void Draw(Shader shader) override;
 
 	void setMoney(int money);
 	int getMoney();
-	bool shouldDestroy(glm::vec3 mouseWorldCoord);
-	static void generateCoins(float deltaTime, Game& SpaceDefender);
+	bool doesCoinOverlap(glm::vec3 mouseWorldCoord);
 };
 
